@@ -357,6 +357,52 @@
   const JONG = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','¼','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
   let currentBlock = { cho: null, jung: null, jong: null }; let committedOutput = "";
 
+  // 🎵 Native Web Audio Synthesizer Engine
+  function playSoundEffect(isCorrect) {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      
+      if (isCorrect) {
+        // Bright retro major-chord arpeggio (C5 -> E5 -> G5)
+        const notes = [523.25, 659.25, 783.99];
+        notes.forEach((freq, index) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+          
+          const startTime = ctx.currentTime + (index * 0.08);
+          gain.gain.setValueAtTime(0.15, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.3);
+          
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + 0.3);
+        });
+      } else {
+        // Low arcade buzzer sound (150Hz decaying into 100Hz)
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.25);
+        
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.25);
+      }
+    } catch (e) {
+      console.log("Audio context blocked or unsupported.");
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     setupEventHandlers();
     buildVirtualKeyboard();
@@ -380,7 +426,7 @@
 
     document.getElementById("continueWorkflowBtn").addEventListener("click", () => {
       activeIndex++;
-      activePlayerIndex = (activePlayerIndex + 1) % 3; // Shift to next individual player!
+      activePlayerIndex = (activePlayerIndex + 1) % 3;
       saveSessionToStorage();
       renderNextQueueItem();
     });
@@ -511,7 +557,6 @@
       const j = Math.floor(Math.random() * (i + 1));
       [targetPool[i], targetPool[j]] = [targetPool[j], targetPool[i]];
     }
-    // Set matching round bounds based on pool size
     currentActiveQueue = targetPool.slice(0, Math.min(15, targetPool.length));
     saveSessionToStorage();
     renderNextQueueItem();
@@ -596,10 +641,12 @@
         if(opt[keyField] === targetItem[keyField]) {
           btn.classList.add("correct"); playerScores[activePlayerIndex]++;
           document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🎉 Correct entry! +1 point</span>`;
+          playSoundEffect(true);
         } else {
           btn.classList.add("incorrect");
           allButtons.forEach(b => { if(b.textContent === targetItem[keyField]) b.classList.add("correct"); });
           document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">💥 Missed! Next person up!</span>`;
+          playSoundEffect(false);
         }
         syncScoreboardUI();
         saveSessionToStorage();
@@ -626,8 +673,10 @@
     if(generatedString === correctString) {
       playerScores[activePlayerIndex]++;
       document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🏆 Beautiful spelling!</span>`;
+      playSoundEffect(true);
     } else {
       document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">🩹 Solution: ${correctString}</span>`;
+      playSoundEffect(false);
     }
     syncScoreboardUI();
     saveSessionToStorage();
@@ -669,9 +718,11 @@
       if(trackingResult === coreNormalization) {
         interactiveBtn.className = "choice-bubble-btn correct"; playerScores[activePlayerIndex]++;
         document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🌟 Flawless recognition match!</span>`;
+        playSoundEffect(true);
       } else {
         interactiveBtn.className = "choice-bubble-btn incorrect";
         document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">🧐 System read: "${event.results[0][0].transcript}"</span>`;
+        playSoundEffect(false);
       }
       syncScoreboardUI(); saveSessionToStorage(); document.getElementById("continueWorkflowBtn").style.display = "inline-flex";
     };
