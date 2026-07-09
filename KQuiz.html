@@ -87,7 +87,6 @@
   .badge-pill.status-online { background: var(--mint-green); color: white; border-color: var(--text-dark); box-shadow: 0 3px 0 var(--text-dark); }
   .badge-pill.saved-indicator { background: var(--primary-blue); color: white; border-color: var(--text-dark); box-shadow: 0 3px 0 var(--text-dark); display: none; }
 
-  /* Group Scoreboard Arcades */
   .arcade-scoreboard {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;
   }
@@ -161,7 +160,6 @@
   .choice-bubble-btn.correct { background: var(--mint-green) !important; color: white !important; }
   .choice-bubble-btn.incorrect { background: var(--brand-pop) !important; color: white !important; }
 
-  /* Visual Syllable Assembler */
   .typer-nest { margin-top: 24px; }
   .typer-screen {
     font-family: 'Gowun Dodum', sans-serif; font-size: 38px; min-height: 72px;
@@ -222,7 +220,6 @@
     <button class="mega-btn danger" id="clearStorageBtn" onclick="wipeSavedProgress()">Wipe Saved Scores 🧹</button>
   </header>
 
-  <!-- Live Matrix Asset Feed -->
   <div class="card-board">
     <h2>Popcorn Sync Engine Status</h2>
     <div class="badge-cluster">
@@ -233,7 +230,6 @@
     </div>
   </div>
 
-  <!-- Interactive Player Stations -->
   <div class="arcade-scoreboard">
     <div class="player-box" id="pPill_0">
       <span class="avatar-spot">🦊</span>
@@ -252,7 +248,6 @@
     </div>
   </div>
 
-  <!-- Interactive Session Selectors -->
   <div class="card-board">
     <h2>Pick Your Gameplay Mode</h2>
     <div class="modes-flex">
@@ -264,7 +259,6 @@
     </div>
   </div>
 
-  <!-- Live Game Arena -->
   <div id="quizArea">
     <div class="stage-header">
       <span id="trackerLabel">Question 0/0</span>
@@ -299,14 +293,12 @@
       <div class="action-deck">
         <div class="celebration-toast" id="evalFeedback"></div>
         <div>
-          <button class="mega-btn accent" id="resetRoundStateBtn" style="display:none;">Rotate To Next Player 🔄</button>
           <button class="mega-btn primary" id="continueWorkflowBtn" style="display:none;">Next Challenge ➔</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Post Game Results Studio -->
   <div class="card-board" id="summaryView">
     <h2>🎉 Victory Lap Evaluation! 🎉</h2>
     <div class="summary-podiums">
@@ -334,13 +326,24 @@
   // 🔗 LINK EMBED: Paste your updated published google sheets public URL here whenever you want!
   const EMBEDDED_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXpcCILEulBysiVCgHZWNbdIIDz-isW0CeiCkpg0FXerZ8o2N3dD5PNonYkK5nxsCauUWN93JbkZWH/pub?gid=0&single=true&output=csv";
 
+  // 📝 BCD matrix update containing your customized vocabulary arrays
   const DEFAULT_FALLBACK_MATRIX = [
-    ["한글", "Hangeul (the Korean alphabet)", "Vocab", "The native alphabet system used for the Korean language."],
-    ["안녕하세요", "Hello (formal)", "Expression", "Deploy when greeting seniors, professionals, or individuals met for the first time."],
-    ["감사합니다", "Thank you (formal)", "Expression", "Standard professional courtesy phrase used in business."],
-    ["은유", "Metaphor", "Vocab", "Figure of speech expressing structural alignment comparison."],
-    ["고래고래 소리를 지르다", "To yell at the top of one's lungs", "Vocab", "Idiomatic figure of speech describing excessive auditory projection."],
-    ["잘 먹겠습니다", "Thank you for the meal", "Expression", "Uttered immediately preceding consumption."]
+    ["하루", "a day", "Vocab", ""],
+    ["시간", "time", "Vocab", ""],
+    ["휴식", "rest / break", "Vocab", ""],
+    ["아이고", "ugh / oh no / oh dear", "Expression", "You accidentally drop your 폰 on the floor. What would you say?"],
+    ["감사하다", "to appreciate, to thank", "Vocab", ""],
+    ["정말", "really", "Vocab", ""],
+    ["새로운", "new", "Vocab", ""],
+    ["헐", "OMG or WTF", "Expression", "Your friend tells you they won a free trip to Korea. What would you say?"],
+    ["폰", "phone", "Vocab", ""],
+    ["돈", "money", "Vocab", ""],
+    ["음식", "food", "Vocab", ""],
+    ["대박", "awesome / no way / that's crazy", "Expression", "You bought a new phone for half the usual price. What would you say?"],
+    ["먹다", "to eat", "Vocab", ""],
+    ["빨리", "quickly / fast / hurry up", "Vocab", ""],
+    ["맛있다", "delicious / tasty", "Vocab", ""],
+    ["잘 먹겠습니다", "I will eat well", "Expression", "Your meal has just been served, and everyone is about to start eating. What would you say?"]
   ];
 
   let vocabList = []; let expressionList = []; let currentActiveQueue = [];
@@ -348,7 +351,6 @@
   
   let playerScores = [0, 0, 0];
   let activePlayerIndex = 0; 
-  let playersTestedThisRound = 0;
 
   const CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
   const JUNG = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
@@ -368,7 +370,6 @@
         card.classList.add("active");
         activeSelectedMode = card.dataset.mode;
         
-        // Check if there is an existing saved session matching this mode
         if (localStorage.getItem("hangeul_save_activeMode") === activeSelectedMode && localStorage.getItem("hangeul_save_queue")) {
           loadSessionFromStorage();
         } else {
@@ -377,21 +378,9 @@
       });
     });
 
-    document.getElementById("resetRoundStateBtn").addEventListener("click", () => {
-      activePlayerIndex = (activePlayerIndex + 1) % 3;
-      evaluatedState = false;
-      document.getElementById("resetRoundStateBtn").style.display = "none";
-      document.getElementById("evalFeedback").textContent = "";
-      cwClear();
-      syncScoreboardUI();
-      saveSessionToStorage();
-      renderActiveItemState();
-    });
-
     document.getElementById("continueWorkflowBtn").addEventListener("click", () => {
       activeIndex++;
-      activePlayerIndex = (activePlayerIndex + 1) % 3;
-      playersTestedThisRound = 0;
+      activePlayerIndex = (activePlayerIndex + 1) % 3; // Shift to next individual player!
       saveSessionToStorage();
       renderNextQueueItem();
     });
@@ -406,7 +395,6 @@
     });
   }
 
-  // --- LOCAL STORAGE FUNCTIONS ---
   function saveSessionToStorage() {
     localStorage.setItem("hangeul_save_scores", JSON.stringify(playerScores));
     localStorage.setItem("hangeul_save_activeIndex", activeIndex);
@@ -424,7 +412,6 @@
     activeIndex = parseInt(localStorage.getItem("hangeul_save_activeIndex")) || 0;
     activePlayerIndex = parseInt(localStorage.getItem("hangeul_save_activePlayerIndex")) || 0;
     currentActiveQueue = JSON.parse(localStorage.getItem("hangeul_save_queue")) || [];
-    playersTestedThisRound = 0; // reset round rotation logic safely
 
     document.getElementById("summaryView").style.display = "none";
     document.getElementById("quizArea").style.display = "block";
@@ -438,12 +425,11 @@
       playerScores = [0, 0, 0];
       activeIndex = 0;
       activePlayerIndex = 0;
-      playersTestedThisRound = 0;
       syncScoreboardUI();
       document.getElementById("quizArea").style.display = "none";
       document.getElementById("summaryView").style.display = "none";
       document.querySelectorAll(".mode-bubble").forEach(c => c.classList.remove("active"));
-      alert("Scores and progress have been deleted! Initialized fresh state.");
+      alert("Scores cleared successfully!");
     }
   }
 
@@ -474,7 +460,6 @@
   }
 
   function checkAndResumeInterruptedSession() {
-    // Automatically boot into previous mode if saved state is found on startup
     const savedMode = localStorage.getItem("hangeul_save_activeMode");
     if(savedMode) {
       activeSelectedMode = savedMode;
@@ -500,7 +485,7 @@
 
   function processRawMatrix(rows) {
     vocabList = []; expressionList = [];
-    let startIdx = (rows[0] && (rows[0][0].toLowerCase().includes("hangul") || rows[0][0].includes("한글"))) ? 1 : 0;
+    let startIdx = (rows[0] && (rows[0][0].toLowerCase().includes("hangul") || rows[0][0].includes("한글") || rows[0][0].toLowerCase().includes("english"))) ? 1 : 0;
 
     for(let i = startIdx; i < rows.length; i++) {
       const line = rows[i]; if(!line[0] || line.length < 2) continue;
@@ -516,7 +501,6 @@
     document.getElementById("quizArea").style.display = "block";
     playerScores = [0, 0, 0];
     activePlayerIndex = 0;
-    playersTestedThisRound = 0;
     activeIndex = 0;
     syncScoreboardUI();
 
@@ -527,7 +511,8 @@
       const j = Math.floor(Math.random() * (i + 1));
       [targetPool[i], targetPool[j]] = [targetPool[j], targetPool[i]];
     }
-    currentActiveQueue = targetPool.slice(0, Math.min(10, targetPool.length));
+    // Set matching round bounds based on pool size
+    currentActiveQueue = targetPool.slice(0, Math.min(15, targetPool.length));
     saveSessionToStorage();
     renderNextQueueItem();
   }
@@ -545,7 +530,6 @@
   function renderNextQueueItem() {
     evaluatedState = false;
     document.getElementById("continueWorkflowBtn").style.display = "none";
-    document.getElementById("resetRoundStateBtn").style.display = "none";
     document.getElementById("evalFeedback").textContent = "";
     cwClear();
 
@@ -611,27 +595,18 @@
 
         if(opt[keyField] === targetItem[keyField]) {
           btn.classList.add("correct"); playerScores[activePlayerIndex]++;
-          document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🎉 Player ${activePlayerIndex + 1} got it right!</span>`;
+          document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🎉 Correct entry! +1 point</span>`;
         } else {
           btn.classList.add("incorrect");
           allButtons.forEach(b => { if(b.textContent === targetItem[keyField]) b.classList.add("correct"); });
-          document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">💥 Oof! Player ${activePlayerIndex + 1} missed it.</span>`;
+          document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">💥 Missed! Next person up!</span>`;
         }
         syncScoreboardUI();
         saveSessionToStorage();
-        handleTurnFlowTransitions();
+        document.getElementById("continueWorkflowBtn").style.display = "inline-flex";
       };
       container.appendChild(btn);
     });
-  }
-
-  function handleTurnFlowTransitions() {
-    playersTestedThisRound++;
-    if(playersTestedThisRound < 3) {
-      document.getElementById("resetRoundStateBtn").style.display = "inline-flex";
-    } else {
-      document.getElementById("continueWorkflowBtn").style.display = "inline-flex";
-    }
   }
 
   function executeWritingConfig(item) {
@@ -650,62 +625,62 @@
 
     if(generatedString === correctString) {
       playerScores[activePlayerIndex]++;
-      document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🏆 Brilliant spelling, Player ${activePlayerIndex + 1}!</span>`;
+      document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🏆 Beautiful spelling!</span>`;
     } else {
-      document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">🩹 Not quite! Correct spelling: ${correctString}</span>`;
+      document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">🩹 Solution: ${correctString}</span>`;
     }
     syncScoreboardUI();
     saveSessionToStorage();
-    handleTurnFlowTransitions();
+    document.getElementById("continueWorkflowBtn").style.display = "inline-flex";
   }
 
   function executeListeningConfig(item) {
-    document.getElementById("promptField").textContent = "Click the speaker, listen closely, and identify it!";
-    document.getElementById("primeStimulus").textContent = "🔊 Popcorn Audio"; document.getElementById("primeStimulus").style.cursor = "pointer";
+    document.getElementById("promptField").textContent = "Listen closely and identify the item:";
+    document.getElementById("primeStimulus").textContent = "🔊 Replay Sound"; document.getElementById("primeStimulus").style.cursor = "pointer";
     document.getElementById("primeStimulus").onclick = () => triggerAudioSpeech(item.hangeul);
-    document.getElementById("secondaryStimulus").textContent = "[Click soundwave button to replay]";
+    document.getElementById("secondaryStimulus").textContent = "";
     triggerAudioSpeech(item.hangeul);
     generateOptionsMatrix(item, "english");
   }
 
   function executeSpeakingConfig(item) {
-    document.getElementById("promptField").textContent = "Unmute in Discord and say this phrase clearly:";
+    document.getElementById("promptField").textContent = "Unmute in Discord and pronounce cleanly:";
     document.getElementById("primeStimulus").textContent = item.hangeul;
     document.getElementById("secondaryStimulus").textContent = item.english;
     injectUseCaseCallout(item);
     const optContainer = document.getElementById("optionsContainer"); optContainer.style.display = "grid";
     
     const verifyBtn = document.createElement("button"); verifyBtn.className = "choice-bubble-btn"; verifyBtn.style.textAlign = "center";
-    verifyBtn.innerHTML = "🎤 Click to Start Voice Recognition Check";
+    verifyBtn.innerHTML = "🎤 Start Speech Assessment Processing";
     verifyBtn.onclick = () => runSpeechRecognitionProcessing(item, verifyBtn);
     optContainer.appendChild(verifyBtn);
   }
 
   function runSpeechRecognitionProcessing(targetItem, interactiveBtn) {
     const speechSDK = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!speechSDK) { interactiveBtn.textContent = "Audio Web API Not Supported Here"; return; }
+    if(!speechSDK) { interactiveBtn.textContent = "Audio API Not Supported"; return; }
     window.speechSynthesis && window.speechSynthesis.cancel();
     const systemAnalytic = new speechSDK(); systemAnalytic.lang = 'ko-KR'; systemAnalytic.interimResults = false;
-    interactiveBtn.textContent = "📡 System Listening... Speak Now!"; interactiveBtn.disabled = true;
+    interactiveBtn.textContent = "📡 Listening... Speak now!"; interactiveBtn.disabled = true;
 
     systemAnalytic.onresult = (event) => {
       const trackingResult = event.results[0][0].transcript.replace(/\s+/g, '');
       const coreNormalization = targetItem.hangeul.replace(/\s+/g, '');
       if(trackingResult === coreNormalization) {
         interactiveBtn.className = "choice-bubble-btn correct"; playerScores[activePlayerIndex]++;
-        document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🌟 Flawless accent match, Player ${activePlayerIndex + 1}!</span>`;
+        document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🌟 Flawless recognition match!</span>`;
       } else {
         interactiveBtn.className = "choice-bubble-btn incorrect";
-        document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">🧐 Audio parsed: "${event.results[0][0].transcript}"</span>`;
+        document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">🧐 System read: "${event.results[0][0].transcript}"</span>`;
       }
-      syncScoreboardUI(); saveSessionToStorage(); handleTurnFlowTransitions();
+      syncScoreboardUI(); saveSessionToStorage(); document.getElementById("continueWorkflowBtn").style.display = "inline-flex";
     };
-    systemAnalytic.onerror = () => { interactiveBtn.textContent = "Mic timeout or permission block."; handleTurnFlowTransitions(); };
+    systemAnalytic.onerror = () => { interactiveBtn.textContent = "Mic timeout error."; document.getElementById("continueWorkflowBtn").style.display = "inline-flex"; };
     systemAnalytic.start();
   }
 
   function executeUseCaseConfig(item) {
-    document.getElementById("promptField").textContent = "When or where should you deploy this expression?";
+    document.getElementById("promptField").textContent = "Identify the appropriate social scenario for this item:";
     document.getElementById("primeStimulus").textContent = item.hangeul;
     document.getElementById("secondaryStimulus").textContent = `Meaning: "${item.english}"`;
     generateOptionsMatrix(item, "useCase");
@@ -713,7 +688,7 @@
 
   function injectUseCaseCallout(item) {
     if(item.useCase && activeSelectedMode !== 'usecase') {
-      document.getElementById("contextWrapper").innerHTML = `<div class="tip-cloud"><strong>💡 Context Tip:</strong> ${item.useCase}</div>`;
+      document.getElementById("contextWrapper").innerHTML = `<div class="tip-cloud"><strong>💡 Scenario Objective:</strong> ${item.useCase}</div>`;
     }
   }
 
@@ -757,7 +732,7 @@
     document.getElementById("quizArea").style.display = "none";
     document.getElementById("summaryView").style.display = "block";
     for(let i=0; i<3; i++) { document.getElementById(`final_${i}`).textContent = playerScores[i]; }
-    localStorage.removeItem("hangeul_save_queue"); // clear active run on completion
+    localStorage.removeItem("hangeul_save_queue");
     localStorage.removeItem("hangeul_save_activeMode");
   }
 </script>
