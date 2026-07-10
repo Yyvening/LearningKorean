@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>한글 스튜디오 · Friends Edition</title>
+<title>한글 스튜디오 · Studio Edition</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -28,24 +28,36 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background-color: var(--bg-base); color: var(--text-primary); font-family: 'Fredoka', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  
+  body { 
+    background-color: var(--bg-base); 
+    color: var(--text-primary); 
+    font-family: 'Fredoka', sans-serif; 
+    min-height: 100vh; 
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center; 
+    padding: 20px; 
+  }
 
-  /* --- VIEW CONTAINER LAYER --- */
+  /* --- FIXED STRUCTURAL VIEW LAYOUTS --- */
   .view-panel { display: none; width: 100%; animation: slideUp 0.2s ease-out; }
   .view-panel.active { display: block; }
   @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* --- BRAND COMPACT FORMS (Gateway, Lobby, Stats) --- */
-  .compact-layout { max-width: 600px; margin: 0 auto; }
+  /* Centered block view handling for Login, Lobby, and Summary reports */
+  .compact-container { max-width: 550px; width: 100%; margin: 0 auto; }
   .studio-card { background: var(--surface); border: var(--border-thick); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-flat); }
   
   .brand-header { text-align: center; margin-bottom: 24px; }
   .brand-header h1 { font-size: 34px; color: var(--border-color); text-shadow: 2px 2px 0px var(--pop-yellow); }
 
-  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-  .sync-input { padding: 14px; font-family: inherit; font-size: 16px; border: var(--border-thin); border-radius: var(--radius-md); outline: none; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; text-align: left; }
+  .form-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); }
+  .sync-input { padding: 14px; font-family: inherit; font-size: 16px; border: var(--border-thin); border-radius: var(--radius-md); outline: none; background: white; width: 100%; }
   
-  .action-btn { font-family: inherit; font-size: 15px; font-weight: 700; text-transform: uppercase; padding: 14px 24px; border-radius: var(--radius-md); border: var(--border-thin); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-flat); background: var(--surface); width: 100%; margin-top: 8px; user-select: none; }
+  .action-btn { font-family: inherit; font-size: 14px; font-weight: 700; text-transform: uppercase; padding: 14px 24px; border-radius: var(--radius-md); border: var(--border-thin); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-flat); background: var(--surface); width: 100%; margin-top: 8px; user-select: none; }
   .action-btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0px var(--border-color); }
   .action-btn.primary { background: var(--pop-blue); color: white; }
   .action-btn.host { background: var(--pop-yellow); }
@@ -54,55 +66,34 @@
   .roster-list { background: #F8FAFC; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 100px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
   .roster-item { padding: 10px 14px; background: white; border: 1px solid #CBD5E1; border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; }
 
-  /* --- LEARNING ARENA ENVIRONMENT DASHBOARD (Wide Split Screen) --- */
-  .arena-dashboard { 
-    max-width: 1200px; 
-    width: 100%; 
-    margin: 0 auto; 
-    display: grid; 
-    grid-template-columns: 1fr 320px; 
-    gap: 24px; 
-    align-items: start;
-  }
-  @media (max-width: 900px) {
-    .arena-dashboard { grid-template-columns: 1fr; }
+  /* --- RESPONSIBLE GRID ARENA LAYOUT (Adaptive Wide Design) --- */
+  .arena-wrapper { max-width: 1000px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr 240px; gap: 20px; align-items: start; }
+  
+  /* Mobile Breakpoint Fixes */
+  @media (max-width: 850px) {
+    .arena-wrapper { grid-template-columns: 1fr; }
+    .sidebar-tracker { margin-top: 10px; }
   }
 
-  .main-deck-workspace { 
-    background: var(--surface); 
-    border: var(--border-thick); 
-    border-radius: var(--radius-lg); 
-    padding: 32px; 
-    box-shadow: var(--shadow-flat);
-    position: relative;
-    min-height: 480px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .sidebar-tracker {
-    background: #F8FAFC;
-    border: var(--border-thick);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    box-shadow: var(--shadow-flat);
-  }
+  .main-deck-workspace { background: var(--surface); border: var(--border-thick); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-flat); position: relative; min-height: 440px; display: flex; flex-direction: column; justify-content: space-between; }
+  .sidebar-tracker { background: #F8FAFC; border: var(--border-thick); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-flat); }
 
   .progress-bar-container { position: absolute; top: -4px; left: -4px; right: -4px; height: 12px; background: #E2E8F0; border: var(--border-thick); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--pop-green); width: 0%; transition: width 0.3s; }
   
-  .display-hub { text-align: center; margin: 40px 0; }
-  .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 72px; font-weight: 700; color: var(--border-color); }
+  .display-hub { text-align: center; margin: 30px 0; }
+  .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 64px; font-weight: 700; color: var(--border-color); }
   
-  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-  .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 20px; font-family: inherit; font-size: 18px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 3px 3px 0px var(--border-color); }
+  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 500px) { .choices-grid { grid-template-columns: 1fr; } }
+  
+  .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 3px 3px 0px var(--border-color); }
   .choice-btn.correct { background: var(--pop-green) !important; color: white !important; }
   .choice-btn.incorrect { background: var(--pop-pink) !important; color: white !important; opacity: 0.4; text-decoration: line-through; }
 
-  .sidebar-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; border-bottom: 2px solid #CBD5E1; padding-bottom: 6px; }
-  .badge-stack { display: flex; flex-direction: column; gap: 8px; }
-  .live-badge { padding: 10px 14px; background: white; border: var(--border-thin); border-radius: var(--radius-md); font-size: 14px; font-weight: 600; display: flex; justify-content: space-between; }
+  .sidebar-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; border-bottom: 2px solid #CBD5E1; padding-bottom: 4px; }
+  .badge-stack { display: flex; flex-direction: column; gap: 6px; }
+  .live-badge { padding: 8px 12px; background: white; border: var(--border-thin); border-radius: var(--radius-md); font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; }
 
   .stat-block { border: var(--border-thin); padding: 16px; border-radius: var(--radius-md); margin-bottom: 16px; text-align: left; background: #F8FAFC; }
   .stat-title { font-weight: 700; text-transform: uppercase; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; border-bottom: 1px dashed #CBD5E1; padding-bottom: 4px; }
@@ -112,15 +103,14 @@
 </head>
 <body>
 
-  <!-- ================= VIEW 1: GATEWAY ================= -->
   <div id="viewGateway" class="view-panel active">
-    <div class="compact-layout studio-card">
+    <div class="compact-container studio-card">
       <div class="brand-header">
         <h1>한글 스튜디오</h1>
         <p>Study Squad Edition 💬</p>
       </div>
       <div class="form-group">
-        <label style="font-size:12px; font-weight:700;">ENTER YOUR NAME</label>
+        <label>Enter Your Name</label>
         <input type="text" id="playerNameInput" class="sync-input" placeholder="e.g. Minji" autocomplete="off">
       </div>
       <button class="action-btn primary" onclick="joinRoom(false)">Join Study Room 🚀</button>
@@ -128,13 +118,18 @@
     </div>
   </div>
 
-  <!-- ================= VIEW 2: LOBBY ================= -->
   <div id="viewLobby" class="view-panel">
-    <div class="compact-layout studio-card">
+    <div class="compact-container studio-card">
       <div class="brand-header">
         <h1>Classroom Lobby</h1>
         <p>Waiting for everyone to arrive...</p>
       </div>
+      
+      <div class="form-group" id="categoryContainer" style="display:none; margin-bottom:20px;">
+        <label>Select Deck Category Filter</label>
+        <select id="categorySelector" class="sync-input" style="cursor:pointer; font-weight:600;"></select>
+      </div>
+
       <div class="roster-list" id="lobbyRoster"></div>
       
       <div id="facilitatorControls" style="display:none;">
@@ -146,15 +141,13 @@
     </div>
   </div>
 
-  <!-- ================= VIEW 3: SEPARATED LEARNING ARENA ENVIRONMENT ================= -->
   <div id="viewArena" class="view-panel">
-    <div class="arena-dashboard">
+    <div class="arena-wrapper">
       
-      <!-- Primary Core Interaction Deck Piece -->
       <main class="main-deck-workspace">
         <div class="progress-bar-container"><div class="progress-fill" id="pBar"></div></div>
         
-        <div style="display: flex; justify-content: space-between; font-size:13px; font-weight:700; margin-top:8px;">
+        <div style="display: flex; justify-content: space-between; font-size:12px; font-weight:700; margin-top:8px;">
           <span id="cardProgress">Card 0/0</span>
           <span style="background:var(--pop-yellow); padding:2px 10px; border:var(--border-thin); border-radius:12px;">Active Word</span>
         </div>
@@ -174,8 +167,7 @@
         </div>
       </main>
 
-      <!-- Decoupled Standalone Sidebar Tracker Area -->
-      <aside class="sidebar-tracker" id="arenaSidebarBox">
+      <aside class="sidebar-tracker">
         <div class="sidebar-title">Squad Status Feed</div>
         <div class="badge-stack" id="liveRosterStatus"></div>
       </aside>
@@ -183,9 +175,8 @@
     </div>
   </div>
 
-  <!-- ================= VIEW 4: ANALYTICS REPORT ================= -->
   <div id="viewSummary" class="view-panel">
-    <div class="compact-layout studio-card" style="text-align: center;">
+    <div class="compact-container studio-card" style="text-align: center;">
       <div class="brand-header">
         <h1>Analytics Wrap Report 📊</h1>
       </div>
@@ -214,7 +205,7 @@
 
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXpcCILEulBysiVCgHZWNbdIIDz-isW0CeiCkpg0FXerZ8o2N3dD5PNonYkK5nxsCauUWN93JbkZWH/pub?gid=0&single=true&output=csv";
-  const FALLBACK_DATA = [["하루", "a day"], ["시간", "time"], ["휴식", "rest / break"], ["정말", "really"]];
+  const FALLBACK_DATA = [["하루", "a day", "Basic"], ["시간", "time", "Basic"], ["휴식", "rest / break", "Basic"], ["정말", "really", "Basic"]];
 
   let socket = null;
   let clientState = { name: "", isHost: false };
@@ -260,6 +251,7 @@
 
     if(becomeHost) {
       document.getElementById("facilitatorControls").style.display = "block";
+      document.getElementById("categoryContainer").style.display = "block";
       document.getElementById("studentLobbyMsg").style.display = "none";
     }
 
@@ -306,14 +298,44 @@
       const res = await fetch(CSV_URL);
       const txt = await res.text();
       let lines = txt.split("\n").map(l => l.split(","));
-      vocabPool = lines.slice(1).map(l => ({ hangeul: l[0]?.trim(), english: l[1]?.trim() })).filter(v => v.hangeul);
+      
+      // Parse out columns safely (A: Hangeul, B: English, C: Category)
+      vocabPool = lines.slice(1).map(l => ({ 
+        hangeul: l[0]?.trim(), 
+        english: l[1]?.trim(),
+        category: l[2]?.trim() || "All Words"
+      })).filter(v => v.hangeul);
     } catch(e) {
-      vocabPool = FALLBACK_DATA.map(l => ({ hangeul: l[0], english: l[1] }));
+      vocabPool = FALLBACK_DATA.map(l => ({ hangeul: l[0], english: l[1], category: l[2] }));
     }
+
+    // Build the category dropdown options lists dynamically
+    const categories = ["All Words", ...new Set(vocabPool.map(v => v.category))];
+    const selector = document.getElementById("categorySelector");
+    selector.innerHTML = "";
+    categories.forEach(cat => {
+      const opt = document.createElement("option");
+      opt.value = cat;
+      opt.textContent = cat;
+      selector.appendChild(opt);
+    });
   }
 
   function startQuiz() {
-    let shuffled = [...vocabPool].sort(() => Math.random() - 0.5);
+    const chosenCategory = document.getElementById("categorySelector").value;
+    
+    // Filter down based on category selection
+    let filteredPool = vocabPool;
+    if(chosenCategory !== "All Words") {
+      filteredPool = vocabPool.filter(v => v.category === chosenCategory);
+    }
+
+    if(filteredPool.length === 0) {
+      alert("Selected category is empty!");
+      return;
+    }
+
+    let shuffled = [...filteredPool].sort(() => Math.random() - 0.5);
     gameQueue = shuffled.slice(0, Math.min(10, shuffled.length));
     socket.emit("start_game", { queue: gameQueue });
   }
