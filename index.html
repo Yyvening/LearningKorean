@@ -103,6 +103,7 @@
 </head>
 <body>
 
+  <!-- ================= VIEW 1: GATEWAY ================= -->
   <div id="viewGateway" class="view-panel active">
     <div class="compact-container studio-card">
       <div class="brand-header">
@@ -118,6 +119,7 @@
     </div>
   </div>
 
+  <!-- ================= VIEW 2: LOBBY ================= -->
   <div id="viewLobby" class="view-panel">
     <div class="compact-container studio-card">
       <div class="brand-header">
@@ -125,6 +127,7 @@
         <p>Waiting for everyone to arrive...</p>
       </div>
       
+      <!-- Category Selection Panel (Only displays on host screen) -->
       <div class="form-group" id="categoryContainer" style="display:none; margin-bottom:20px;">
         <label>Select Deck Category Filter</label>
         <select id="categorySelector" class="sync-input" style="cursor:pointer; font-weight:600;"></select>
@@ -141,9 +144,11 @@
     </div>
   </div>
 
+  <!-- ================= VIEW 3: ARENA ENVIRONMENT ================= -->
   <div id="viewArena" class="view-panel">
     <div class="arena-wrapper">
       
+      <!-- Main Workstation Box -->
       <main class="main-deck-workspace">
         <div class="progress-bar-container"><div class="progress-fill" id="pBar"></div></div>
         
@@ -167,6 +172,7 @@
         </div>
       </main>
 
+      <!-- Balanced Sidebar Feed Box -->
       <aside class="sidebar-tracker">
         <div class="sidebar-title">Squad Status Feed</div>
         <div class="badge-stack" id="liveRosterStatus"></div>
@@ -175,6 +181,7 @@
     </div>
   </div>
 
+  <!-- ================= VIEW 4: ANALYTICS REPORT ================= -->
   <div id="viewSummary" class="view-panel">
     <div class="compact-container studio-card" style="text-align: center;">
       <div class="brand-header">
@@ -207,6 +214,7 @@
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXpcCILEulBysiVCgHZWNbdIIDz-isW0CeiCkpg0FXerZ8o2N3dD5PNonYkK5nxsCauUWN93JbkZWH/pub?gid=0&single=true&output=csv";
   const FALLBACK_DATA = [["하루", "a day", "Basic"], ["시간", "time", "Basic"], ["휴식", "rest / break", "Basic"], ["정말", "really", "Basic"]];
 
+  let audioCtx = null;
   let socket = null;
   let clientState = { name: "", isHost: false };
   let vocabPool = [];
@@ -215,6 +223,42 @@
   
   let currentCardClicks = 0;
   let myStats = { totalCards: 0, firstTryCorrect: 0, totalClicks: 0, wrongWordsMap: {} };
+
+  // --- AUDIO SYNTHESIS MODULE ---
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+
+  function playSound(type) {
+    if (!audioCtx) return;
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'success') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+      } else if (type === 'error') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.25);
+      }
+    } catch(e) { console.log("Audio block error:", e); }
+  }
 
   function switchView(viewId) {
     document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
@@ -231,6 +275,7 @@
   }
 
   async function joinRoom(becomeHost) {
+    initAudio(); // Unlocks user sound engine safely
     let name = document.getElementById("playerNameInput").value.trim();
     if(!name) { 
       if(becomeHost) name = "Facilitator 👑";
@@ -299,20 +344,24 @@
       const txt = await res.text();
       let lines = txt.split("\n").map(l => l.split(","));
       
-      // Parse out columns safely (A: Hangeul, B: English, C: Category)
+      // Clear empty returns and normalize whitespace
       vocabPool = lines.slice(1).map(l => ({ 
         hangeul: l[0]?.trim(), 
         english: l[1]?.trim(),
         category: l[2]?.trim() || "All Words"
-      })).filter(v => v.hangeul);
+      })).filter(v => v.hangeul && v.english);
     } catch(e) {
       vocabPool = FALLBACK_DATA.map(l => ({ hangeul: l[0], english: l[1], category: l[2] }));
     }
 
-    // Build the category dropdown options lists dynamically
-    const categories = ["All Words", ...new Set(vocabPool.map(v => v.category))];
+    // Capture explicit, distinct category groupings safely
+    const uniqueCats = new Set();
+    vocabPool.forEach(v => { if(v.category) uniqueCats.add(v.category); });
+    
+    const categories = ["All Words", ...Array.from(uniqueCats)];
     const selector = document.getElementById("categorySelector");
     selector.innerHTML = "";
+    
     categories.forEach(cat => {
       const opt = document.createElement("option");
       opt.value = cat;
@@ -324,14 +373,13 @@
   function startQuiz() {
     const chosenCategory = document.getElementById("categorySelector").value;
     
-    // Filter down based on category selection
     let filteredPool = vocabPool;
     if(chosenCategory !== "All Words") {
       filteredPool = vocabPool.filter(v => v.category === chosenCategory);
     }
 
     if(filteredPool.length === 0) {
-      alert("Selected category is empty!");
+      alert("Selected category has no valid rows!");
       return;
     }
 
@@ -342,6 +390,7 @@
 
   function renderCard() {
     currentCardClicks = 0;
+    initAudio(); 
     
     if(clientState.isHost) {
       document.getElementById("studentWaitMsg").style.display = "none";
@@ -383,6 +432,7 @@
     myStats.totalClicks++;
 
     if(isCorrect) {
+      playSound('success');
       btn.classList.add("correct");
       document.querySelectorAll(".choice-btn").forEach(b => b.disabled = true);
       
@@ -391,6 +441,7 @@
 
       socket.emit("submit_click", { word: hangeulWord, isCorrect: true });
     } else {
+      playSound('error');
       btn.classList.add("incorrect");
       btn.disabled = true;
 
