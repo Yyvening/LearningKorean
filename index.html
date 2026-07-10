@@ -120,7 +120,6 @@
 </head>
 <body>
 
-  <!-- ================= VIEW 1: IDENTITY SELECTION GATEWAY ================= -->
   <div id="viewGateway" class="view-panel active">
     <div class="compact-container studio-card">
       <div class="brand-header">
@@ -130,20 +129,19 @@
       
       <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; color: var(--text-secondary); text-align:center;">Who are you today?</div>
       <div class="hero-select-grid">
-        <button class="profile-pick-btn jannica" onclick="selectProfile('Jannica')">
-          <div>Jannica <span class="profile-subtitle">Blossom Pink (Jan-ni-ka) 💗</span></div> <span>🎯</span>
+        <button class="profile-pick-btn jannica" onclick="selectProfile('잔니카')">
+          <div>잔니카 <span class="profile-subtitle">💗</span></div> <span>🎯</span>
         </button>
-        <button class="profile-pick-btn rose" onclick="selectProfile('Rose')">
-          <div>Rose <span class="profile-subtitle">Bubbles Blue 💙</span></div> <span>🫧</span>
+        <button class="profile-pick-btn rose" onclick="selectProfile('로즈')">
+          <div>로즈 <span class="profile-subtitle">💙</span></div> <span>🫧</span>
         </button>
-        <button class="profile-pick-btn krystal" onclick="selectProfile('Krystal')">
-          <div>Krystal <span class="profile-subtitle">Buttercup Green 💚</span></div> <span>⚡</span>
+        <button class="profile-pick-btn krystal" onclick="selectProfile('크리스탈')">
+          <div>크리스탈 <span class="profile-subtitle">💚</span></div> <span>⚡</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= VIEW 2: LOBBY ================= -->
   <div id="viewLobby" class="view-panel">
     <div class="compact-container studio-card">
       <div class="brand-header">
@@ -164,7 +162,6 @@
     </div>
   </div>
 
-  <!-- ================= VIEW 3: ARENA ENVIRONMENT ================= -->
   <div id="viewArena" class="view-panel">
     <div class="arena-wrapper">
       
@@ -181,7 +178,6 @@
           <div id="speechTranscriptionFeedback" style="margin-top:10px; font-size:14px; font-weight:700; color:var(--blossom-pink); min-height:20px;"></div>
         </div>
 
-        <!-- MODE INTERACTION AREAS -->
         <div class="choices-grid interaction-block-container" id="choicesBox"></div>
 
         <div class="interaction-block-container" id="writingInterfaceBox">
@@ -209,7 +205,7 @@
       <aside class="sidebar-tracker">
         <div id="workspaceFilterContainer" style="display:none; margin-bottom:14px;">
           <div class="sidebar-title">Switch Quiz Mode</div>
-          <select id="gameModeSelector" style="width:100%; cursor:pointer; font-weight:700; padding:8px; font-size:13px; border:var(--border-thin);" onchange="changeClassroomMode()">
+          <select id="gameModeSelector" style="width:100%; pointer-events:auto; font-weight:700; padding:8px; font-size:13px; border:var(--border-thin);" onchange="changeClassroomMode()">
             <option value="reading">📚 1. Reading Mode</option>
             <option value="speaking">🗣️ 2. Speaking Mode</option>
             <option value="writing">✍️ 3. Writing Mode</option>
@@ -233,7 +229,6 @@
     </div>
   </div>
 
-  <!-- ================= VIEW 4: MASTER WORKSHOP SUMMARY REPORT ================= -->
   <div id="viewSummary" class="view-panel">
     <div class="compact-container studio-card" style="text-align: center; max-width:650px;">
       <div class="brand-header">
@@ -309,15 +304,12 @@
     document.getElementById(viewId).classList.add('active');
   }
 
-  // Ask the user if they are running the session when clicking their profile button
   function selectProfile(name) {
     const isFaci = confirm(`Are you the facilitator/teacher for this session, ${name}?`);
-    
     let displayName = name;
     if (isFaci) {
-      displayName = name + " 👑"; // Add crown automatically to identify host visually
+      displayName = name + " 👑";
     }
-    
     pickHeroProfile(displayName, isFaci);
   }
 
@@ -326,7 +318,6 @@
     clientState = { name: selectedName, isHost: becomeHost };
     await loadDatabase();
 
-    // Check if socket connection framework is accessible
     if (typeof io === 'undefined') {
       alert("Socket server connection down. Please make sure to run 'node server.js' in your terminal!");
       return;
