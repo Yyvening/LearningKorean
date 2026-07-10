@@ -30,12 +30,15 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background-color: var(--bg-base); color: var(--text-primary); font-family: 'Fredoka', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
 
-  .view-panel { display: none; width: 100%; max-width: 650px; animation: slideUp 0.2s ease-out; }
+  /* --- VIEW CONTAINER LAYER --- */
+  .view-panel { display: none; width: 100%; animation: slideUp 0.2s ease-out; }
   .view-panel.active { display: block; }
-  .studio-card { background: var(--surface); border: var(--border-thick); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-flat); }
-  
   @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+  /* --- BRAND COMPACT FORMS (Gateway, Lobby, Stats) --- */
+  .compact-layout { max-width: 600px; margin: 0 auto; }
+  .studio-card { background: var(--surface); border: var(--border-thick); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-flat); }
+  
   .brand-header { text-align: center; margin-bottom: 24px; }
   .brand-header h1 { font-size: 34px; color: var(--border-color); text-shadow: 2px 2px 0px var(--pop-yellow); }
 
@@ -51,17 +54,55 @@
   .roster-list { background: #F8FAFC; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 100px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
   .roster-item { padding: 10px 14px; background: white; border: 1px solid #CBD5E1; border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; }
 
-  .arena-card { max-width: 800px; min-height: 520px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+  /* --- LEARNING ARENA ENVIRONMENT DASHBOARD (Wide Split Screen) --- */
+  .arena-dashboard { 
+    max-width: 1200px; 
+    width: 100%; 
+    margin: 0 auto; 
+    display: grid; 
+    grid-template-columns: 1fr 320px; 
+    gap: 24px; 
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .arena-dashboard { grid-template-columns: 1fr; }
+  }
+
+  .main-deck-workspace { 
+    background: var(--surface); 
+    border: var(--border-thick); 
+    border-radius: var(--radius-lg); 
+    padding: 32px; 
+    box-shadow: var(--shadow-flat);
+    position: relative;
+    min-height: 480px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .sidebar-tracker {
+    background: #F8FAFC;
+    border: var(--border-thick);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-flat);
+  }
+
   .progress-bar-container { position: absolute; top: -4px; left: -4px; right: -4px; height: 12px; background: #E2E8F0; border: var(--border-thick); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--pop-green); width: 0%; transition: width 0.3s; }
   
-  .display-hub { text-align: center; margin: 20px 0; }
-  .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 68px; font-weight: 700; }
+  .display-hub { text-align: center; margin: 40px 0; }
+  .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 72px; font-weight: 700; color: var(--border-color); }
   
-  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 18px; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 3px 3px 0px var(--border-color); }
+  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 20px; font-family: inherit; font-size: 18px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 3px 3px 0px var(--border-color); }
   .choice-btn.correct { background: var(--pop-green) !important; color: white !important; }
   .choice-btn.incorrect { background: var(--pop-pink) !important; color: white !important; opacity: 0.4; text-decoration: line-through; }
+
+  .sidebar-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; border-bottom: 2px solid #CBD5E1; padding-bottom: 6px; }
+  .badge-stack { display: flex; flex-direction: column; gap: 8px; }
+  .live-badge { padding: 10px 14px; background: white; border: var(--border-thin); border-radius: var(--radius-md); font-size: 14px; font-weight: 600; display: flex; justify-content: space-between; }
 
   .stat-block { border: var(--border-thin); padding: 16px; border-radius: var(--radius-md); margin-bottom: 16px; text-align: left; background: #F8FAFC; }
   .stat-title { font-weight: 700; text-transform: uppercase; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; border-bottom: 1px dashed #CBD5E1; padding-bottom: 4px; }
@@ -71,8 +112,9 @@
 </head>
 <body>
 
+  <!-- ================= VIEW 1: GATEWAY ================= -->
   <div id="viewGateway" class="view-panel active">
-    <div class="studio-card">
+    <div class="compact-layout studio-card">
       <div class="brand-header">
         <h1>한글 스튜디오</h1>
         <p>Study Squad Edition 💬</p>
@@ -86,8 +128,9 @@
     </div>
   </div>
 
+  <!-- ================= VIEW 2: LOBBY ================= -->
   <div id="viewLobby" class="view-panel">
-    <div class="studio-card">
+    <div class="compact-layout studio-card">
       <div class="brand-header">
         <h1>Classroom Lobby</h1>
         <p>Waiting for everyone to arrive...</p>
@@ -103,36 +146,46 @@
     </div>
   </div>
 
-  <div id="viewArena" class="view-panel arena-card studio-card">
-    <div class="progress-bar-container"><div class="progress-fill" id="pBar"></div></div>
-    
-    <div style="display: flex; justify-content: space-between; font-size:13px; font-weight:700; margin-top:8px;">
-      <span id="cardProgress">Card 0/0</span>
-      <span style="background:var(--pop-yellow); padding:2px 10px; border:var(--border-thin); border-radius:12px;">Active</span>
-    </div>
+  <!-- ================= VIEW 3: SEPARATED LEARNING ARENA ENVIRONMENT ================= -->
+  <div id="viewArena" class="view-panel">
+    <div class="arena-dashboard">
+      
+      <!-- Primary Core Interaction Deck Piece -->
+      <main class="main-deck-workspace">
+        <div class="progress-bar-container"><div class="progress-fill" id="pBar"></div></div>
+        
+        <div style="display: flex; justify-content: space-between; font-size:13px; font-weight:700; margin-top:8px;">
+          <span id="cardProgress">Card 0/0</span>
+          <span style="background:var(--pop-yellow); padding:2px 10px; border:var(--border-thin); border-radius:12px;">Active Word</span>
+        </div>
 
-    <div id="liveStatusDeck" style="background:#F8FAFC; padding:10px; border:var(--border-thin); border-radius:var(--radius-md); font-size:12px; font-weight:600; margin:10px 0;">
-      <div style="color:var(--text-secondary); margin-bottom:4px; font-size:10px; text-transform:uppercase;">Classroom Tracker:</div>
-      <div id="liveRosterStatus" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
-    </div>
+        <div class="display-hub">
+          <div class="stimulus-main" id="mainWord">한글</div>
+        </div>
 
-    <div class="display-hub">
-      <div class="stimulus-main" id="mainWord">한글</div>
-    </div>
+        <div class="choices-grid" id="choicesBox"></div>
 
-    <div class="choices-grid" id="choicesBox"></div>
+        <div>
+          <button class="action-btn success" id="nextCardBtn" style="display:none; margin-top:0;" onclick="sendNav(1)">Next Slide Card ▶</button>
+          <button class="action-btn primary" id="endGameBtn" style="display:none; margin-top:0; background:var(--pop-pink);" onclick="triggerEndGame()">Wrap Up & View Stats 🏁</button>
+          <div id="studentWaitMsg" style="display:none; text-align:center; font-size:13px; font-weight:600; color:var(--text-secondary); padding:10px; background:var(--bg-base); border-radius:var(--radius-sm); border: 1px dashed var(--border-color);">
+            Find the match! Look at the card layout options above... 🎉
+          </div>
+        </div>
+      </main>
 
-    <div style="margin-top:16px;">
-      <button class="action-btn success" id="nextCardBtn" style="display:none; margin-top:0;" onclick="sendNav(1)">Next Slide Card ▶</button>
-      <button class="action-btn primary" id="endGameBtn" style="display:none; margin-top:0; background:var(--pop-pink);" onclick="triggerEndGame()">Wrap Up & View Stats 🏁</button>
-      <div id="studentWaitMsg" style="display:none; text-align:center; font-size:13px; font-weight:600; color:var(--text-secondary); padding:8px; background:var(--bg-base); border-radius:var(--radius-sm);">
-        Find the match! Waiting for the facilitator to advance... 🎉
-      </div>
+      <!-- Decoupled Standalone Sidebar Tracker Area -->
+      <aside class="sidebar-tracker" id="arenaSidebarBox">
+        <div class="sidebar-title">Squad Status Feed</div>
+        <div class="badge-stack" id="liveRosterStatus"></div>
+      </aside>
+
     </div>
   </div>
 
+  <!-- ================= VIEW 4: ANALYTICS REPORT ================= -->
   <div id="viewSummary" class="view-panel">
-    <div class="studio-card" style="text-align: center;">
+    <div class="compact-layout studio-card" style="text-align: center;">
       <div class="brand-header">
         <h1>Analytics Wrap Report 📊</h1>
       </div>
@@ -151,7 +204,7 @@
       </div>
 
       <div class="stat-block" id="facilitatorStrugglePanel" style="display:none;">
-        <div class="stat-title">Facilitator Insights: Total Misses By Player</div>
+        <div class="stat-title">Facilitator Insights: Total Mistakes By Player</div>
         <div id="struggleLeaderboard"></div>
       </div>
 
@@ -169,7 +222,6 @@
   let gameQueue = [];
   let activeIndex = 0;
   
-  // Tracking user local attempts for statistics calculations
   let currentCardClicks = 0;
   let myStats = { totalCards: 0, firstTryCorrect: 0, totalClicks: 0, wrongWordsMap: {} };
 
@@ -180,7 +232,7 @@
 
   function promptFacilitator() {
     const pw = prompt("Enter Facilitator Access Passcode:");
-    if(pw === "1234") { // Simple private passcode entry
+    if(pw === "1234") { 
       joinRoom(true);
     } else if (pw !== null) {
       alert("Invalid Passcode!");
@@ -211,7 +263,6 @@
       document.getElementById("studentLobbyMsg").style.display = "none";
     }
 
-    // Engine Networking Triggers
     socket.on("update_roster", (players) => {
       const lobbyList = document.getElementById("lobbyRoster");
       lobbyList.innerHTML = "";
@@ -219,18 +270,16 @@
       arenaList.innerHTML = "";
 
       for(let id in players) {
-        // Render lobby rows
         const row = document.createElement("div");
         row.className = "roster-item";
         row.innerHTML = `<span>👤 ${players[id].name}</span> <span>${players[id].status}</span>`;
         lobbyList.appendChild(row);
 
-        // Render live game labels
         if(!players[id].name.includes("👑")) {
-          const badge = document.createElement("span");
-          badge.style.cssText = "padding:3px 8px; background:white; border:1px solid #CBD5E1; border-radius:6px;";
-          badge.innerHTML = `${players[id].name}: ${players[id].status}`;
-          arenaList.appendChild(badge);
+          const div = document.createElement("div");
+          div.className = "live-badge";
+          div.innerHTML = `<span>👤 ${players[id].name}</span> <span>${players[id].status}</span>`;
+          arenaList.appendChild(div);
         }
       }
     });
@@ -239,7 +288,6 @@
       gameQueue = serverData.queue;
       activeIndex = serverData.activeIndex;
 
-      // Only switch windows once the facilitator has actively triggered the start action
       if(activeIndex >= 0 && activeIndex < 500) {
         if(!document.getElementById("viewArena").classList.contains("active")) {
           switchView("viewArena");
@@ -324,7 +372,6 @@
       btn.classList.add("incorrect");
       btn.disabled = true;
 
-      // Log incorrect map trace locally
       myStats.wrongWordsMap[hangeulWord] = (myStats.wrongWordsMap[hangeulWord] || 0) + 1;
 
       socket.emit("submit_click", { word: hangeulWord, isCorrect: false });
@@ -343,7 +390,6 @@
   function calculateAndDisplayStats(logs) {
     switchView("viewSummary");
 
-    // 1. Process Individual Card Copy Information
     const accuracy = myStats.totalCards > 0 ? Math.round((myStats.firstTryCorrect / myStats.totalCards) * 100) : 100;
     document.getElementById("myAccuracy").textContent = `${accuracy}%`;
     document.getElementById("myAces").textContent = `${myStats.firstTryCorrect} / ${myStats.totalCards} words`;
@@ -356,13 +402,11 @@
     }
     document.getElementById("myStruggle").textContent = worstWord;
 
-    // 2. Process Collective Global Master Logs Information
     let overallClicks = logs.length;
     let trueClicks = logs.filter(l => l.isCorrect).length;
     let groupAvgPercentage = overallClicks > 0 ? Math.round((trueClicks / overallClicks) * 100) : 100;
     document.getElementById("groupAvg").textContent = `${groupAvgPercentage}%`;
 
-    // Discover the aggregate group trouble word item
     let globalWrongMap = {};
     let totalIncorrectClicksByPlayer = {};
 
@@ -371,7 +415,6 @@
         globalWrongMap[entry.word] = (globalWrongMap[entry.word] || 0) + 1;
         totalIncorrectClicksByPlayer[entry.name] = (totalIncorrectClicksByPlayer[entry.name] || 0) + 1;
       } else {
-        // Guarantee user exists in player click map tracking objects
         if(!totalIncorrectClicksByPlayer[entry.name]) totalIncorrectClicksByPlayer[entry.name] = 0;
       }
     });
@@ -384,7 +427,6 @@
     }
     document.getElementById("groupTroubleWord").textContent = topTroubleWord;
 
-    // 3. Render Facilitator Board Breakdown if Host
     if(clientState.isHost) {
       const dashboard = document.getElementById("facilitatorStrugglePanel");
       const listContainer = document.getElementById("struggleLeaderboard");
