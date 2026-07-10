@@ -91,9 +91,13 @@
   
   .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; width: 100%; }
   
-  .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 18px; font-family: inherit; font-size: 17px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 4px 4px 0px var(--border-color); }
+  .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 18px; font-family: inherit; font-size: 17px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 4px 4px 0px var(--border-color); transition: background-color 0.2s, color 0.2s; }
   .choice-btn.correct { background: var(--buttercup-green) !important; color: white !important; }
   .choice-btn.incorrect { background: var(--blossom-pink) !important; color: white !important; opacity: 0.5; text-decoration: line-through; }
+
+  .writing-box-input { width: 100%; padding: 16px; border: var(--border-thin); border-radius: var(--radius-md); font-family: 'Gowun Dodum', sans-serif; font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 12px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.1); transition: background-color 0.2s, color 0.2s; }
+  .writing-box-input.correct-flash { background-color: #D1FAE5; border-color: var(--buttercup-green); color: #065F46; }
+  .writing-box-input.incorrect-flash { background-color: #FEE2E2; border-color: var(--blossom-pink); color: #991B1B; }
 
   .interaction-block-container { width: 100%; margin-bottom: 20px; display: none; text-align: center; }
   .interaction-block-container.active { display: block; }
@@ -120,6 +124,7 @@
 </head>
 <body>
 
+  <!-- ================= VIEW 1: IDENTITY SELECTION GATEWAY ================= -->
   <div id="viewGateway" class="view-panel active">
     <div class="compact-container studio-card">
       <div class="brand-header">
@@ -142,6 +147,7 @@
     </div>
   </div>
 
+  <!-- ================= VIEW 2: LOBBY ================= -->
   <div id="viewLobby" class="view-panel">
     <div class="compact-container studio-card">
       <div class="brand-header">
@@ -162,6 +168,7 @@
     </div>
   </div>
 
+  <!-- ================= VIEW 3: ARENA ENVIRONMENT ================= -->
   <div id="viewArena" class="view-panel">
     <div class="arena-wrapper">
       
@@ -175,13 +182,14 @@
 
         <div class="display-hub">
           <div class="stimulus-main" id="mainWord">한글</div>
-          <div id="speechTranscriptionFeedback" style="margin-top:10px; font-size:14px; font-weight:700; color:var(--blossom-pink); min-height:20px;"></div>
+          <div id="globalEvaluationFeedback" style="margin-top:12px; font-size:15px; font-weight:700; color:var(--blossom-pink); min-height:24px;"></div>
         </div>
 
+        <!-- MODE INTERACTION AREAS -->
         <div class="choices-grid interaction-block-container" id="choicesBox"></div>
 
         <div class="interaction-block-container" id="writingInterfaceBox">
-          <input type="text" id="writingInputField" style="width:100%; padding:14px; border:var(--border-thin); border-radius:var(--radius-md); font-weight:600; text-align:center; margin-bottom:12px;" placeholder="Type Korean text here..." autocomplete="off">
+          <input type="text" id="writingInputField" class="writing-box-input" placeholder="Type Korean text here..." autocomplete="off">
           <button class="action-btn primary" onclick="checkWritingSubmission()">Verify Written Answer ✍️</button>
         </div>
 
@@ -229,6 +237,7 @@
     </div>
   </div>
 
+  <!-- ================= VIEW 4: MASTER WORKSHOP SUMMARY REPORT ================= -->
   <div id="viewSummary" class="view-panel">
     <div class="compact-container studio-card" style="text-align: center; max-width:650px;">
       <div class="brand-header">
@@ -365,19 +374,38 @@
 
   async function loadDatabase() {
     try {
-      const res = await fetch(CSV_URL); const txt = await res.text();
-      let lines = txt.split("\n").map(l => l.split(","));
-      vocabPool = lines.slice(1).map(l => ({ 
-        hangeul: l[0]?.trim() || "", english: l[1]?.trim() || "", type: l[2]?.trim() || "", useCase: l[3]?.trim() || ""
-      })).filter(v => v.hangeul && v.english);
+      const res = await fetch(CSV_URL); 
+      const txt = await res.text();
+      let lines = txt.split(/\r?\n/);
+      
+      vocabPool = lines.slice(1).map(line => {
+        let columns = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+        const clean = (val) => val ? val.replace(/^"|"$/g, '').trim() : "";
+        
+        return { 
+          hangeul: clean(columns[0]), 
+          english: clean(columns[1]), 
+          type: clean(columns[2]), 
+          useCase: clean(columns[3]) || "" 
+        };
+      }).filter(v => v.hangeul && v.english);
     } catch(e) {
+      console.error("Database loading failed:", e);
       vocabPool = [{ hangeul: "하루", english: "a day", type: "Vocab", useCase: "" }];
     }
   }
 
   function startQuiz() {
     let poolToUse = [...vocabPool];
-    if (activeMode === "context") poolToUse = vocabPool.filter(v => v.useCase && v.useCase.length > 2);
+    if (activeMode === "context") {
+      poolToUse = vocabPool.filter(v => v.useCase && v.useCase.trim().length > 3);
+    }
+    
+    if (poolToUse.length === 0) {
+      alert("No matching items found for this mode in your sheet data!");
+      return;
+    }
+
     let shuffled = poolToUse.sort(() => Math.random() - 0.5);
     gameQueue = shuffled.slice(0, Math.min(10, shuffled.length));
     socket.emit("start_game", { queue: gameQueue, mode: activeMode });
@@ -401,7 +429,15 @@
 
   function renderCard() {
     currentCardClicks = 0;
-    document.getElementById("speechTranscriptionFeedback").textContent = "";
+    const feedbackBox = document.getElementById("globalEvaluationFeedback");
+    feedbackBox.textContent = "";
+    feedbackBox.style.color = "var(--blossom-pink)";
+    
+    const writeInput = document.getElementById("writingInputField");
+    writeInput.className = "writing-box-input"; 
+    writeInput.value = "";
+    writeInput.disabled = false;
+
     hideAllInterfaces();
 
     if(clientState.isHost) {
@@ -435,14 +471,13 @@
     } 
     else if (activeMode === "context") {
       document.getElementById("choicesBox").classList.add("active");
-      mainDisplay.textContent = currentCard.useCase || "Scenario missing!"; mainDisplay.style.fontSize = "22px";
+      mainDisplay.textContent = currentCard.useCase || "Scenario cell empty!"; mainDisplay.style.fontSize = "22px";
       buildMultipleChoices(currentCard, "hangeul");
     }
     else if (activeMode === "writing") {
       document.getElementById("writingInterfaceBox").classList.add("active");
-      document.getElementById("writingInputField").value = "";
-      document.getElementById("writingInputField").disabled = false;
       mainDisplay.textContent = currentCard.english; mainDisplay.style.fontSize = "42px";
+      writeInput.focus();
     }
     else if (activeMode === "speaking") {
       document.getElementById("speakingInterfaceBox").classList.add("active");
@@ -450,6 +485,11 @@
       mainDisplay.textContent = currentCard.hangeul; mainDisplay.style.fontSize = "64px";
     }
   }
+
+  // Allow enter key submission for quick typing flow
+  document.getElementById("writingInputField").addEventListener("keydown", function(e) {
+    if(e.key === "Enter") checkWritingSubmission();
+  });
 
   function buildMultipleChoices(currentCard, propertyToCompare) {
     const box = document.getElementById("choicesBox"); box.innerHTML = "";
@@ -468,19 +508,38 @@
   }
 
   function checkWritingSubmission() {
-    const guess = document.getElementById("writingInputField").value.trim().toLowerCase();
+    const writeInput = document.getElementById("writingInputField");
+    const guess = writeInput.value.trim().toLowerCase();
     const target = gameQueue[activeIndex].hangeul.trim().toLowerCase();
+    const feedbackBox = document.getElementById("globalEvaluationFeedback");
+    
     if(!guess) return;
+    
     const isCorrect = (guess === target);
-    if(isCorrect) document.getElementById("writingInputField").disabled = true;
-    processEvaluationResult(isCorrect, gameQueue[activeIndex].hangeul, null);
+    
+    // Reset temporary animation indicator layout states
+    writeInput.classList.remove("correct-flash", "incorrect-flash");
+    
+    if(isCorrect) {
+      writeInput.classList.add("correct-flash");
+      writeInput.disabled = true;
+      feedbackBox.style.color = "var(--buttercup-green)";
+      feedbackBox.textContent = "✨ Correct! Well Written.";
+      processEvaluationResult(true, gameQueue[activeIndex].hangeul, null);
+    } else {
+      writeInput.classList.add("incorrect-flash");
+      feedbackBox.style.color = "var(--blossom-pink)";
+      feedbackBox.textContent = "❌ Spelled wrong. Look closely and try again!";
+      processEvaluationResult(false, gameQueue[activeIndex].hangeul, null);
+    }
   }
 
   function triggerVoiceCapture() {
-    if (!recognition) { alert("Speech engine error."); return; }
+    if (!recognition) { alert("Speech engine failure."); return; }
     const wave = document.getElementById("voiceWaveElement");
-    const feedback = document.getElementById("speechTranscriptionFeedback");
-    wave.style.display = "block"; feedback.textContent = "";
+    const feedbackBox = document.getElementById("globalEvaluationFeedback");
+    wave.style.display = "block"; 
+    feedbackBox.textContent = "";
     recognition.start();
 
     recognition.onresult = function(event) {
@@ -488,7 +547,14 @@
       const userSpoke = event.results[0][0].transcript.trim();
       const targetKorean = gameQueue[activeIndex].hangeul.trim();
       const isMatch = (userSpoke === targetKorean);
-      feedback.textContent = isMatch ? `✅ Perfect!` : `❌ Heard: "${userSpoke}"`;
+      
+      if(isMatch) {
+        feedbackBox.style.color = "var(--buttercup-green)";
+        feedbackBox.textContent = `✅ Perfect Pronunciation! ("${userSpoke}")`;
+      } else {
+        feedbackBox.style.color = "var(--blossom-pink)";
+        feedbackBox.textContent = `❌ Detected: "${userSpoke}". Try again!`;
+      }
       processEvaluationResult(isMatch, targetKorean, null);
     };
     recognition.onerror = function() { wave.style.display = "none"; };
