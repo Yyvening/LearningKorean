@@ -1,13 +1,16 @@
 {
-  "name": "hangeul-live-studio",
+  "name": "hangeul-studio",
   "version": "1.0.0",
-  "description": "Real-time Korean study deck for voice calls",
+  "description": "한글 스튜디오 · Powerpuff Edition — realtime classroom vocab quiz",
   "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "socket.io": "^4.6.1"
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
   }
 }
