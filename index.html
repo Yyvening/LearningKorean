@@ -9,20 +9,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-base: #FFF1F2;       
-    --surface: #FFFFFF;       
-    --border-color: #000000;  
+    --bg-base: #FFF1F2;
+    --surface: #FFFFFF;
+    --border-color: #000000;
     --border-thick: 5px solid var(--border-color);
     --border-thin: 3px solid var(--border-color);
-    --text-primary: #000000;  
+    --text-primary: #000000;
     --text-secondary: #334155;
-    
-    --blossom-pink: #FF6B8B;  
-    --bubbles-blue: #4EA8DE;  
-    --buttercup-green: #4ECDC4; 
+
+    --blossom-pink: #FF6B8B;
+    --bubbles-blue: #4EA8DE;
+    --buttercup-green: #4ECDC4;
     --chemical-x-black: #1E293B;
-    --pop-yellow: #FFD166;    
-    
+    --pop-yellow: #FFD166;
+
     --radius-lg: 30px;
     --radius-md: 20px;
     --radius-sm: 10px;
@@ -30,43 +30,44 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  
-  body { 
-    background-color: var(--bg-base); 
-    color: var(--text-primary); 
-    font-family: 'Fredoka', sans-serif; 
-    min-height: 100vh; 
-    display: flex; 
+
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Fredoka', sans-serif;
+    min-height: 100vh;
+    display: flex;
     flex-direction: column;
-    align-items: center; 
-    justify-content: center; 
-    padding: 20px; 
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
     background-image: radial-gradient(rgba(255, 107, 139, 0.15) 15%, transparent 16%), radial-gradient(rgba(78, 168, 222, 0.15) 15%, transparent 16%);
     background-size: 60px 60px;
     background-position: 0 0, 30px 30px;
+    position: relative;
+    overflow-x: hidden;
   }
 
   .view-panel { display: none; width: 100%; animation: slideUp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   .view-panel.active { display: block; }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes confettiFall { to { top: 110%; transform: rotate(720deg); opacity: 0.3; } }
 
   .compact-container { max-width: 580px; width: 100%; margin: 0 auto; }
   .studio-card { background: var(--surface); border: var(--border-thick); border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow-flat); position: relative; }
-  
+
   .brand-header { text-align: center; margin-bottom: 28px; }
   .brand-header h1 { font-size: 38px; color: var(--border-color); text-shadow: 3px 3px 0px var(--pop-yellow); -webkit-text-stroke: 1px var(--border-color); }
   .brand-header p { font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; margin-top: 4px; }
 
   .hero-select-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
-  
-  .profile-pick-btn { font-family: inherit; font-size: 18px; font-weight: 700; color: white; border: var(--border-thin); border-radius: var(--radius-md); padding: 20px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; box-shadow: 5px 5px 0px var(--border-color); position: relative; overflow: hidden; text-shadow: 2px 2px 0px rgba(0,0,0,0.4); }
+
+  .profile-pick-btn { font-family: inherit; font-size: 18px; font-weight: 700; color: white; border: var(--border-thin); border-radius: var(--radius-md); padding: 20px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; box-shadow: 5px 5px 0px var(--border-color); position: relative; overflow: hidden; text-shadow: 2px 2px 0px rgba(0,0,0,0.4); width: 100%; }
   .profile-pick-btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0px var(--border-color); }
-  
+
   .profile-pick-btn.jannica { background: var(--blossom-pink); }
   .profile-pick-btn.rose { background: var(--bubbles-blue); }
   .profile-pick-btn.krystal { background: var(--buttercup-green); }
-  
+
   .profile-subtitle { font-size: 11px; font-weight: 500; text-transform: uppercase; opacity: 0.9; display: block; margin-top: 2px; text-shadow: none; color: white; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 20px; width: fit-content; }
 
   .action-btn { font-family: inherit; font-size: 14px; font-weight: 700; text-transform: uppercase; padding: 14px 24px; border-radius: var(--radius-md); border: var(--border-thin); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 4px 4px 0px var(--border-color); background: var(--surface); width: 100%; margin-top: 8px; user-select: none; }
@@ -74,15 +75,18 @@
   .action-btn.success { background: var(--buttercup-green); color: white; }
   .action-btn.danger { background: var(--blossom-pink); color: white; }
   .action-btn.primary { background: var(--bubbles-blue); color: white; }
-  .action-btn.ghost { background: white; }
+  .action-btn.ghost { background: white; color: var(--text-primary); box-shadow: none; border: 2px dashed var(--border-color); font-size: 12px; padding: 10px; }
   .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .action-btn:disabled:active { transform: none; box-shadow: 4px 4px 0px var(--border-color); }
-
-  .role-select-panel { text-align: center; }
-  .role-select-panel .chosen-label { font-weight: 700; margin-bottom: 16px; font-size: 15px; }
 
   .roster-list { background: #FFF; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 100px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.05); }
-  .roster-item { padding: 12px 16px; background: white; border: var(--border-thin); border-left: 8px solid var(--border-color); border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 700; font-size: 15px; box-shadow: 2px 2px 0px var(--border-color); }
+  .roster-item { padding: 12px 16px; background: white; border: var(--border-thin); border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 15px; box-shadow: 2px 2px 0px var(--border-color); }
+  .roster-item.is-offline { opacity: 0.55; }
+
+  .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; border: 2px solid var(--border-color); vertical-align: middle; }
+  .status-dot.ready { background: var(--buttercup-green); }
+  .status-dot.host { background: var(--pop-yellow); }
+  .status-dot.offline { background: #CBD5E1; animation: blinkDot 1.2s infinite; }
+  @keyframes blinkDot { 50% { opacity: 0.3; } }
 
   .arena-wrapper { max-width: 1000px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: start; }
   @media (max-width: 850px) { .arena-wrapper { grid-template-columns: 1fr; } }
@@ -92,12 +96,12 @@
 
   .progress-bar-container { position: absolute; top: -5px; left: -5px; right: -5px; height: 16px; background: #E2E8F0; border: var(--border-thick); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--buttercup-green); width: 0%; transition: width 0.3s; border-right: 3px solid var(--border-color); }
-  
+
   .display-hub { text-align: center; margin: 24px 0; min-height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 52px; font-weight: 700; color: var(--text-primary); line-height: 1.3; text-shadow: 2px 2px 0px #E2E8F0; }
-  
+
   .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; width: 100%; }
-  
+
   .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 18px; font-family: inherit; font-size: 17px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 4px 4px 0px var(--border-color); transition: background-color 0.2s, color 0.2s; }
   .choice-btn.correct { background: var(--buttercup-green) !important; color: white !important; }
   .choice-btn.incorrect { background: var(--blossom-pink) !important; color: white !important; opacity: 0.5; text-decoration: line-through; }
@@ -108,20 +112,21 @@
 
   .interaction-block-container { width: 100%; margin-bottom: 20px; display: none; text-align: center; }
   .interaction-block-container.active { display: block; }
-  
+
   .speech-wave-indicator { font-size: 13px; font-weight: 700; color: var(--blossom-pink); display: none; margin-top: 8px; animation: pulse 0.8s infinite alternate; }
   @keyframes pulse { from { opacity: 0.4; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
   .sidebar-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-primary); margin-bottom: 12px; border-bottom: 3px solid var(--border-color); padding-bottom: 4px; margin-top: 18px; }
   .sidebar-title:first-child { margin-top: 0; }
   .badge-stack { display: flex; flex-direction: column; gap: 8px; }
-  .live-badge { padding: 10px 14px; background: white; border: var(--border-thin); border-left: 8px solid var(--border-color); border-radius: var(--radius-md); font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; box-shadow: 3px 3px 0px var(--border-color); }
+  .live-badge { padding: 10px 14px; background: white; border: var(--border-thin); border-radius: var(--radius-md); font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; box-shadow: 3px 3px 0px var(--border-color); }
+  .live-badge.is-offline { opacity: 0.55; }
 
-  /* quick-scan status colors so a facilitator can see class progress at a glance */
-  .status-cleared { border-left-color: var(--buttercup-green) !important; }
-  .status-struggling { border-left-color: var(--blossom-pink) !important; }
-  .status-pending { border-left-color: var(--pop-yellow) !important; }
-  .status-host { border-left-color: var(--bubbles-blue) !important; }
+  .pacing-box { background: var(--pop-yellow); border: var(--border-thin); border-radius: var(--radius-md); padding: 12px; margin-bottom: 16px; text-align: center; box-shadow: 3px 3px 0px var(--border-color); display: none; }
+  .pacing-box.active { display: block; }
+  .pacing-box .pacing-count { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; }
+  .pacing-track { height: 10px; background: rgba(0,0,0,0.15); border-radius: 10px; margin-top: 6px; overflow: hidden; border: 2px solid var(--border-color); }
+  .pacing-fill { height: 100%; background: var(--chemical-x-black); width: 0%; transition: width 0.25s; }
 
   .stat-block { border: var(--border-thick); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 20px; text-align: left; background: white; box-shadow: 5px 5px 0px var(--border-color); }
   .stat-title { font-weight: 700; text-transform: uppercase; font-size: 13px; color: var(--border-color); margin-bottom: 12px; border-bottom: 3px solid var(--border-color); padding-bottom: 4px; }
@@ -132,24 +137,42 @@
 
   .guide-box { background: #EFF6FF; border: var(--border-thin); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; font-size: 13px; text-align: left; color: #1E3A8A; box-shadow: 3px 3px 0px var(--border-color); }
   .guide-box strong { color: #1D4ED8; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 4px; }
-  .guide-box.warn { background: #FFF7ED; color: #9A3412; }
-  .guide-box.error { background: #FEF2F2; color: #991B1B; }
-  .guide-box.ok { background: #ECFDF5; color: #065F46; }
+  .guide-box.warn { background: #FEF3C7; border-color: var(--pop-yellow); color: #78350F; }
+  .guide-box.warn strong { color: #92400E; }
 
   .toast-banner { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: var(--chemical-x-black); color: white; padding: 12px 22px; border-radius: var(--radius-md); border: var(--border-thin); font-weight: 700; font-size: 13px; box-shadow: var(--shadow-flat); z-index: 999; display: none; max-width: 90vw; text-align: center; }
-  .connection-banner { position: fixed; top: 0; left: 0; right: 0; background: var(--blossom-pink); color: white; text-align: center; padding: 10px; font-weight: 700; font-size: 13px; z-index: 1000; display: none; border-bottom: var(--border-thick); }
 
-  .pacing-pill { display: none; background: var(--bubbles-blue); color: white; padding: 4px 12px; border: var(--border-thin); border-radius: 12px; font-size: 11px; margin-left: 8px; white-space: nowrap; }
+  /* Role picker */
+  .chosen-character-banner { text-align: center; font-size: 22px; font-weight: 700; margin-bottom: 18px; padding: 14px; border: var(--border-thin); border-radius: var(--radius-md); box-shadow: 3px 3px 0px var(--border-color); color: white; }
+  .role-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 480px) { .role-btn-grid { grid-template-columns: 1fr; } }
+  .role-btn { font-family: inherit; font-weight: 700; font-size: 15px; padding: 22px 14px; border: var(--border-thin); border-radius: var(--radius-md); cursor: pointer; box-shadow: 5px 5px 0px var(--border-color); background: white; text-align: center; line-height: 1.5; }
+  .role-btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0px var(--border-color); }
+  .role-btn.teach { background: var(--chemical-x-black); color: white; }
+  .role-btn .role-emoji { font-size: 30px; display: block; margin-bottom: 6px; }
+  .role-btn small { display: block; font-weight: 500; text-transform: none; font-size: 11px; opacity: 0.8; margin-top: 4px; }
 
-  .export-row { display: flex; gap: 10px; margin-top: 14px; }
-  .export-row .action-btn { margin-top: 0; }
+  /* Connecting / loading view */
+  .loading-spinner { width: 54px; height: 54px; border-radius: 50%; border: 6px solid var(--border-color); border-top-color: var(--pop-yellow); margin: 0 auto 18px; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { text-align: center; font-weight: 700; font-size: 15px; color: var(--text-secondary); }
+
+  /* Confetti overlay */
+  #confettiLayer { position: fixed; inset: 0; pointer-events: none; z-index: 998; overflow: hidden; }
+  .confetti-piece { position: absolute; top: -20px; border-radius: 2px; animation: confettiFall linear forwards; }
+  @keyframes confettiFall {
+    to { transform: translateY(110vh) rotate(540deg); opacity: 0.9; }
+  }
+
+  .report-export-row { display: flex; gap: 10px; margin-top: 4px; }
+  .report-export-row .action-btn { margin-top: 0; }
 </style>
 <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 
-  <div id="connectionBanner" class="connection-banner">🔌 Connection lost - reconnecting...</div>
   <div id="toastBanner" class="toast-banner"></div>
+  <div id="confettiLayer"></div>
 
   <!-- ================= VIEW 1: IDENTITY SELECTION GATEWAY ================= -->
   <div id="viewGateway" class="view-panel active">
@@ -159,27 +182,54 @@
         <p>🎀 Townsville Academy Edition 🧬</p>
       </div>
 
-      <div id="heroGrid">
-        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; color: var(--text-secondary); text-align:center;">Who are you today?</div>
-        <div class="hero-select-grid">
-          <button class="profile-pick-btn jannica" onclick="selectCharacter('잔니카')">
-            <div>잔니카 <span class="profile-subtitle">💗</span></div> <span>🎯</span>
-          </button>
-          <button class="profile-pick-btn rose" onclick="selectCharacter('로즈')">
-            <div>로즈 <span class="profile-subtitle">💙</span></div> <span>🫧</span>
-          </button>
-          <button class="profile-pick-btn krystal" onclick="selectCharacter('크리스탈')">
-            <div>크리스탈 <span class="profile-subtitle">💚</span></div> <span>⚡</span>
-          </button>
-        </div>
+      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; color: var(--text-secondary); text-align:center;">Who are you today?</div>
+      <div class="hero-select-grid">
+        <button class="profile-pick-btn jannica" onclick="selectCharacter('잔니카', 'jannica')">
+          <div>잔니카 <span class="profile-subtitle">💗</span></div> <span>🎯</span>
+        </button>
+        <button class="profile-pick-btn rose" onclick="selectCharacter('로즈', 'rose')">
+          <div>로즈 <span class="profile-subtitle">💙</span></div> <span>🫧</span>
+        </button>
+        <button class="profile-pick-btn krystal" onclick="selectCharacter('크리스탈', 'krystal')">
+          <div>크리스탈 <span class="profile-subtitle">💚</span></div> <span>⚡</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 1b: ROLE PICKER (replaces confirm() dialog) ================= -->
+  <div id="viewRolePick" class="view-panel">
+    <div class="compact-container studio-card">
+      <div class="brand-header">
+        <h1>One More Thing</h1>
+        <p>🎀 Townsville Academy Edition 🧬</p>
       </div>
 
-      <div id="roleSelectPanel" class="role-select-panel" style="display:none;">
-        <div class="chosen-label">Joining as <span id="chosenCharacterLabel"></span> — what's your role?</div>
-        <button class="action-btn primary" onclick="chooseRole(true)">🧑‍🏫 I'm Facilitating (Teacher)</button>
-        <button class="action-btn success" onclick="chooseRole(false)">🙋 I'm Joining (Student)</button>
-        <button class="action-btn ghost" onclick="backToCharacters()">← Back</button>
+      <div id="chosenCharacterBanner" class="chosen-character-banner">잔니카 💗</div>
+
+      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; color: var(--text-secondary); text-align:center;">What's your role in this session?</div>
+      <div class="role-btn-grid">
+        <button class="role-btn teach" onclick="confirmRole(true)">
+          <span class="role-emoji">👑</span>
+          I'm Teaching
+          <small>Control the deck &amp; pace</small>
+        </button>
+        <button class="role-btn" onclick="confirmRole(false)">
+          <span class="role-emoji">🎯</span>
+          I'm Joining
+          <small>Play along live</small>
+        </button>
       </div>
+      <button class="action-btn ghost" onclick="switchView('viewGateway')">← Choose someone else</button>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 1c: CONNECTING / LOADING ================= -->
+  <div id="viewConnecting" class="view-panel">
+    <div class="compact-container studio-card" style="text-align:center;">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" id="connectingText">Loading vocab deck...</div>
+      <button class="action-btn ghost" id="connectingCancelBtn" style="display:none; margin-top:18px;" onclick="abandonResume()">Not me — start fresh</button>
     </div>
   </div>
 
@@ -190,39 +240,36 @@
         <h1>Classroom Lobby</h1>
         <p id="lobbySubtitle">Assembling the Squad...</p>
       </div>
-      
+
+      <div class="guide-box warn" id="vocabFallbackBanner" style="display:none;">
+        <strong>⚠️ Backup Word List Active</strong>
+        <span id="vocabFallbackText">The live vocab sheet couldn't be reached, so this session is running on a small backup word list. Ask the teacher to check the sheet link and use "Refresh Sheet" below.</span>
+      </div>
+
       <div class="guide-box" style="background:#FFF1F2; border-color:var(--blossom-pink); color:#9F1239">
         <strong>🗺️ Workshop Strategy Board</strong>
         Rotate through all learning modes: <strong>Reading ➔ Speaking ➔ Writing ➔ Context Cases</strong>.
       </div>
 
-      <div id="vocabStatusLine" class="guide-box" style="display:none;"></div>
-
       <div class="roster-list" id="lobbyRoster"></div>
-      
-      <div id="facilitatorControls" style="display:none;">
-        <button class="action-btn success" id="launchDeckBtn" onclick="startQuiz()" disabled>Launch First Quiz Deck ▶</button>
-        <button class="action-btn ghost" onclick="requestVocabReload()">🔄 Reload Vocab Sheet</button>
-        <button class="action-btn danger" onclick="confirmResetWorkshop()">🧹 Reset Workshop</button>
-      </div>
 
-      <button class="action-btn ghost" style="margin-top:14px;" onclick="leaveSession()">🚪 Leave / Switch Profile</button>
+      <div id="facilitatorControls" style="display:none;">
+        <button class="action-btn success" onclick="startQuiz()">Launch First Quiz Deck ▶</button>
+        <button class="action-btn ghost" onclick="requestVocabReload()">🔄 Refresh Sheet Data</button>
+      </div>
     </div>
   </div>
 
   <!-- ================= VIEW 3: ARENA ENVIRONMENT ================= -->
   <div id="viewArena" class="view-panel">
     <div class="arena-wrapper">
-      
+
       <main class="main-deck-workspace">
         <div class="progress-bar-container"><div class="progress-fill" id="pBar"></div></div>
-        
-        <div style="display: flex; justify-content: space-between; align-items:center; font-size:12px; font-weight:700; margin-top:8px;">
+
+        <div style="display: flex; justify-content: space-between; font-size:12px; font-weight:700; margin-top:8px;">
           <span id="cardProgress">Card 0/0</span>
-          <span>
-            <span style="background:var(--pop-yellow); padding:4px 12px; border:var(--border-thin); border-radius:12px;" id="currentCardMode">Reading Mode</span>
-            <span id="pacingIndicator" class="pacing-pill"></span>
-          </span>
+          <span style="background:var(--pop-yellow); padding:4px 12px; border:var(--border-thin); border-radius:12px;" id="currentCardMode">Reading Mode</span>
         </div>
 
         <div class="display-hub">
@@ -248,7 +295,7 @@
             <button class="action-btn success" id="nextCardBtn" style="margin-top:0; flex:1;" onclick="sendNav(1)">Next Slide Card ▶</button>
             <button class="action-btn host" id="resetDeckBtn" style="margin-top:0; display:none; background:var(--pop-yellow);" onclick="resetCurrentDeckLoop()">Run Another Mode 🔄</button>
           </div>
-          
+
           <div id="studentWaitMsg" style="display:none; text-align:center; font-size:13px; font-weight:700; color:var(--text-secondary); padding:10px; background:var(--bg-base); border-radius:var(--radius-sm); border: 2px dashed var(--border-color);">
             Solve the prompt on your screen... 🎉
           </div>
@@ -256,6 +303,11 @@
       </main>
 
       <aside class="sidebar-tracker">
+        <div id="pacingBox" class="pacing-box">
+          <div>🏁 <span class="pacing-count" id="pacingCount">0 / 0</span> cleared this card</div>
+          <div class="pacing-track"><div class="pacing-fill" id="pacingFill"></div></div>
+        </div>
+
         <div id="workspaceFilterContainer" style="display:none; margin-bottom:14px;">
           <div class="sidebar-title">Switch Quiz Mode</div>
           <select id="gameModeSelector" style="width:100%; pointer-events:auto; font-weight:700; padding:8px; font-size:13px; border:var(--border-thin);" onchange="changeClassroomMode()">
@@ -306,14 +358,670 @@
         <div id="struggleLeaderboard" style="min-height:40px;"></div>
       </div>
 
-      <div class="export-row">
-        <button class="action-btn primary" onclick="copyReport()">📋 Copy Report</button>
-        <button class="action-btn success" onclick="downloadReport()">⬇️ Download Report</button>
+      <div class="report-export-row">
+        <button class="action-btn primary" onclick="copyReportToClipboard()">📋 Copy Report</button>
+        <button class="action-btn success" onclick="downloadReportAsText()">⬇️ Download .txt</button>
       </div>
-      <button class="action-btn ghost" onclick="location.reload()">Restart Session</button>
+      <button class="action-btn ghost" onclick="clearSavedSessionAndReload()">Restart Session</button>
     </div>
   </div>
 
-<script src="app.js"></script>
+<script>
+  // ============================================================
+  // STATE
+  // ============================================================
+  let audioCtx = null;
+  let socket = null;
+  let clientState = { name: "", isHost: false, clientId: null };
+  let vocabPool = [];
+  let gameQueue = [];
+  let activeIndex = 0;
+  let activeMode = "reading";
+  let currentCardClicks = 0;
+  let myStats = { totalCards: 0, firstTryCorrect: 0, totalClicks: 0, wrongWordsMap: {} };
+  let pendingCharacter = { name: "", key: "" };
+  let lastCelebratedIndex = -1;
+  let lastReport = null; // stashed data for export buttons
+
+  const CHARACTER_COLORS = {
+    jannica: "var(--blossom-pink)",
+    rose: "var(--bubbles-blue)",
+    krystal: "var(--buttercup-green)"
+  };
+
+  const SESSION_KEY = "hgs_savedProfile";
+  const CLIENTID_KEY = "hgs_clientId";
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ko-KR';
+  }
+
+  // ============================================================
+  // SOUND / TOAST / VIEW HELPERS
+  // ============================================================
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  function playSound(type) {
+    if (!audioCtx) return;
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      if (type === 'success') {
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+      } else if (type === 'error') {
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+      } else if (type === 'fanfare') {
+        [523.25, 659.25, 784.0, 1046.5].forEach((freq, i) => {
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.connect(g); g.connect(audioCtx.destination);
+          o.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.09);
+          g.gain.setValueAtTime(0.14, audioCtx.currentTime + i * 0.09);
+          o.start(audioCtx.currentTime + i * 0.09);
+          o.stop(audioCtx.currentTime + i * 0.09 + 0.22);
+        });
+      }
+    } catch(e){}
+  }
+
+  function switchView(viewId) {
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+  }
+
+  function showToast(message) {
+    const banner = document.getElementById('toastBanner');
+    banner.textContent = message;
+    banner.style.display = 'block';
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => { banner.style.display = 'none'; }, 3800);
+  }
+
+  // Builds a <span> using textContent so player-supplied names can never
+  // be interpreted as HTML/scripts, even if something upstream missed it.
+  function buildLabeledSpan(text) {
+    const span = document.createElement("span");
+    span.textContent = text;
+    return span;
+  }
+
+  function statusToDotClass(status) {
+    if (!status) return "ready";
+    if (status.indexOf("👑") !== -1) return "host";
+    if (status.indexOf("⚪") !== -1 || status.toLowerCase().indexOf("reconnect") !== -1) return "offline";
+    return "ready";
+  }
+
+  // ============================================================
+  // CONFETTI (completion moment)
+  // ============================================================
+  function fireConfetti() {
+    const layer = document.getElementById('confettiLayer');
+    const colors = ['#FF6B8B', '#4EA8DE', '#4ECDC4', '#FFD166', '#1E293B'];
+    const pieceCount = 90;
+    for (let i = 0; i < pieceCount; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      const size = 6 + Math.random() * 8;
+      piece.style.width = size + 'px';
+      piece.style.height = (size * 0.5) + 'px';
+      piece.style.left = (Math.random() * 100) + 'vw';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.border = '1px solid #000';
+      const duration = 1.8 + Math.random() * 1.4;
+      piece.style.animationDuration = duration + 's';
+      piece.style.animationDelay = (Math.random() * 0.4) + 's';
+      layer.appendChild(piece);
+      setTimeout(() => piece.remove(), (duration + 0.5) * 1000);
+    }
+    playSound('fanfare');
+  }
+
+  // ============================================================
+  // SESSION PERSISTENCE (reconnect recovery)
+  // ============================================================
+  function getOrCreateClientId() {
+    let id = sessionStorage.getItem(CLIENTID_KEY);
+    if (!id) {
+      id = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : ('c-' + Math.random().toString(36).slice(2) + Date.now());
+      sessionStorage.setItem(CLIENTID_KEY, id);
+    }
+    return id;
+  }
+
+  function persistSession() {
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        baseName: pendingCharacter.rawName || clientState.name,
+        characterKey: pendingCharacter.key,
+        isHost: clientState.isHost,
+        myStats: myStats
+      }));
+    } catch(e) {}
+  }
+
+  function loadSavedSession() {
+    try {
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch(e) { return null; }
+  }
+
+  function clearSavedSessionAndReload() {
+    sessionStorage.removeItem(SESSION_KEY);
+    location.reload();
+  }
+
+  function abandonResume() {
+    sessionStorage.removeItem(SESSION_KEY);
+    switchView('viewGateway');
+  }
+
+  // ============================================================
+  // GATEWAY -> ROLE PICK -> CONNECT FLOW
+  // ============================================================
+  function selectCharacter(name, key) {
+    pendingCharacter = { rawName: name, key: key };
+    const banner = document.getElementById('chosenCharacterBanner');
+    banner.textContent = name;
+    banner.style.background = CHARACTER_COLORS[key] || "var(--chemical-x-black)";
+    switchView('viewRolePick');
+  }
+
+  function confirmRole(isHostChoice) {
+    pickHeroProfile(pendingCharacter.rawName, isHostChoice);
+  }
+
+  async function pickHeroProfile(selectedName, becomeHost) {
+    initAudio();
+    clientState = { name: selectedName, isHost: becomeHost, clientId: getOrCreateClientId() };
+    persistSession();
+
+    document.getElementById('connectingText').textContent = "Booting up the lab...";
+    document.getElementById('connectingCancelBtn').style.display = 'none';
+    switchView('viewConnecting');
+
+    if (typeof io === 'undefined') {
+      document.getElementById('connectingText').textContent = "⚠️ Socket server connection down. Run 'node server.js' in your terminal, then reload.";
+      return;
+    }
+
+    connectSocket();
+  }
+
+  function connectSocket() {
+    socket = io();
+
+    socket.emit("join_session", {
+      clientId: clientState.clientId,
+      name: clientState.name,
+      isHost: clientState.isHost
+    });
+
+    socket.on("host_status", ({ isHost, requestedHost, displayName }) => {
+      clientState.isHost = isHost;
+      if (displayName) clientState.name = displayName;
+      persistSession();
+
+      document.getElementById("lobbySubtitle").textContent = isHost
+        ? "👑 Hosting Workspace Session"
+        : "Waiting for the facilitator to launch a deck...";
+      document.getElementById("facilitatorControls").style.display = isHost ? "block" : "none";
+      document.getElementById("workspaceFilterContainer").style.display = isHost ? "block" : "none";
+      document.getElementById("hostEndSessionContainer").style.display = isHost ? "block" : "none";
+
+      if (requestedHost && !isHost) {
+        showToast("⚠️ Someone is already facilitating this session - you've joined as a participant.");
+      }
+
+      // Only move off the connecting screen once we know our role.
+      if (!document.getElementById("viewArena").classList.contains("active")) {
+        switchView("viewLobby");
+      }
+    });
+
+    socket.on("vocab_ready", ({ vocabPool: pool, error }) => {
+      vocabPool = Array.isArray(pool) ? pool : [];
+      const banner = document.getElementById('vocabFallbackBanner');
+      const text = document.getElementById('vocabFallbackText');
+      if (error) {
+        banner.style.display = 'block';
+        text.textContent = `The live vocab sheet couldn't be reached (${error}), so this session is running on a small backup word list. Ask the teacher to check the sheet link and use "Refresh Sheet".`;
+        showToast("⚠️ Vocab sheet failed to load - using backup word list.");
+      } else {
+        banner.style.display = 'none';
+      }
+    });
+
+    socket.on("update_roster", (players) => {
+      const lobbyList = document.getElementById("lobbyRoster"); lobbyList.innerHTML = "";
+      const arenaList = document.getElementById("liveRosterStatus"); arenaList.innerHTML = "";
+      for (let id in players) {
+        const p = players[id];
+        const offline = statusToDotClass(p.status) === "offline";
+
+        const row = document.createElement("div"); row.className = "roster-item" + (offline ? " is-offline" : "");
+        const nameWrap = document.createElement("span");
+        const dot = document.createElement("span"); dot.className = "status-dot " + statusToDotClass(p.status);
+        nameWrap.appendChild(dot);
+        nameWrap.appendChild(document.createTextNode("👤 " + p.name));
+        row.appendChild(nameWrap);
+        row.appendChild(buildLabeledSpan(p.status));
+        lobbyList.appendChild(row);
+
+        if (!p.isHost) {
+          const div = document.createElement("div"); div.className = "live-badge" + (offline ? " is-offline" : "");
+          const nameWrap2 = document.createElement("span");
+          const dot2 = document.createElement("span"); dot2.className = "status-dot " + statusToDotClass(p.status);
+          nameWrap2.appendChild(dot2);
+          nameWrap2.appendChild(document.createTextNode("👤 " + p.name));
+          div.appendChild(nameWrap2);
+          div.appendChild(buildLabeledSpan(p.status));
+          arenaList.appendChild(div);
+        }
+      }
+    });
+
+    socket.on("sync_game", (serverData) => {
+      gameQueue = Array.isArray(serverData.queue) ? serverData.queue : [];
+      activeIndex = serverData.activeIndex;
+      if (serverData.mode) activeMode = serverData.mode;
+      if (gameQueue.length > 0 && activeIndex >= 0 && activeIndex < gameQueue.length) {
+        if (!document.getElementById("viewArena").classList.contains("active")) switchView("viewArena");
+        renderCard();
+      }
+    });
+
+    socket.on("progress_update", ({ cleared, total }) => {
+      const box = document.getElementById("pacingBox");
+      if (!clientState.isHost || total <= 0) { box.classList.remove("active"); return; }
+      box.classList.add("active");
+      document.getElementById("pacingCount").textContent = `${cleared} / ${total}`;
+      document.getElementById("pacingFill").style.width = `${Math.min(100, (cleared / total) * 100)}%`;
+    });
+
+    socket.on("game_over_analytics", (fullLogs) => {
+      calculateAndDisplayStats(fullLogs);
+    });
+
+    socket.on("connect_error", () => {
+      document.getElementById('connectingText').textContent = "⚠️ Couldn't reach the classroom server. Retrying...";
+    });
+  }
+
+  // Attempt to resume a saved session automatically on load (reconnect recovery)
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = loadSavedSession();
+    if (saved && saved.baseName) {
+      pendingCharacter = { rawName: saved.baseName, key: saved.characterKey };
+      if (saved.myStats) myStats = saved.myStats;
+      document.getElementById('connectingText').textContent = `Resuming as ${saved.baseName}...`;
+      document.getElementById('connectingCancelBtn').style.display = 'inline-flex';
+      switchView('viewConnecting');
+      clientState = { name: saved.baseName, isHost: !!saved.isHost, clientId: getOrCreateClientId() };
+      if (typeof io === 'undefined') {
+        document.getElementById('connectingText').textContent = "⚠️ Socket server connection down. Run 'node server.js' in your terminal, then reload.";
+        return;
+      }
+      connectSocket();
+    }
+  });
+
+  // ============================================================
+  // HOST ACTIONS
+  // ============================================================
+  function requestVocabReload() {
+    if (!clientState.isHost || !socket) return;
+    showToast("🔄 Asking the server to refresh the vocab sheet...");
+    socket.emit("reload_vocab");
+  }
+
+  function startQuiz() {
+    if (!clientState.isHost) return;
+
+    let poolToUse = [...vocabPool];
+    if (activeMode === "context") {
+      poolToUse = vocabPool.filter(v => v.useCase && v.useCase.trim().length > 3);
+    }
+
+    if (poolToUse.length === 0) {
+      showToast("⚠️ No matching items found for this mode in the sheet data!");
+      return;
+    }
+    if (poolToUse.length < 4 && (activeMode === "reading" || activeMode === "context")) {
+      showToast("⚠️ Fewer than 4 words available - multiple choice will repeat some distractors.");
+    }
+
+    let shuffled = poolToUse.sort(() => Math.random() - 0.5);
+    gameQueue = shuffled.slice(0, Math.min(10, shuffled.length));
+    lastCelebratedIndex = -1;
+    socket.emit("start_game", { queue: gameQueue, mode: activeMode });
+  }
+
+  function changeClassroomMode() {
+    if (!clientState.isHost) return;
+    activeMode = document.getElementById("gameModeSelector").value;
+    activeIndex = 0; startQuiz();
+  }
+
+  function resetCurrentDeckLoop() {
+    if (!clientState.isHost) return;
+    activeIndex = 0; startQuiz();
+  }
+
+  function sendNav(direction) {
+    if (!clientState.isHost) return;
+    activeIndex += direction;
+    socket.emit("nav_card", { activeIndex: activeIndex, mode: activeMode });
+  }
+
+  function triggerEndGame() {
+    if (!clientState.isHost) return;
+    socket.emit("end_game");
+  }
+
+  // ============================================================
+  // CARD RENDERING
+  // ============================================================
+  function hideAllInterfaces() {
+    document.getElementById("choicesBox").classList.remove("active");
+    document.getElementById("writingInterfaceBox").classList.remove("active");
+    document.getElementById("speakingInterfaceBox").classList.remove("active");
+  }
+
+  function renderCard() {
+    currentCardClicks = 0;
+    const feedbackBox = document.getElementById("globalEvaluationFeedback");
+    feedbackBox.textContent = "";
+    feedbackBox.style.color = "var(--blossom-pink)";
+
+    const writeInput = document.getElementById("writingInputField");
+    writeInput.className = "writing-box-input";
+    writeInput.value = "";
+    writeInput.disabled = false;
+
+    document.getElementById("speechTriggerBtn").disabled = false;
+
+    hideAllInterfaces();
+
+    const isLastCard = activeIndex === gameQueue.length - 1;
+
+    if (clientState.isHost) {
+      document.getElementById("studentWaitMsg").style.display = "none";
+      document.getElementById("facilitatorNavBox").style.display = "flex";
+      if (isLastCard) {
+        document.getElementById("nextCardBtn").style.display = "none";
+        document.getElementById("resetDeckBtn").style.display = "inline-flex";
+      } else {
+        document.getElementById("nextCardBtn").style.display = "inline-flex";
+        document.getElementById("resetDeckBtn").style.display = "none";
+      }
+    } else {
+      document.getElementById("studentWaitMsg").style.display = "block";
+      document.getElementById("facilitatorNavBox").style.display = "none";
+    }
+
+    if (isLastCard && lastCelebratedIndex !== activeIndex) {
+      lastCelebratedIndex = activeIndex;
+      fireConfetti();
+    }
+
+    const currentCard = gameQueue[activeIndex];
+    document.getElementById("pBar").style.width = `${((activeIndex + 1) / gameQueue.length) * 100}%`;
+    document.getElementById("cardProgress").textContent = `Card ${activeIndex + 1} / ${gameQueue.length}`;
+
+    const modeLabels = { reading: "📚 Reading Mode", speaking: "🗣️ Speaking Mode", writing: "✍️ Writing Mode", context: "🧠 Context Mode" };
+    document.getElementById("currentCardMode").textContent = modeLabels[activeMode];
+
+    const mainDisplay = document.getElementById("mainWord");
+
+    if (activeMode === "reading") {
+      document.getElementById("choicesBox").classList.add("active");
+      mainDisplay.textContent = currentCard.hangeul; mainDisplay.style.fontSize = "64px";
+      buildMultipleChoices(currentCard, "english");
+    }
+    else if (activeMode === "context") {
+      document.getElementById("choicesBox").classList.add("active");
+      mainDisplay.textContent = currentCard.useCase || "Scenario cell empty!"; mainDisplay.style.fontSize = "22px";
+      buildMultipleChoices(currentCard, "hangeul");
+    }
+    else if (activeMode === "writing") {
+      document.getElementById("writingInterfaceBox").classList.add("active");
+      mainDisplay.textContent = currentCard.english; mainDisplay.style.fontSize = "42px";
+      writeInput.focus();
+    }
+    else if (activeMode === "speaking") {
+      document.getElementById("speakingInterfaceBox").classList.add("active");
+      document.getElementById("speechTriggerBtn").disabled = false;
+      mainDisplay.textContent = currentCard.hangeul; mainDisplay.style.fontSize = "64px";
+    }
+  }
+
+  document.getElementById("writingInputField").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") checkWritingSubmission();
+  });
+
+  function buildMultipleChoices(currentCard, propertyToCompare) {
+    const box = document.getElementById("choicesBox"); box.innerHTML = "";
+    let targetAnswer = currentCard[propertyToCompare === "english" ? "english" : "hangeul"];
+    let wrongPool = vocabPool.filter(v => v[propertyToCompare === "english" ? "english" : "hangeul"] !== targetAnswer);
+    let wrongChoices = wrongPool.sort(() => Math.random() - 0.5).slice(0, 3);
+    let distribution = [currentCard, ...wrongChoices].sort(() => Math.random() - 0.5);
+
+    distribution.forEach(opt => {
+      const btn = document.createElement("button"); btn.className = "choice-btn";
+      let displayValue = opt[propertyToCompare === "english" ? "english" : "hangeul"];
+      btn.textContent = displayValue;
+      btn.onclick = () => processEvaluationResult(displayValue === targetAnswer, currentCard.hangeul, btn);
+      box.appendChild(btn);
+    });
+  }
+
+  function checkWritingSubmission() {
+    const writeInput = document.getElementById("writingInputField");
+    const guess = writeInput.value.trim().toLowerCase();
+    const target = gameQueue[activeIndex].hangeul.trim().toLowerCase();
+    const feedbackBox = document.getElementById("globalEvaluationFeedback");
+
+    if (!guess) return;
+
+    const isCorrect = (guess === target);
+
+    writeInput.classList.remove("correct-flash", "incorrect-flash");
+
+    if (isCorrect) {
+      writeInput.classList.add("correct-flash");
+      writeInput.disabled = true;
+      feedbackBox.style.color = "var(--buttercup-green)";
+      feedbackBox.textContent = "✨ Correct! Well Written.";
+      processEvaluationResult(true, gameQueue[activeIndex].hangeul, null);
+    } else {
+      writeInput.classList.add("incorrect-flash");
+      feedbackBox.style.color = "var(--blossom-pink)";
+      feedbackBox.textContent = "❌ Spelled wrong. Look closely and try again!";
+      processEvaluationResult(false, gameQueue[activeIndex].hangeul, null);
+    }
+  }
+
+  function triggerVoiceCapture() {
+    if (!recognition) { showToast("⚠️ Speech engine failure - this browser doesn't support voice recognition."); return; }
+    const wave = document.getElementById("voiceWaveElement");
+    const feedbackBox = document.getElementById("globalEvaluationFeedback");
+    const btn = document.getElementById("speechTriggerBtn");
+
+    btn.disabled = true;
+    wave.style.display = "block";
+    feedbackBox.textContent = "";
+    recognition.start();
+
+    recognition.onresult = function(event) {
+      wave.style.display = "none";
+      const userSpoke = event.results[0][0].transcript.trim();
+      const targetKorean = gameQueue[activeIndex].hangeul.trim();
+      const isMatch = (userSpoke === targetKorean);
+
+      if (isMatch) {
+        feedbackBox.style.color = "var(--buttercup-green)";
+        feedbackBox.textContent = `✅ Perfect Pronunciation! ("${userSpoke}")`;
+      } else {
+        feedbackBox.style.color = "var(--blossom-pink)";
+        feedbackBox.textContent = `❌ Detected: "${userSpoke}". Try again!`;
+        btn.disabled = false;
+      }
+      processEvaluationResult(isMatch, targetKorean, null);
+    };
+    recognition.onerror = function() { wave.style.display = "none"; btn.disabled = false; };
+    recognition.onspeechend = function() { recognition.stop(); wave.style.display = "none"; };
+  }
+
+  function processEvaluationResult(isCorrect, hangeulWord, clickedBtnElement) {
+    currentCardClicks++; myStats.totalClicks++;
+    if (isCorrect) {
+      playSound('success');
+      if (clickedBtnElement) clickedBtnElement.classList.add("correct");
+      document.querySelectorAll(".choice-btn").forEach(b => b.disabled = true);
+      myStats.totalCards++;
+      if (currentCardClicks === 1) myStats.firstTryCorrect++;
+      socket.emit("submit_click", { word: hangeulWord, isCorrect: true });
+    } else {
+      playSound('error');
+      if (clickedBtnElement) { clickedBtnElement.classList.add("incorrect"); clickedBtnElement.disabled = true; }
+      myStats.wrongWordsMap[hangeulWord] = (myStats.wrongWordsMap[hangeulWord] || 0) + 1;
+      socket.emit("submit_click", { word: hangeulWord, isCorrect: false });
+    }
+    persistSession();
+  }
+
+  // ============================================================
+  // ANALYTICS + EXPORT
+  // ============================================================
+  function calculateAndDisplayStats(logs) {
+    switchView("viewSummary");
+    const accuracy = myStats.totalCards > 0 ? Math.round((myStats.firstTryCorrect / myStats.totalCards) * 100) : 100;
+    document.getElementById("myAces").textContent = `${myStats.firstTryCorrect} / ${myStats.totalCards} cards`;
+    let worstWord = "None!"; let maxOwnWrong = 0;
+    for (let w in myStats.wrongWordsMap) {
+      if (myStats.wrongWordsMap[w] > maxOwnWrong) { maxOwnWrong = myStats.wrongWordsMap[w]; worstWord = `${w}`; }
+    }
+    document.getElementById("myStruggle").textContent = worstWord;
+
+    let overallClicks = logs.length;
+    let trueClicks = logs.filter(l => l.isCorrect).length;
+    let groupAvgPercentage = overallClicks > 0 ? Math.round((trueClicks / overallClicks) * 100) : 100;
+    document.getElementById("myAccuracy").textContent = `${accuracy}% (Classroom Avg: ${groupAvgPercentage}%)`;
+
+    let globalWrongMap = {};
+    let totalIncorrectClicksByPlayer = {};
+
+    logs.forEach(entry => {
+      if (!entry.isCorrect) {
+        globalWrongMap[entry.word] = (globalWrongMap[entry.word] || 0) + 1;
+        totalIncorrectClicksByPlayer[entry.name] = (totalIncorrectClicksByPlayer[entry.name] || 0) + 1;
+      } else {
+        if (!totalIncorrectClicksByPlayer[entry.name]) totalIncorrectClicksByPlayer[entry.name] = 0;
+      }
+    });
+
+    const cloud = document.getElementById("classroomStruggleCloud"); cloud.innerHTML = "";
+    let elementsAdded = 0;
+    for (let word in globalWrongMap) {
+      elementsAdded++;
+      const failCount = globalWrongMap[word];
+      const span = document.createElement("span");
+      span.className = "review-item-tag" + (failCount > 2 ? " heavy-fail" : "");
+      span.textContent = `${word} (${failCount} errors)`;
+      cloud.appendChild(span);
+    }
+    if (elementsAdded === 0) {
+      const div = document.createElement("div");
+      div.style.cssText = "color:var(--buttercup-green); font-weight:700;";
+      div.textContent = "🎉 Perfect clear across the squad!";
+      cloud.appendChild(div);
+    }
+
+    const board = document.getElementById("struggleLeaderboard"); board.innerHTML = "";
+    for (let user in totalIncorrectClicksByPlayer) {
+      const row = document.createElement("div"); row.className = "stat-row";
+      const nameSpan = buildLabeledSpan("👤 " + user);
+      const countSpan = document.createElement("span");
+      countSpan.style.color = "var(--blossom-pink)";
+      countSpan.textContent = `${totalIncorrectClicksByPlayer[user]} mistakes`;
+      row.appendChild(nameSpan);
+      row.appendChild(countSpan);
+      board.appendChild(row);
+    }
+
+    lastReport = {
+      accuracy, groupAvgPercentage,
+      totalCards: myStats.totalCards, firstTryCorrect: myStats.firstTryCorrect,
+      worstWord, globalWrongMap, totalIncorrectClicksByPlayer,
+      when: new Date().toLocaleString()
+    };
+  }
+
+  function buildReportText() {
+    if (!lastReport) return "No report data available yet.";
+    const r = lastReport;
+    let lines = [];
+    lines.push("한글 스튜디오 — Workshop Analytics Report");
+    lines.push(`Generated: ${r.when}`);
+    lines.push("");
+    lines.push(`Personal report for ${clientState.name}:`);
+    lines.push(`  First-try precision: ${r.accuracy}% (classroom avg ${r.groupAvgPercentage}%)`);
+    lines.push(`  Completed cards: ${r.firstTryCorrect} / ${r.totalCards}`);
+    lines.push(`  Hardest word: ${r.worstWord}`);
+    lines.push("");
+    lines.push("Classroom struggle breakdown:");
+    const words = Object.keys(r.globalWrongMap);
+    if (words.length === 0) {
+      lines.push("  Perfect clear across the squad!");
+    } else {
+      words.forEach(w => lines.push(`  ${w} — ${r.globalWrongMap[w]} error(s)`));
+    }
+    lines.push("");
+    lines.push("Mistakes by learner:");
+    const learners = Object.keys(r.totalIncorrectClicksByPlayer);
+    if (learners.length === 0) {
+      lines.push("  No mistakes logged.");
+    } else {
+      learners.forEach(u => lines.push(`  ${u} — ${r.totalIncorrectClicksByPlayer[u]} mistake(s)`));
+    }
+    return lines.join("\n");
+  }
+
+  async function copyReportToClipboard() {
+    const text = buildReportText();
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("📋 Report copied to clipboard!");
+    } catch (e) {
+      showToast("⚠️ Couldn't access clipboard - try the download button instead.");
+    }
+  }
+
+  function downloadReportAsText() {
+    const text = buildReportText();
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "hangeul-studio-report.txt";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+</script>
 </body>
 </html>
