@@ -49,6 +49,7 @@
   .view-panel { display: none; width: 100%; animation: slideUp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   .view-panel.active { display: block; }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes confettiFall { to { top: 110%; transform: rotate(720deg); opacity: 0.3; } }
 
   .compact-container { max-width: 580px; width: 100%; margin: 0 auto; }
   .studio-card { background: var(--surface); border: var(--border-thick); border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow-flat); position: relative; }
@@ -73,10 +74,15 @@
   .action-btn.success { background: var(--buttercup-green); color: white; }
   .action-btn.danger { background: var(--blossom-pink); color: white; }
   .action-btn.primary { background: var(--bubbles-blue); color: white; }
+  .action-btn.ghost { background: white; }
   .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .action-btn:disabled:active { transform: none; box-shadow: 4px 4px 0px var(--border-color); }
+
+  .role-select-panel { text-align: center; }
+  .role-select-panel .chosen-label { font-weight: 700; margin-bottom: 16px; font-size: 15px; }
 
   .roster-list { background: #FFF; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 100px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.05); }
-  .roster-item { padding: 12px 16px; background: white; border: var(--border-thin); border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 700; font-size: 15px; box-shadow: 2px 2px 0px var(--border-color); }
+  .roster-item { padding: 12px 16px; background: white; border: var(--border-thin); border-left: 8px solid var(--border-color); border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 700; font-size: 15px; box-shadow: 2px 2px 0px var(--border-color); }
 
   .arena-wrapper { max-width: 1000px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: start; }
   @media (max-width: 850px) { .arena-wrapper { grid-template-columns: 1fr; } }
@@ -109,7 +115,13 @@
   .sidebar-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-primary); margin-bottom: 12px; border-bottom: 3px solid var(--border-color); padding-bottom: 4px; margin-top: 18px; }
   .sidebar-title:first-child { margin-top: 0; }
   .badge-stack { display: flex; flex-direction: column; gap: 8px; }
-  .live-badge { padding: 10px 14px; background: white; border: var(--border-thin); border-radius: var(--radius-md); font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; box-shadow: 3px 3px 0px var(--border-color); }
+  .live-badge { padding: 10px 14px; background: white; border: var(--border-thin); border-left: 8px solid var(--border-color); border-radius: var(--radius-md); font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; box-shadow: 3px 3px 0px var(--border-color); }
+
+  /* quick-scan status colors so a facilitator can see class progress at a glance */
+  .status-cleared { border-left-color: var(--buttercup-green) !important; }
+  .status-struggling { border-left-color: var(--blossom-pink) !important; }
+  .status-pending { border-left-color: var(--pop-yellow) !important; }
+  .status-host { border-left-color: var(--bubbles-blue) !important; }
 
   .stat-block { border: var(--border-thick); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 20px; text-align: left; background: white; box-shadow: 5px 5px 0px var(--border-color); }
   .stat-title { font-weight: 700; text-transform: uppercase; font-size: 13px; color: var(--border-color); margin-bottom: 12px; border-bottom: 3px solid var(--border-color); padding-bottom: 4px; }
@@ -120,13 +132,23 @@
 
   .guide-box { background: #EFF6FF; border: var(--border-thin); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; font-size: 13px; text-align: left; color: #1E3A8A; box-shadow: 3px 3px 0px var(--border-color); }
   .guide-box strong { color: #1D4ED8; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 4px; }
+  .guide-box.warn { background: #FFF7ED; color: #9A3412; }
+  .guide-box.error { background: #FEF2F2; color: #991B1B; }
+  .guide-box.ok { background: #ECFDF5; color: #065F46; }
 
   .toast-banner { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: var(--chemical-x-black); color: white; padding: 12px 22px; border-radius: var(--radius-md); border: var(--border-thin); font-weight: 700; font-size: 13px; box-shadow: var(--shadow-flat); z-index: 999; display: none; max-width: 90vw; text-align: center; }
+  .connection-banner { position: fixed; top: 0; left: 0; right: 0; background: var(--blossom-pink); color: white; text-align: center; padding: 10px; font-weight: 700; font-size: 13px; z-index: 1000; display: none; border-bottom: var(--border-thick); }
+
+  .pacing-pill { display: none; background: var(--bubbles-blue); color: white; padding: 4px 12px; border: var(--border-thin); border-radius: 12px; font-size: 11px; margin-left: 8px; white-space: nowrap; }
+
+  .export-row { display: flex; gap: 10px; margin-top: 14px; }
+  .export-row .action-btn { margin-top: 0; }
 </style>
 <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 
+  <div id="connectionBanner" class="connection-banner">🔌 Connection lost - reconnecting...</div>
   <div id="toastBanner" class="toast-banner"></div>
 
   <!-- ================= VIEW 1: IDENTITY SELECTION GATEWAY ================= -->
@@ -136,18 +158,27 @@
         <h1>한글 스튜디오</h1>
         <p>🎀 Townsville Academy Edition 🧬</p>
       </div>
-      
-      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; color: var(--text-secondary); text-align:center;">Who are you today?</div>
-      <div class="hero-select-grid">
-        <button class="profile-pick-btn jannica" onclick="selectProfile('잔니카')">
-          <div>잔니카 <span class="profile-subtitle">💗</span></div> <span>🎯</span>
-        </button>
-        <button class="profile-pick-btn rose" onclick="selectProfile('로즈')">
-          <div>로즈 <span class="profile-subtitle">💙</span></div> <span>🫧</span>
-        </button>
-        <button class="profile-pick-btn krystal" onclick="selectProfile('크리스탈')">
-          <div>크리스탈 <span class="profile-subtitle">💚</span></div> <span>⚡</span>
-        </button>
+
+      <div id="heroGrid">
+        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; color: var(--text-secondary); text-align:center;">Who are you today?</div>
+        <div class="hero-select-grid">
+          <button class="profile-pick-btn jannica" onclick="selectCharacter('잔니카')">
+            <div>잔니카 <span class="profile-subtitle">💗</span></div> <span>🎯</span>
+          </button>
+          <button class="profile-pick-btn rose" onclick="selectCharacter('로즈')">
+            <div>로즈 <span class="profile-subtitle">💙</span></div> <span>🫧</span>
+          </button>
+          <button class="profile-pick-btn krystal" onclick="selectCharacter('크리스탈')">
+            <div>크리스탈 <span class="profile-subtitle">💚</span></div> <span>⚡</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="roleSelectPanel" class="role-select-panel" style="display:none;">
+        <div class="chosen-label">Joining as <span id="chosenCharacterLabel"></span> — what's your role?</div>
+        <button class="action-btn primary" onclick="chooseRole(true)">🧑‍🏫 I'm Facilitating (Teacher)</button>
+        <button class="action-btn success" onclick="chooseRole(false)">🙋 I'm Joining (Student)</button>
+        <button class="action-btn ghost" onclick="backToCharacters()">← Back</button>
       </div>
     </div>
   </div>
@@ -165,11 +196,17 @@
         Rotate through all learning modes: <strong>Reading ➔ Speaking ➔ Writing ➔ Context Cases</strong>.
       </div>
 
+      <div id="vocabStatusLine" class="guide-box" style="display:none;"></div>
+
       <div class="roster-list" id="lobbyRoster"></div>
       
       <div id="facilitatorControls" style="display:none;">
-        <button class="action-btn success" onclick="startQuiz()">Launch First Quiz Deck ▶</button>
+        <button class="action-btn success" id="launchDeckBtn" onclick="startQuiz()" disabled>Launch First Quiz Deck ▶</button>
+        <button class="action-btn ghost" onclick="requestVocabReload()">🔄 Reload Vocab Sheet</button>
+        <button class="action-btn danger" onclick="confirmResetWorkshop()">🧹 Reset Workshop</button>
       </div>
+
+      <button class="action-btn ghost" style="margin-top:14px;" onclick="leaveSession()">🚪 Leave / Switch Profile</button>
     </div>
   </div>
 
@@ -180,9 +217,12 @@
       <main class="main-deck-workspace">
         <div class="progress-bar-container"><div class="progress-fill" id="pBar"></div></div>
         
-        <div style="display: flex; justify-content: space-between; font-size:12px; font-weight:700; margin-top:8px;">
+        <div style="display: flex; justify-content: space-between; align-items:center; font-size:12px; font-weight:700; margin-top:8px;">
           <span id="cardProgress">Card 0/0</span>
-          <span style="background:var(--pop-yellow); padding:4px 12px; border:var(--border-thin); border-radius:12px;" id="currentCardMode">Reading Mode</span>
+          <span>
+            <span style="background:var(--pop-yellow); padding:4px 12px; border:var(--border-thin); border-radius:12px;" id="currentCardMode">Reading Mode</span>
+            <span id="pacingIndicator" class="pacing-pill"></span>
+          </span>
         </div>
 
         <div class="display-hub">
@@ -266,433 +306,14 @@
         <div id="struggleLeaderboard" style="min-height:40px;"></div>
       </div>
 
-      <button class="action-btn primary" onclick="location.reload()">Restart Session</button>
+      <div class="export-row">
+        <button class="action-btn primary" onclick="copyReport()">📋 Copy Report</button>
+        <button class="action-btn success" onclick="downloadReport()">⬇️ Download Report</button>
+      </div>
+      <button class="action-btn ghost" onclick="location.reload()">Restart Session</button>
     </div>
   </div>
 
-<script>
-  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXpcCILEulBysiVCgHZWNbdIIDz-isW0CeiCkpg0FXerZ8o2N3dD5PNonYkK5nxsCauUWN93JbkZWH/pub?gid=0&single=true&output=csv";
-  
-  let audioCtx = null;
-  let socket = null;
-  let clientState = { name: "", isHost: false };
-  let vocabPool = []; 
-  let gameQueue = []; 
-  let activeIndex = 0;
-  let activeMode = "reading"; 
-  let currentCardClicks = 0;
-  let myStats = { totalCards: 0, firstTryCorrect: 0, totalClicks: 0, wrongWordsMap: {} };
-
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let recognition = null;
-  if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-    recognition.lang = 'ko-KR'; 
-  }
-
-  function initAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-
-  function playSound(type) {
-    if (!audioCtx) return;
-    try {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      if (type === 'success') {
-        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
-        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); 
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.25);
-      } else if (type === 'error') {
-        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(140, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
-      }
-    } catch(e){}
-  }
-
-  function switchView(viewId) {
-    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById(viewId).classList.add('active');
-  }
-
-  function showToast(message) {
-    const banner = document.getElementById('toastBanner');
-    banner.textContent = message;
-    banner.style.display = 'block';
-    clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => { banner.style.display = 'none'; }, 3500);
-  }
-
-  function selectProfile(name) {
-    const isFaci = confirm(`Are you the facilitator/teacher for this session, ${name}?`);
-    let displayName = name;
-    if (isFaci) {
-      displayName = name + " 👑";
-    }
-    pickHeroProfile(displayName, isFaci);
-  }
-
-  async function pickHeroProfile(selectedName, becomeHost) {
-    initAudio(); 
-    clientState = { name: selectedName, isHost: becomeHost };
-    await loadDatabase();
-
-    if (typeof io === 'undefined') {
-      alert("Socket server connection down. Please make sure to run 'node server.js' in your terminal!");
-      return;
-    }
-
-    socket = io();
-    socket.emit("join_session", { name: selectedName, isHost: becomeHost });
-    switchView("viewLobby");
-
-    // The server has the final say on who is host - it only grants host
-    // to whoever asked for it first. Reconcile our local UI with that.
-    socket.on("host_status", ({ isHost, requestedHost }) => {
-      clientState.isHost = isHost;
-
-      document.getElementById("lobbySubtitle").textContent = isHost
-        ? "👑 Hosting Workspace Session"
-        : "Waiting for the facilitator to launch a deck...";
-      document.getElementById("facilitatorControls").style.display = isHost ? "block" : "none";
-      document.getElementById("workspaceFilterContainer").style.display = isHost ? "block" : "none";
-      document.getElementById("hostEndSessionContainer").style.display = isHost ? "block" : "none";
-
-      if (requestedHost && !isHost) {
-        showToast("⚠️ Someone is already facilitating this session - you've joined as a participant.");
-      }
-    });
-
-    socket.on("update_roster", (players) => {
-      const lobbyList = document.getElementById("lobbyRoster"); lobbyList.innerHTML = "";
-      const arenaList = document.getElementById("liveRosterStatus"); arenaList.innerHTML = "";
-      for(let id in players) {
-        const p = players[id];
-
-        const row = document.createElement("div"); row.className = "roster-item";
-        row.appendChild(buildLabeledSpan("👤 " + p.name));
-        row.appendChild(buildLabeledSpan(p.status));
-        lobbyList.appendChild(row);
-
-        if(!p.isHost) {
-          const div = document.createElement("div"); div.className = "live-badge";
-          div.appendChild(buildLabeledSpan("👤 " + p.name));
-          div.appendChild(buildLabeledSpan(p.status));
-          arenaList.appendChild(div);
-        }
-      }
-    });
-
-    socket.on("sync_game", (serverData) => {
-      gameQueue = Array.isArray(serverData.queue) ? serverData.queue : [];
-      activeIndex = serverData.activeIndex;
-      if (serverData.mode) activeMode = serverData.mode;
-      if(gameQueue.length > 0 && activeIndex >= 0 && activeIndex < gameQueue.length) {
-        if(!document.getElementById("viewArena").classList.contains("active")) switchView("viewArena");
-        renderCard();
-      }
-    });
-
-    socket.on("game_over_analytics", (fullLogs) => {
-      calculateAndDisplayStats(fullLogs);
-    });
-  }
-
-  // Builds a <span> using textContent so player-supplied names can never
-  // be interpreted as HTML/scripts, even if something upstream missed it.
-  function buildLabeledSpan(text) {
-    const span = document.createElement("span");
-    span.textContent = text;
-    return span;
-  }
-
-  async function loadDatabase() {
-    try {
-      const res = await fetch(CSV_URL); 
-      const txt = await res.text();
-      let lines = txt.split(/\r?\n/);
-      
-      vocabPool = lines.slice(1).map(line => {
-        let columns = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        const clean = (val) => val ? val.replace(/^"|"$/g, '').trim() : "";
-        
-        return { 
-          hangeul: clean(columns[0]), 
-          english: clean(columns[1]), 
-          type: clean(columns[2]), 
-          useCase: clean(columns[3]) || "" 
-        };
-      }).filter(v => v.hangeul && v.english);
-    } catch(e) {
-      console.error("Database loading failed:", e);
-      vocabPool = [{ hangeul: "하루", english: "a day", type: "Vocab", useCase: "" }];
-    }
-  }
-
-  function startQuiz() {
-    if (!clientState.isHost) return;
-
-    let poolToUse = [...vocabPool];
-    if (activeMode === "context") {
-      poolToUse = vocabPool.filter(v => v.useCase && v.useCase.trim().length > 3);
-    }
-    
-    if (poolToUse.length === 0) {
-      alert("No matching items found for this mode in your sheet data!");
-      return;
-    }
-    if (poolToUse.length < 4 && (activeMode === "reading" || activeMode === "context")) {
-      showToast("⚠️ Fewer than 4 words available - multiple choice will repeat some distractors.");
-    }
-
-    let shuffled = poolToUse.sort(() => Math.random() - 0.5);
-    gameQueue = shuffled.slice(0, Math.min(10, shuffled.length));
-    socket.emit("start_game", { queue: gameQueue, mode: activeMode });
-  }
-
-  function changeClassroomMode() {
-    if(!clientState.isHost) return;
-    activeMode = document.getElementById("gameModeSelector").value;
-    activeIndex = 0; startQuiz();
-  }
-
-  function resetCurrentDeckLoop() {
-    if (!clientState.isHost) return;
-    activeIndex = 0; startQuiz();
-  }
-
-  function hideAllInterfaces() {
-    document.getElementById("choicesBox").classList.remove("active");
-    document.getElementById("writingInterfaceBox").classList.remove("active");
-    document.getElementById("speakingInterfaceBox").classList.remove("active");
-  }
-
-  function renderCard() {
-    currentCardClicks = 0;
-    const feedbackBox = document.getElementById("globalEvaluationFeedback");
-    feedbackBox.textContent = "";
-    feedbackBox.style.color = "var(--blossom-pink)";
-    
-    const writeInput = document.getElementById("writingInputField");
-    writeInput.className = "writing-box-input"; 
-    writeInput.value = "";
-    writeInput.disabled = false;
-
-    document.getElementById("speechTriggerBtn").disabled = false;
-
-    hideAllInterfaces();
-
-    if(clientState.isHost) {
-      document.getElementById("studentWaitMsg").style.display = "none";
-      document.getElementById("facilitatorNavBox").style.display = "flex";
-      if(activeIndex === gameQueue.length - 1) {
-        document.getElementById("nextCardBtn").style.display = "none";
-        document.getElementById("resetDeckBtn").style.display = "inline-flex";
-      } else {
-        document.getElementById("nextCardBtn").style.display = "inline-flex";
-        document.getElementById("resetDeckBtn").style.display = "none";
-      }
-    } else {
-      document.getElementById("studentWaitMsg").style.display = "block";
-      document.getElementById("facilitatorNavBox").style.display = "none";
-    }
-
-    const currentCard = gameQueue[activeIndex];
-    document.getElementById("pBar").style.width = `${((activeIndex + 1) / gameQueue.length) * 100}%`;
-    document.getElementById("cardProgress").textContent = `Card ${activeIndex + 1} / ${gameQueue.length}`;
-    
-    const modeLabels = { reading: "📚 Reading Mode", speaking: "🗣️ Speaking Mode", writing: "✍️ Writing Mode", context: "🧠 Context Mode" };
-    document.getElementById("currentCardMode").textContent = modeLabels[activeMode];
-
-    const mainDisplay = document.getElementById("mainWord");
-
-    if (activeMode === "reading") {
-      document.getElementById("choicesBox").classList.add("active");
-      mainDisplay.textContent = currentCard.hangeul; mainDisplay.style.fontSize = "64px";
-      buildMultipleChoices(currentCard, "english");
-    } 
-    else if (activeMode === "context") {
-      document.getElementById("choicesBox").classList.add("active");
-      mainDisplay.textContent = currentCard.useCase || "Scenario cell empty!"; mainDisplay.style.fontSize = "22px";
-      buildMultipleChoices(currentCard, "hangeul");
-    }
-    else if (activeMode === "writing") {
-      document.getElementById("writingInterfaceBox").classList.add("active");
-      mainDisplay.textContent = currentCard.english; mainDisplay.style.fontSize = "42px";
-      writeInput.focus();
-    }
-    else if (activeMode === "speaking") {
-      document.getElementById("speakingInterfaceBox").classList.add("active");
-      document.getElementById("speechTriggerBtn").disabled = false;
-      mainDisplay.textContent = currentCard.hangeul; mainDisplay.style.fontSize = "64px";
-    }
-  }
-
-  // Allow enter key submission for quick typing flow
-  document.getElementById("writingInputField").addEventListener("keydown", function(e) {
-    if(e.key === "Enter") checkWritingSubmission();
-  });
-
-  function buildMultipleChoices(currentCard, propertyToCompare) {
-    const box = document.getElementById("choicesBox"); box.innerHTML = "";
-    let targetAnswer = currentCard[propertyToCompare === "english" ? "english" : "hangeul"];
-    let wrongPool = vocabPool.filter(v => v[propertyToCompare === "english" ? "english" : "hangeul"] !== targetAnswer);
-    let wrongChoices = wrongPool.sort(() => Math.random() - 0.5).slice(0, 3);
-    let distribution = [currentCard, ...wrongChoices].sort(() => Math.random() - 0.5);
-
-    distribution.forEach(opt => {
-      const btn = document.createElement("button"); btn.className = "choice-btn";
-      let displayValue = opt[propertyToCompare === "english" ? "english" : "hangeul"];
-      btn.textContent = displayValue;
-      btn.onclick = () => processEvaluationResult(displayValue === targetAnswer, currentCard.hangeul, btn);
-      box.appendChild(btn);
-    });
-  }
-
-  function checkWritingSubmission() {
-    const writeInput = document.getElementById("writingInputField");
-    const guess = writeInput.value.trim().toLowerCase();
-    const target = gameQueue[activeIndex].hangeul.trim().toLowerCase();
-    const feedbackBox = document.getElementById("globalEvaluationFeedback");
-    
-    if(!guess) return;
-    
-    const isCorrect = (guess === target);
-    
-    writeInput.classList.remove("correct-flash", "incorrect-flash");
-    
-    if(isCorrect) {
-      writeInput.classList.add("correct-flash");
-      writeInput.disabled = true;
-      feedbackBox.style.color = "var(--buttercup-green)";
-      feedbackBox.textContent = "✨ Correct! Well Written.";
-      processEvaluationResult(true, gameQueue[activeIndex].hangeul, null);
-    } else {
-      writeInput.classList.add("incorrect-flash");
-      feedbackBox.style.color = "var(--blossom-pink)";
-      feedbackBox.textContent = "❌ Spelled wrong. Look closely and try again!";
-      processEvaluationResult(false, gameQueue[activeIndex].hangeul, null);
-    }
-  }
-
-  function triggerVoiceCapture() {
-    if (!recognition) { alert("Speech engine failure - this browser doesn't support voice recognition."); return; }
-    const wave = document.getElementById("voiceWaveElement");
-    const feedbackBox = document.getElementById("globalEvaluationFeedback");
-    const btn = document.getElementById("speechTriggerBtn");
-
-    btn.disabled = true;
-    wave.style.display = "block"; 
-    feedbackBox.textContent = "";
-    recognition.start();
-
-    recognition.onresult = function(event) {
-      wave.style.display = "none";
-      const userSpoke = event.results[0][0].transcript.trim();
-      const targetKorean = gameQueue[activeIndex].hangeul.trim();
-      const isMatch = (userSpoke === targetKorean);
-      
-      if(isMatch) {
-        feedbackBox.style.color = "var(--buttercup-green)";
-        feedbackBox.textContent = `✅ Perfect Pronunciation! ("${userSpoke}")`;
-      } else {
-        feedbackBox.style.color = "var(--blossom-pink)";
-        feedbackBox.textContent = `❌ Detected: "${userSpoke}". Try again!`;
-        btn.disabled = false;
-      }
-      processEvaluationResult(isMatch, targetKorean, null);
-    };
-    recognition.onerror = function() { wave.style.display = "none"; btn.disabled = false; };
-    recognition.onspeechend = function() { recognition.stop(); wave.style.display = "none"; };
-  }
-
-  function processEvaluationResult(isCorrect, hangeulWord, clickedBtnElement) {
-    currentCardClicks++; myStats.totalClicks++;
-    if(isCorrect) {
-      playSound('success');
-      if(clickedBtnElement) clickedBtnElement.classList.add("correct");
-      document.querySelectorAll(".choice-btn").forEach(b => b.disabled = true);
-      myStats.totalCards++;
-      if(currentCardClicks === 1) myStats.firstTryCorrect++;
-      socket.emit("submit_click", { word: hangeulWord, isCorrect: true });
-    } else {
-      playSound('error');
-      if(clickedBtnElement) { clickedBtnElement.classList.add("incorrect"); clickedBtnElement.disabled = true; }
-      myStats.wrongWordsMap[hangeulWord] = (myStats.wrongWordsMap[hangeulWord] || 0) + 1;
-      socket.emit("submit_click", { word: hangeulWord, isCorrect: false });
-    }
-  }
-
-  function sendNav(direction) {
-    if (!clientState.isHost) return;
-    activeIndex += direction;
-    socket.emit("nav_card", { activeIndex: activeIndex, mode: activeMode });
-  }
-
-  function triggerEndGame() {
-    if (!clientState.isHost) return;
-    if(confirm("Generate cumulative session logs now?")) socket.emit("end_game");
-  }
-
-  function calculateAndDisplayStats(logs) {
-    switchView("viewSummary");
-    const accuracy = myStats.totalCards > 0 ? Math.round((myStats.firstTryCorrect / myStats.totalCards) * 100) : 100;
-    document.getElementById("myAces").textContent = `${myStats.firstTryCorrect} / ${myStats.totalCards} cards`;
-    let worstWord = "None!"; let maxOwnWrong = 0;
-    for(let w in myStats.wrongWordsMap) {
-      if(myStats.wrongWordsMap[w] > maxOwnWrong) { maxOwnWrong = myStats.wrongWordsMap[w]; worstWord = `${w}`; }
-    }
-    document.getElementById("myStruggle").textContent = worstWord;
-
-    let overallClicks = logs.length;
-    let trueClicks = logs.filter(l => l.isCorrect).length;
-    let groupAvgPercentage = overallClicks > 0 ? Math.round((trueClicks / overallClicks) * 100) : 100;
-    document.getElementById("myAccuracy").textContent = `${accuracy}% (Classroom Avg: ${groupAvgPercentage}%)`;
-
-    let globalWrongMap = {};
-    let totalIncorrectClicksByPlayer = {};
-
-    logs.forEach(entry => {
-      if(!entry.isCorrect) {
-        globalWrongMap[entry.word] = (globalWrongMap[entry.word] || 0) + 1;
-        totalIncorrectClicksByPlayer[entry.name] = (totalIncorrectClicksByPlayer[entry.name] || 0) + 1;
-      } else {
-        if(!totalIncorrectClicksByPlayer[entry.name]) totalIncorrectClicksByPlayer[entry.name] = 0;
-      }
-    });
-
-    const cloud = document.getElementById("classroomStruggleCloud"); cloud.innerHTML = "";
-    let elementsAdded = 0;
-    for (let word in globalWrongMap) {
-      elementsAdded++;
-      const failCount = globalWrongMap[word];
-      const span = document.createElement("span");
-      span.className = "review-item-tag" + (failCount > 2 ? " heavy-fail" : "");
-      span.textContent = `${word} (${failCount} errors)`;
-      cloud.appendChild(span);
-    }
-    if(elementsAdded === 0) {
-      const div = document.createElement("div");
-      div.style.cssText = "color:var(--buttercup-green); font-weight:700;";
-      div.textContent = "🎉 Perfect clear across the squad!";
-      cloud.appendChild(div);
-    }
-
-    const board = document.getElementById("struggleLeaderboard"); board.innerHTML = "";
-    for(let user in totalIncorrectClicksByPlayer) {
-      const row = document.createElement("div"); row.className = "stat-row";
-      const nameSpan = buildLabeledSpan("👤 " + user);
-      const countSpan = document.createElement("span");
-      countSpan.style.color = "var(--blossom-pink)";
-      countSpan.textContent = `${totalIncorrectClicksByPlayer[user]} mistakes`;
-      row.appendChild(nameSpan);
-      row.appendChild(countSpan);
-      board.appendChild(row);
-    }
-  }
-</script>
+<script src="app.js"></script>
 </body>
 </html>
