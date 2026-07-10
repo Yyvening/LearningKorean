@@ -79,8 +79,8 @@
   .progress-bar-container { position: absolute; top: -4px; left: -4px; right: -4px; height: 12px; background: #E2E8F0; border: var(--border-thick); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--pop-green); width: 0%; transition: width 0.3s; }
   
-  .display-hub { text-align: center; margin: 30px 0; }
-  .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 64px; font-weight: 700; color: var(--border-color); }
+  .display-hub { text-align: center; margin: 20px 0; min-height: 120px; display: flex; align-items: center; justify-content: center; }
+  .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 48px; font-weight: 700; color: var(--border-color); line-height: 1.3; padding: 0 10px; }
   
   .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
   @media (max-width: 500px) { .choices-grid { grid-template-columns: 1fr; } }
@@ -146,7 +146,7 @@
         
         <div style="display: flex; justify-content: space-between; font-size:12px; font-weight:700; margin-top:8px;">
           <span id="cardProgress">Card 0/0</span>
-          <span style="background:var(--pop-yellow); padding:2px 10px; border:var(--border-thin); border-radius:12px;" id="currentCardCategory">Category</span>
+          <span style="background:var(--pop-yellow); padding:2px 10px; border:var(--border-thin); border-radius:12px;" id="currentCardMode">Reading Mode</span>
         </div>
 
         <div class="display-hub">
@@ -166,15 +166,14 @@
 
       <!-- Balanced Sidebar Feed Box -->
       <aside class="sidebar-tracker">
-        <!-- Live Workspace Filter Control (Visible on Facilitator Device) -->
+        <!-- Live Workspace Activity Filter Mode (Visible on Facilitator Device) -->
         <div id="workspaceFilterContainer" style="display:none; margin-bottom:20px;">
-          <div class="sidebar-title">Active Deck Filter</div>
-          <select id="categorySelector" class="sync-input" style="cursor:pointer; font-weight:600; padding:8px; font-size:13px;" onchange="filterActiveDeck()">
-            <option value="All Words">All Words</option>
-            <option value="Reading">Reading</option>
-            <option value="Speaking">Speaking</option>
-            <option value="Writing">Writing</option>
-            <option value="Context (Use Case)">Context (Use Case)</option>
+          <div class="sidebar-title">Select Classroom Mode</div>
+          <select id="gameModeSelector" class="sync-input" style="cursor:pointer; font-weight:600; padding:8px; font-size:13px;" onchange="changeClassroomMode()">
+            <option value="reading">📚 Reading Mode</option>
+            <option value="speaking">🗣️ Speaking Mode</option>
+            <option value="writing">✍️ Writing Mode</option>
+            <option value="context">🧠 Context (Use Case) Mode</option>
           </select>
         </div>
 
@@ -216,15 +215,14 @@
 
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXpcCILEulBysiVCgHZWNbdIIDz-isW0CeiCkpg0FXerZ8o2N3dD5PNonYkK5nxsCauUWN93JbkZWH/pub?gid=0&single=true&output=csv";
-  const FALLBACK_DATA = [["하루", "a day", "Reading"], ["시간", "time", "Speaking"], ["휴식", "rest / break", "Writing"], ["정말", "really", "Context (Use Case)"]];
-
+  
   let audioCtx = null;
   let socket = null;
   let clientState = { name: "", isHost: false };
-  let vocabPool = []; // Original loaded rows from Sheet
-  let filteredPool = []; // Active subset safely matching dropdown choices
-  let gameQueue = []; // Shuffled layout elements synchronized on screens
+  let vocabPool = []; 
+  let gameQueue = []; 
   let activeIndex = 0;
+  let activeMode = "reading"; // Track game behavior instantly
   
   let currentCardClicks = 0;
   let myStats = { totalCards: 0, firstTryCorrect: 0, totalClicks: 0, wrongWordsMap: {} };
@@ -261,7 +259,7 @@
         osc.start();
         osc.stop(audioCtx.currentTime + 0.25);
       }
-    } catch(e) { console.log("Audio play exception:", e); }
+    } catch(e) { console.log("Audio block error:", e); }
   }
 
   function switchView(viewId) {
@@ -327,6 +325,7 @@
     socket.on("sync_game", (serverData) => {
       gameQueue = serverData.queue;
       activeIndex = serverData.activeIndex;
+      if (serverData.mode) activeMode = serverData.mode;
 
       if(activeIndex >= 0 && activeIndex < 500) {
         if(!document.getElementById("viewArena").classList.contains("active")) {
@@ -348,38 +347,37 @@
       let lines = txt.split("\n").map(l => l.split(","));
       
       vocabPool = lines.slice(1).map(l => ({ 
-        hangeul: l[0]?.trim(), 
-        english: l[1]?.trim(),
-        category: l[2]?.trim() || "Reading" // Default back to reading skill type safely
+        hangeul: l[0]?.trim() || "", 
+        english: l[1]?.trim() || "",
+        type: l[2]?.trim() || "",
+        useCase: l[3]?.trim() || ""
       })).filter(v => v.hangeul && v.english);
     } catch(e) {
-      vocabPool = FALLBACK_DATA.map(l => ({ hangeul: l[0], english: l[1], category: l[2] }));
+      console.log("Database load failed, fallback applied.");
+      vocabPool = [{ hangeul: "하루", english: "a day", type: "Vocab", useCase: "" }];
     }
-    filteredPool = [...vocabPool];
   }
 
   function startQuiz() {
-    // Generates initial 10 cards based on currently applied selection
-    const chosenCategory = document.getElementById("categorySelector").value;
-    if(chosenCategory === "All Words") {
-      filteredPool = [...vocabPool];
-    } else {
-      filteredPool = vocabPool.filter(v => v.category.toLowerCase().includes(chosenCategory.toLowerCase().split(" ")[0]));
+    let poolToUse = [...vocabPool];
+    
+    // Context Mode filters down dynamically to only use cards that contain a UseCase description
+    if (activeMode === "context") {
+      poolToUse = vocabPool.filter(v => v.useCase && v.useCase.length > 2);
+      if (poolToUse.length === 0) {
+        alert("No lines inside your sheet contain UseCase scenario text! Defaulting to all rows.");
+        poolToUse = [...vocabPool];
+      }
     }
 
-    if(filteredPool.length === 0) {
-      alert(`No words currently match "${chosenCategory}" inside your Sheet database. Defaulting to all rows.`);
-      filteredPool = [...vocabPool];
-    }
-
-    let shuffled = [...filteredPool].sort(() => Math.random() - 0.5);
+    let shuffled = poolToUse.sort(() => Math.random() - 0.5);
     gameQueue = shuffled.slice(0, Math.min(10, shuffled.length));
-    socket.emit("start_game", { queue: gameQueue });
+    socket.emit("start_game", { queue: gameQueue, mode: activeMode });
   }
 
-  function filterActiveDeck() {
-    // Allows facilitator to hot-swap filtering dynamically during live sessions
+  function changeClassroomMode() {
     if(!clientState.isHost) return;
+    activeMode = document.getElementById("gameModeSelector").value;
     activeIndex = 0;
     startQuiz();
   }
@@ -403,23 +401,60 @@
 
     const currentCard = gameQueue[activeIndex];
     document.getElementById("cardProgress").textContent = `Card ${activeIndex + 1} / ${gameQueue.length}`;
-    document.getElementById("currentCardCategory").textContent = currentCard.category;
-    document.getElementById("pBar").style.width = `${((activeIndex) / gameQueue.length) * 100}%`;
-    document.getElementById("mainWord").textContent = currentCard.hangeul;
+    
+    // Set UI Mode header badge text nicely
+    const modeLabels = { reading: "📚 Reading", speaking: "🗣️ Speaking", writing: "✍️ Writing", context: "🧠 Context Mode" };
+    document.getElementById("currentCardMode").textContent = modeLabels[activeMode] || "Game Deck";
 
+    const mainDisplay = document.getElementById("mainWord");
     const box = document.getElementById("choicesBox");
     box.innerHTML = "";
 
-    let seed = currentCard.hangeul.length;
-    let wrongPool = vocabPool.filter(v => v.english !== currentCard.english);
-    let wrongChoices = wrongPool.sort(() => (seed % 3) - 1.5).slice(0, 3);
-    let distribution = [currentCard, ...wrongChoices].sort((a, b) => a.english.localeCompare(b.english));
+    let correctAnswerText = "";
+    let distribution = [];
 
+    // --- RENDER CARD CONFIGURATIONS BY ACTIVE GAME MODE ---
+    if (activeMode === "reading" || activeMode === "writing") {
+      // Prompt: Hangeul word -> Answer options: English translations
+      mainDisplay.textContent = currentCard.hangeul;
+      mainDisplay.style.fontSize = "64px";
+      correctAnswerText = currentCard.english;
+
+      let wrongPool = vocabPool.filter(v => v.english !== currentCard.english);
+      let wrongChoices = wrongPool.sort(() => Math.random() - 0.5).slice(0, 3);
+      distribution = [currentCard, ...wrongChoices].sort((a, b) => a.english.localeCompare(b.english));
+    } 
+    else if (activeMode === "speaking") {
+      // Prompt: English translation -> Answer options: Hangeul words
+      mainDisplay.textContent = currentCard.english;
+      mainDisplay.style.fontSize = "42px";
+      correctAnswerText = currentCard.hangeul;
+
+      let wrongPool = vocabPool.filter(v => v.hangeul !== currentCard.hangeul);
+      let wrongChoices = wrongPool.sort(() => Math.random() - 0.5).slice(0, 3);
+      distribution = [currentCard, ...wrongChoices].sort((a, b) => a.hangeul.localeCompare(b.hangeul));
+    } 
+    else if (activeMode === "context") {
+      // Prompt: UseCase Scenario text -> Answer options: Hangeul words
+      mainDisplay.textContent = currentCard.useCase || "Scenario missing!";
+      mainDisplay.style.fontSize = "24px"; 
+      correctAnswerText = currentCard.hangeul;
+
+      let wrongPool = vocabPool.filter(v => v.hangeul !== currentCard.hangeul);
+      let wrongChoices = wrongPool.sort(() => Math.random() - 0.5).slice(0, 3);
+      distribution = [currentCard, ...wrongChoices].sort((a, b) => a.hangeul.localeCompare(b.hangeul));
+    }
+
+    // Build choice action items
     distribution.forEach(opt => {
       const btn = document.createElement("button");
       btn.className = "choice-btn";
-      btn.textContent = opt.english;
-      btn.onclick = () => submitGuess(btn, opt.english === currentCard.english, currentCard.hangeul);
+      
+      // Select text matching prompt target properties
+      const choiceValue = (activeMode === "reading" || activeMode === "writing") ? opt.english : opt.hangeul;
+      btn.textContent = choiceValue;
+      
+      btn.onclick = () => submitGuess(btn, choiceValue === correctAnswerText, currentCard.hangeul);
       box.appendChild(btn);
     });
   }
@@ -450,7 +485,7 @@
 
   function sendNav(direction) {
     activeIndex += direction;
-    socket.emit("nav_card", { activeIndex: activeIndex });
+    socket.emit("nav_card", { activeIndex: activeIndex, mode: activeMode });
   }
 
   function triggerEndGame() {
