@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>한글 스튜디오 · Hangeul Live Studio</title>
+<title>한글 스튜디오 · Friends Edition</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -25,69 +25,49 @@
     --radius-md: 16px;
     --radius-sm: 8px;
     --shadow-flat: 5px 5px 0px var(--border-color);
-    --shadow-flat-lg: 8px 8px 0px var(--border-color);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background-color: var(--bg-base);
-    color: var(--text-primary);
-    font-family: 'Fredoka', -apple-system, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
+  body { background-color: var(--bg-base); color: var(--text-primary); font-family: 'Fredoka', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
 
-  /* View Panels Setup */
-  .view-panel { display: none; width: 100%; max-width: 650px; animation: slideUp 0.25s ease-out; }
+  .view-panel { display: none; width: 100%; max-width: 650px; animation: slideUp 0.2s ease-out; }
   .view-panel.active { display: block; }
   .studio-card { background: var(--surface); border: var(--border-thick); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-flat); }
   
-  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
   .brand-header { text-align: center; margin-bottom: 24px; }
-  .brand-header h1 { font-size: 34px; font-weight: 700; color: var(--border-color); text-shadow: 2px 2px 0px var(--pop-yellow); }
-  .brand-header p { font-size: 14px; color: var(--text-secondary); margin-top: 4px; font-weight: 500; }
+  .brand-header h1 { font-size: 34px; color: var(--border-color); text-shadow: 2px 2px 0px var(--pop-yellow); }
 
   .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-  .form-group label { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; }
   .sync-input { padding: 14px; font-family: inherit; font-size: 16px; border: var(--border-thin); border-radius: var(--radius-md); outline: none; }
-  .sync-input:focus { border-color: var(--pop-blue); }
   
-  .action-btn { font-family: inherit; font-size: 15px; font-weight: 700; text-transform: uppercase; padding: 14px 24px; border-radius: var(--radius-md); border: var(--border-thin); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-flat); transition: all 0.1s; background: var(--surface); width: 100%; margin-top: 8px; user-select: none; }
+  .action-btn { font-family: inherit; font-size: 15px; font-weight: 700; text-transform: uppercase; padding: 14px 24px; border-radius: var(--radius-md); border: var(--border-thin); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-flat); background: var(--surface); width: 100%; margin-top: 8px; user-select: none; }
   .action-btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0px var(--border-color); }
   .action-btn.primary { background: var(--pop-blue); color: white; }
   .action-btn.host { background: var(--pop-yellow); }
   .action-btn.success { background: var(--pop-green); color: white; }
 
-  /* Lobby / Live Dashboard Roster Styles */
-  .lobby-meta-pill { background: var(--surface-alt); border: var(--border-thin); border-radius: var(--radius-md); padding: 14px; margin: 16px 0; text-align: center; font-size: 18px; font-weight: 700; color: var(--border-color); }
-  .roster-list { background: #F8FAFC; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 120px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
-  .roster-item { padding: 10px 14px; background: white; border: 1px solid #CBD5E1; border-radius: var(--radius-sm); display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; }
+  .roster-list { background: #F8FAFC; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 100px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
+  .roster-item { padding: 10px 14px; background: white; border: 1px solid #CBD5E1; border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; }
 
-  /* Arena Framework Layout */
   .arena-card { max-width: 800px; min-height: 520px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
   .progress-bar-container { position: absolute; top: -4px; left: -4px; right: -4px; height: 12px; background: #E2E8F0; border: var(--border-thick); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--pop-green); width: 0%; transition: width 0.3s; }
-  .arena-header { display: flex; justify-content: space-between; align-items: center; border-bottom: var(--border-thin); padding-bottom: 14px; margin-bottom: 20px; margin-top: 10px; }
   
   .display-hub { text-align: center; margin: 20px 0; }
-  .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 68px; font-weight: 700; color: var(--border-color); margin-bottom: 8px; }
+  .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 68px; font-weight: 700; }
   
-  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
-  @media(max-width: 550px) { .choices-grid { grid-template-columns: 1fr; } }
-  
-  .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 18px 22px; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 3px 3px 0px var(--border-color); transition: all 0.1s; color: var(--text-primary); }
-  .choice-btn:hover:not(:disabled) { background: #F8FAFC; transform: translateY(-2px); box-shadow: 5px 5px 0px var(--border-color); }
-  .choice-btn:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0px var(--border-color); }
-  .choice-btn.correct { background: var(--pop-green) !important; color: white !important; border-color: var(--border-color); transform: translate(2px, 2px); box-shadow: 1px 1px 0px var(--border-color) !important; }
-  .choice-btn.incorrect { background: var(--pop-pink) !important; color: white !important; opacity: 0.5; text-decoration: line-through; transform: translate(2px, 2px); box-shadow: 1px 1px 0px var(--border-color) !important; }
+  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 18px; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 3px 3px 0px var(--border-color); }
+  .choice-btn.correct { background: var(--pop-green) !important; color: white !important; }
+  .choice-btn.incorrect { background: var(--pop-pink) !important; color: white !important; opacity: 0.4; text-decoration: line-through; }
 
-  .live-nav-tray { display: flex; gap: 12px; width: 100%; margin-top: 16px; }
+  .stat-block { border: var(--border-thin); padding: 16px; border-radius: var(--radius-md); margin-bottom: 16px; text-align: left; background: #F8FAFC; }
+  .stat-title { font-weight: 700; text-transform: uppercase; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; border-bottom: 1px dashed #CBD5E1; padding-bottom: 4px; }
+  .stat-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; font-weight: 600; }
 </style>
-<script src="/socket.io/socket.io.js" onerror="console.log('Local fallback system active.')"></script>
+<script src="/socket.io/socket.io.js" onerror="console.log('Local active.')"></script>
 </head>
 <body>
 
@@ -95,36 +75,30 @@
     <div class="studio-card">
       <div class="brand-header">
         <h1>한글 스튜디오</h1>
-        <p>Interactive Practice Deck For Group Voice Calls</p>
+        <p>Study Squad Edition 💬</p>
       </div>
       <div class="form-group">
-        <label>Room Code</label>
-        <input type="text" id="roomCodeInput" class="sync-input" placeholder="e.g. KOREAN101" autocomplete="off">
+        <label style="font-size:12px; font-weight:700;">ENTER YOUR NAME</label>
+        <input type="text" id="playerNameInput" class="sync-input" placeholder="e.g. Minji" autocomplete="off">
       </div>
-      <div class="form-group">
-        <label>Your Name</label>
-        <input type="text" id="playerNameInput" class="sync-input" placeholder="e.g. Alex" autocomplete="off">
-      </div>
-      <button class="action-btn primary" onclick="connect(false)">Join Study Session 🚀</button>
-      <button class="action-btn host" onclick="connect(true)">Host Live Room 👑</button>
+      <button class="action-btn primary" onclick="joinRoom(false)">Join Study Room 🚀</button>
+      <button class="action-btn host" style="font-size:12px;" onclick="promptFacilitator()">Facilitator Dashboard 👑</button>
     </div>
   </div>
 
   <div id="viewLobby" class="view-panel">
     <div class="studio-card">
       <div class="brand-header">
-        <h1 id="lobbyTitle">Study Lounge</h1>
-        <p>Chill here while everyone gets into the voice chat channel!</p>
+        <h1>Classroom Lobby</h1>
+        <p>Waiting for everyone to arrive...</p>
       </div>
-      <div class="lobby-meta-pill" id="lobbyCodeDisplay">ROOM: ----</div>
-      <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px;">Joined Members:</div>
       <div class="roster-list" id="lobbyRoster"></div>
       
-      <div id="hostLobbyControls" style="display:none;">
-        <button class="action-btn success" onclick="startSession()">Open Deck & Start Practice ▶</button>
+      <div id="facilitatorControls" style="display:none;">
+        <button class="action-btn success" onclick="startQuiz()">Launch Study Deck ▶</button>
       </div>
-      <div id="studentLobbyMessage" style="text-align:center; color:var(--text-secondary); font-weight:600; padding:12px; font-size:14px;">
-        Waiting for your host to open up the quiz panel... ☕
+      <div id="studentLobbyMsg" style="text-align:center; color:var(--text-secondary); font-weight:600; font-size:14px; padding:10px;">
+        The game will instantly open once the facilitator fires the deck... ☕
       </div>
     </div>
   </div>
@@ -132,29 +106,27 @@
   <div id="viewArena" class="view-panel arena-card studio-card">
     <div class="progress-bar-container"><div class="progress-fill" id="pBar"></div></div>
     
-    <div class="arena-header">
-      <span id="arenaProgressTag" style="font-weight: 700; text-transform: uppercase; font-size: 14px;">Card 0/0</span>
-      <span id="arenaStatusTag" style="font-weight: 700; background: var(--pop-yellow); padding: 4px 12px; border: var(--border-thin); border-radius: 20px; font-size: 13px;">Live Session</span>
+    <div style="display: flex; justify-content: space-between; font-size:13px; font-weight:700; margin-top:8px;">
+      <span id="cardProgress">Card 0/0</span>
+      <span style="background:var(--pop-yellow); padding:2px 10px; border:var(--border-thin); border-radius:12px;">Active</span>
     </div>
 
-    <div id="arenaHostMonitorDeck" style="display:none; background:#F8FAFC; padding:12px; border:var(--border-thin); border-radius:var(--radius-md); margin-bottom:12px;">
-      <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-secondary); margin-bottom:4px;">Live Classroom Status Feed:</div>
-      <div id="arenaLiveRoster" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+    <div id="liveStatusDeck" style="background:#F8FAFC; padding:10px; border:var(--border-thin); border-radius:var(--radius-md); font-size:12px; font-weight:600; margin:10px 0;">
+      <div style="color:var(--text-secondary); margin-bottom:4px; font-size:10px; text-transform:uppercase;">Classroom Tracker:</div>
+      <div id="liveRosterStatus" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
     </div>
 
     <div class="display-hub">
-      <div id="arenaPrompt" style="font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text-secondary);">What does this mean?</div>
-      <div class="stimulus-main" id="arenaMainWord">한글</div>
+      <div class="stimulus-main" id="mainWord">한글</div>
     </div>
 
-    <div class="choices-grid" id="arenaChoices"></div>
+    <div class="choices-grid" id="choicesBox"></div>
 
-    <div class="live-nav-tray">
-      <button class="action-btn secondary" id="hostPrevBtn" style="display:none; margin-top:0; width:35%;" onclick="navigateCard(-1)">◀ Back</button>
-      <button class="action-btn success" id="hostNextBtn" style="display:none; margin-top:0; width:65%;" onclick="navigateCard(1)">Next Card ▶</button>
-      
-      <div id="studentWaitingText" style="display:none; text-align:center; width:100%; font-size:14px; font-weight:600; color:var(--text-secondary); padding:10px; background:var(--bg-base); border-radius:var(--radius-md); border:1px dashed var(--border-color);">
-        Practice freely! Waiting for host to slide the card... 🎉
+    <div style="margin-top:16px;">
+      <button class="action-btn success" id="nextCardBtn" style="display:none; margin-top:0;" onclick="sendNav(1)">Next Slide Card ▶</button>
+      <button class="action-btn primary" id="endGameBtn" style="display:none; margin-top:0; background:var(--pop-pink);" onclick="triggerEndGame()">Wrap Up & View Stats 🏁</button>
+      <div id="studentWaitMsg" style="display:none; text-align:center; font-size:13px; font-weight:600; color:var(--text-secondary); padding:8px; background:var(--bg-base); border-radius:var(--radius-sm);">
+        Find the match! Waiting for the facilitator to advance... 🎉
       </div>
     </div>
   </div>
@@ -162,104 +134,122 @@
   <div id="viewSummary" class="view-panel">
     <div class="studio-card" style="text-align: center;">
       <div class="brand-header">
-        <h1>Session Finished! 🏁</h1>
-        <p>You did awesome during today's study block.</p>
+        <h1>Analytics Wrap Report 📊</h1>
       </div>
-      <p style="font-size:15px; color:var(--text-secondary); margin-bottom:20px;">The host can reset the room or close out the call whenever ready.</p>
-      <button class="action-btn primary" onclick="location.reload()">Back to Main Entry Gateway</button>
+
+      <div class="stat-block">
+        <div class="stat-title">Your Personal Performance</div>
+        <div class="stat-row"><span>Accuracy:</span><span id="myAccuracy">100%</span></div>
+        <div class="stat-row"><span>First-Try Aces:</span><span id="myAces">0</span></div>
+        <div class="stat-row"><span>Most Guesses Spent On:</span><span id="myStruggle">None</span></div>
+      </div>
+
+      <div class="stat-block">
+        <div class="stat-title">Overall Classroom Metrics</div>
+        <div class="stat-row"><span>Classroom Average Precision:</span><span id="groupAvg">100%</span></div>
+        <div class="stat-row"><span>Highest Review Priority (Most Misses):</span><span id="groupTroubleWord" style="color:var(--pop-pink);">None</span></div>
+      </div>
+
+      <div class="stat-block" id="facilitatorStrugglePanel" style="display:none;">
+        <div class="stat-title">Facilitator Insights: Total Misses By Player</div>
+        <div id="struggleLeaderboard"></div>
+      </div>
+
+      <button class="action-btn primary" onclick="location.reload()">Restart Workspace Session</button>
     </div>
   </div>
 
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXpcCILEulBysiVCgHZWNbdIIDz-isW0CeiCkpg0FXerZ8o2N3dD5PNonYkK5nxsCauUWN93JbkZWH/pub?gid=0&single=true&output=csv";
-  const FALLBACK_DATA = [["하루", "a day"], ["시간", "time"], ["휴식", "rest / break"], ["정말", "really"], ["감사하다", "to thank"]];
+  const FALLBACK_DATA = [["하루", "a day"], ["시간", "time"], ["휴식", "rest / break"], ["정말", "really"]];
 
   let socket = null;
-  let state = { isHost: false, roomCode: "", name: "" };
+  let clientState = { name: "", isHost: false };
   let vocabPool = [];
   let gameQueue = [];
   let activeIndex = 0;
-
-  window.onload = async function() {
-    await loadDatabase();
-    // Auto-recovery safety check on refresh
-    const cache = localStorage.getItem("hangeul_live_session");
-    if(cache) {
-      const parsed = JSON.parse(cache);
-      document.getElementById("roomCodeInput").value = parsed.roomCode;
-      document.getElementById("playerNameInput").value = parsed.name;
-      connect(parsed.isHost);
-    }
-  }
+  
+  // Tracking user local attempts for statistics calculations
+  let currentCardClicks = 0;
+  let myStats = { totalCards: 0, firstTryCorrect: 0, totalClicks: 0, wrongWordsMap: {} };
 
   function switchView(viewId) {
     document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
     document.getElementById(viewId).classList.add('active');
   }
 
-  async function connect(becomeHost) {
-    const code = document.getElementById("roomCodeInput").value.trim().toUpperCase();
-    const name = document.getElementById("playerNameInput").value.trim();
-    if(!code || !name) { alert("Please input both a Room Code and Your Name!"); return; }
+  function promptFacilitator() {
+    const pw = prompt("Enter Facilitator Access Passcode:");
+    if(pw === "1234") { // Simple private passcode entry
+      joinRoom(true);
+    } else if (pw !== null) {
+      alert("Invalid Passcode!");
+    }
+  }
 
-    state = { isHost: becomeHost, roomCode: code, name: name };
-    document.getElementById("lobbyCodeDisplay").textContent = `ROOM: ${code}`;
-    localStorage.setItem("hangeul_live_session", JSON.stringify(state));
+  async function joinRoom(becomeHost) {
+    let name = document.getElementById("playerNameInput").value.trim();
+    if(!name) { 
+      if(becomeHost) name = "Facilitator 👑";
+      else { alert("Please input your name to join!"); return; }
+    }
+
+    clientState = { name: name, isHost: becomeHost };
+    await loadDatabase();
 
     if(typeof io === 'undefined') {
-      alert("Socket module unreachable. Running in local solo sandbox mode.");
-      switchView("viewLobby");
-      document.getElementById("hostLobbyControls").style.display = "block";
-      document.getElementById("studentLobbyMessage").style.display = "none";
+      alert("Socket server connection omitted.");
       return;
     }
 
     socket = io();
-    socket.emit("join_room", { roomCode: code, name: name, isHost: becomeHost });
+    socket.emit("join_session", { name: name, isHost: becomeHost });
     switchView("viewLobby");
 
     if(becomeHost) {
-      document.getElementById("hostLobbyControls").style.display = "block";
-      document.getElementById("studentLobbyMessage").style.display = "none";
+      document.getElementById("facilitatorControls").style.display = "block";
+      document.getElementById("studentLobbyMsg").style.display = "none";
     }
 
-    // Network Event Callbacks
-    socket.on("update_host_dashboard", (players) => {
-      // 1. Lobby View Update
-      const lobbyContainer = document.getElementById("lobbyRoster");
-      lobbyContainer.innerHTML = "";
-      
-      // 2. Arena View Update (Host Roster Box)
-      const arenaRosterContainer = document.getElementById("arenaLiveRoster");
-      arenaRosterContainer.innerHTML = "";
+    // Engine Networking Triggers
+    socket.on("update_roster", (players) => {
+      const lobbyList = document.getElementById("lobbyRoster");
+      lobbyList.innerHTML = "";
+      const arenaList = document.getElementById("liveRosterStatus");
+      arenaList.innerHTML = "";
 
       for(let id in players) {
-        // Build Lobby Elements
-        const lItem = document.createElement("div");
-        lItem.className = "roster-item";
-        lItem.innerHTML = `<span>👤 ${players[id].name}</span> <span>${players[id].status}</span>`;
-        lobbyContainer.appendChild(lItem);
+        // Render lobby rows
+        const row = document.createElement("div");
+        row.className = "roster-item";
+        row.innerHTML = `<span>👤 ${players[id].name}</span> <span>${players[id].status}</span>`;
+        lobbyList.appendChild(row);
 
-        // Build Arena Elements (Mini Badges)
-        if(!players[id].name.includes("👑") && players[id].name !== state.name) {
-          const aBadge = document.createElement("span");
-          aBadge.style.cssText = "padding:4px 10px; background:white; font-size:12px; border:1px solid #CBD5E1; border-radius:6px; font-weight:600;";
-          aBadge.innerHTML = `👤 ${players[id].name}: ${players[id].status}`;
-          arenaRosterContainer.appendChild(aBadge);
+        // Render live game labels
+        if(!players[id].name.includes("👑")) {
+          const badge = document.createElement("span");
+          badge.style.cssText = "padding:3px 8px; background:white; border:1px solid #CBD5E1; border-radius:6px;";
+          badge.innerHTML = `${players[id].name}: ${players[id].status}`;
+          arenaList.appendChild(badge);
         }
       }
     });
 
-    socket.on("sync_session_state", (serverData) => {
+    socket.on("sync_game", (serverData) => {
       gameQueue = serverData.queue;
       activeIndex = serverData.activeIndex;
-      
-      if(gameQueue && gameQueue.length > 0) {
+
+      // Only switch windows once the facilitator has actively triggered the start action
+      if(activeIndex >= 0 && activeIndex < 500) {
         if(!document.getElementById("viewArena").classList.contains("active")) {
           switchView("viewArena");
         }
-        renderCurrentCard();
+        renderCard();
       }
+    });
+
+    socket.on("game_over_analytics", (fullLogs) => {
+      calculateAndDisplayStats(fullLogs);
     });
   }
 
@@ -274,84 +264,142 @@
     }
   }
 
-  function startSession() {
+  function startQuiz() {
     let shuffled = [...vocabPool].sort(() => Math.random() - 0.5);
     gameQueue = shuffled.slice(0, Math.min(10, shuffled.length));
-    activeIndex = 0;
-
-    socket.emit("host_initialized_queue", { roomCode: state.roomCode, queue: gameQueue });
-    switchView("viewArena");
-    renderCurrentCard();
+    socket.emit("start_game", { queue: gameQueue });
   }
 
-  function renderCurrentCard() {
-    if(activeIndex >= gameQueue.length) {
-      localStorage.removeItem("hangeul_live_session");
-      switchView("viewSummary");
-      return;
-    }
-
-    // Set visibility controls based on role
-    if(state.isHost) {
-      document.getElementById("arenaHostMonitorDeck").style.display = "block";
-      document.getElementById("hostNextBtn").style.display = "inline-flex";
-      document.getElementById("hostPrevBtn").style.display = activeIndex > 0 ? "inline-flex" : "none";
-      document.getElementById("studentWaitingText").style.display = "none";
-      document.getElementById("hostNextBtn").textContent = activeIndex === gameQueue.length - 1 ? "Finish Game 🏁" : "Next Card ▶";
+  function renderCard() {
+    currentCardClicks = 0;
+    
+    if(clientState.isHost) {
+      document.getElementById("studentWaitMsg").style.display = "none";
+      if(activeIndex === gameQueue.length - 1) {
+        document.getElementById("nextCardBtn").style.display = "none";
+        document.getElementById("endGameBtn").style.display = "inline-flex";
+      } else {
+        document.getElementById("nextCardBtn").style.display = "inline-flex";
+        document.getElementById("endGameBtn").style.display = "none";
+      }
     } else {
-      document.getElementById("arenaHostMonitorDeck").style.display = "none";
-      document.getElementById("hostNextBtn").style.display = "none";
-      document.getElementById("hostPrevBtn").style.display = "none";
-      document.getElementById("studentWaitingText").style.display = "block";
+      document.getElementById("studentWaitMsg").style.display = "block";
     }
 
-    const card = gameQueue[activeIndex];
-    document.getElementById("arenaProgressTag").textContent = `Card ${activeIndex + 1} / ${gameQueue.length}`;
+    const currentCard = gameQueue[activeIndex];
+    document.getElementById("cardProgress").textContent = `Card ${activeIndex + 1} / ${gameQueue.length}`;
     document.getElementById("pBar").style.width = `${((activeIndex) / gameQueue.length) * 100}%`;
-    document.getElementById("arenaMainWord").textContent = card.hangeul;
-    
-    // Process layout choice arrays deterministically so everyone gets matching item options
-    const container = document.getElementById("arenaChoices");
-    container.innerHTML = "";
-    
-    let seed = card.hangeul.length;
-    let wrongPool = vocabPool.filter(v => v.english !== card.english);
+    document.getElementById("mainWord").textContent = currentCard.hangeul;
+
+    const box = document.getElementById("choicesBox");
+    box.innerHTML = "";
+
+    let seed = currentCard.hangeul.length;
+    let wrongPool = vocabPool.filter(v => v.english !== currentCard.english);
     let wrongChoices = wrongPool.sort(() => (seed % 3) - 1.5).slice(0, 3);
-    let distribution = [card, ...wrongChoices].sort((a, b) => a.english.localeCompare(b.english));
+    let distribution = [currentCard, ...wrongChoices].sort((a, b) => a.english.localeCompare(b.english));
 
     distribution.forEach(opt => {
       const btn = document.createElement("button");
       btn.className = "choice-btn";
       btn.textContent = opt.english;
-      btn.onclick = () => checkGuess(btn, opt.english === card.english);
-      container.appendChild(btn);
+      btn.onclick = () => submitGuess(btn, opt.english === currentCard.english, currentCard.hangeul);
+      box.appendChild(btn);
     });
   }
 
-  function checkGuess(selectedBtn, isCorrect) {
+  function submitGuess(btn, isCorrect, hangeulWord) {
+    currentCardClicks++;
+    myStats.totalClicks++;
+
     if(isCorrect) {
-      // Highlight correct green!
-      selectedBtn.classList.add("correct");
-      // Disable everything else because they successfully got it
+      btn.classList.add("correct");
       document.querySelectorAll(".choice-btn").forEach(b => b.disabled = true);
       
-      if(socket) {
-        socket.emit("student_submit_status", { roomCode: state.roomCode, status: "Passed! 🎉" });
-      }
+      myStats.totalCards++;
+      if(currentCardClicks === 1) myStats.firstTryCorrect++;
+
+      socket.emit("submit_click", { word: hangeulWord, isCorrect: true });
     } else {
-      // Turn red, but don't freeze inputs! Let them keep trying naturally
-      selectedBtn.classList.add("incorrect");
-      selectedBtn.disabled = true; 
+      btn.classList.add("incorrect");
+      btn.disabled = true;
+
+      // Log incorrect map trace locally
+      myStats.wrongWordsMap[hangeulWord] = (myStats.wrongWordsMap[hangeulWord] || 0) + 1;
+
+      socket.emit("submit_click", { word: hangeulWord, isCorrect: false });
     }
   }
 
-  function navigateCard(direction) {
-    if(!state.isHost) return;
+  function sendNav(direction) {
     activeIndex += direction;
-    if(socket) {
-      socket.emit("host_nav_card", { roomCode: state.roomCode, activeIndex: activeIndex });
+    socket.emit("nav_card", { activeIndex: activeIndex });
+  }
+
+  function triggerEndGame() {
+    socket.emit("end_game");
+  }
+
+  function calculateAndDisplayStats(logs) {
+    switchView("viewSummary");
+
+    // 1. Process Individual Card Copy Information
+    const accuracy = myStats.totalCards > 0 ? Math.round((myStats.firstTryCorrect / myStats.totalCards) * 100) : 100;
+    document.getElementById("myAccuracy").textContent = `${accuracy}%`;
+    document.getElementById("myAces").textContent = `${myStats.firstTryCorrect} / ${myStats.totalCards} words`;
+    
+    let worstWord = "None!"; let maxOwnWrong = 0;
+    for(let w in myStats.wrongWordsMap) {
+      if(myStats.wrongWordsMap[w] > maxOwnWrong) {
+        maxOwnWrong = myStats.wrongWordsMap[w]; worstWord = `${w} (${maxOwnWrong} extra clicks)`;
+      }
     }
-    renderCurrentCard();
+    document.getElementById("myStruggle").textContent = worstWord;
+
+    // 2. Process Collective Global Master Logs Information
+    let overallClicks = logs.length;
+    let trueClicks = logs.filter(l => l.isCorrect).length;
+    let groupAvgPercentage = overallClicks > 0 ? Math.round((trueClicks / overallClicks) * 100) : 100;
+    document.getElementById("groupAvg").textContent = `${groupAvgPercentage}%`;
+
+    // Discover the aggregate group trouble word item
+    let globalWrongMap = {};
+    let totalIncorrectClicksByPlayer = {};
+
+    logs.forEach(entry => {
+      if(!entry.isCorrect) {
+        globalWrongMap[entry.word] = (globalWrongMap[entry.word] || 0) + 1;
+        totalIncorrectClicksByPlayer[entry.name] = (totalIncorrectClicksByPlayer[entry.name] || 0) + 1;
+      } else {
+        // Guarantee user exists in player click map tracking objects
+        if(!totalIncorrectClicksByPlayer[entry.name]) totalIncorrectClicksByPlayer[entry.name] = 0;
+      }
+    });
+
+    let topTroubleWord = "None! Flawless run! 🎉"; let topTroubleCount = 0;
+    for(let w in globalWrongMap) {
+      if(globalWrongMap[w] > topTroubleCount) {
+        topTroubleCount = globalWrongMap[w]; topTroubleWord = `${w} (Missed ${topTroubleCount} times total)`;
+      }
+    }
+    document.getElementById("groupTroubleWord").textContent = topTroubleWord;
+
+    // 3. Render Facilitator Board Breakdown if Host
+    if(clientState.isHost) {
+      const dashboard = document.getElementById("facilitatorStrugglePanel");
+      const listContainer = document.getElementById("struggleLeaderboard");
+      dashboard.style.display = "block";
+      listContainer.innerHTML = "";
+
+      for(let user in totalIncorrectClicksByPlayer) {
+        if(!user.includes("👑")) {
+          const row = document.createElement("div");
+          row.className = "stat-row";
+          row.innerHTML = `<span>👤 ${user}:</span> <span style="color:var(--pop-pink)">${totalIncorrectClicksByPlayer[user]} mistakes</span>`;
+          listContainer.appendChild(row);
+        }
+      }
+    }
   }
 </script>
 </body>
