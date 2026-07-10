@@ -4,68 +4,108 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const path = require('path');
 
-// Serve your HTML file when anyone visits the web link
+app.use(express.static(path.join(__dirname)));
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-let rooms = {}; 
+// Server storage for live games
+const activeRooms = {}; 
 
 io.on('connection', (socket) => {
-  // Triggered when someone puts in a room code and hits connect
+  
   socket.on('join_room', ({ roomCode, name, isHost }) => {
     socket.join(roomCode);
-    if (!rooms[roomCode]) {
-      rooms[roomCode] = { mode: 'reading', queue: [], activeIndex: 0, players: {} };
+    
+    socket.roomCode = roomCode;
+    socket.playerName = name;
+    socket.isHost = isHost;
+
+    if (!activeRooms[roomCode]) {
+      activeRooms[roomCode] = {
+        players: {},
+        queue: [],
+        activeIndex: 0
+      };
     }
-    if (!isHost) {
-      rooms[roomCode].players[socket.id] = { name, status: 'Thinking... 🧠' };
-    }
-    // Instantly update the host's monitoring dashboard
-    io.to(roomCode).emit('update_host_dashboard', rooms[roomCode].players);
+
+    // Register player info
+    activeRooms[roomCode].players[socket.id] = { 
+      name: name, 
+      status: isHost ? "Host 👑" : "Thinking... 🧠" 
+    };
+
+    // Broadcast updated lists back to room
+    io.to(roomCode).emit('update_host_dashboard', activeRooms[roomCode].players);
+    
+    // Sync newly joined/refreshed players to where the session currently is
+    socket.emit('sync_session_state', {
+      queue: activeRooms[roomCode].queue,
+      activeIndex: activeRooms[roomCode].activeIndex
+    });
   });
 
-  // Triggered when host picks a study track (Reading, Block Builder, etc.)
-  socket.on('host_initialized_queue', ({ roomCode, queue, mode }) => {
-    if (rooms[roomCode]) {
-      rooms[roomCode].queue = queue;
-      rooms[roomCode].mode = mode;
-      rooms[roomCode].activeIndex = 0;
-      socket.to(roomCode).emit('sync_session_state', rooms[roomCode]);
-    }
-  });
-
-  // Triggered when host clicks 'Next Card'
-  socket.on('host_next_card', ({ roomCode, activeIndex }) => {
-    if (rooms[roomCode]) {
-      rooms[roomCode].activeIndex = activeIndex;
-      // Reset student statuses back to neutral for the fresh card
-      for (let id in rooms[roomCode].players) {
-        rooms[roomCode].players[id].status = 'Thinking... 🧠';
+  socket.on('host_initialized_queue', ({ roomCode, queue }) => {
+    if(activeRooms[roomCode]) {
+      activeRooms[roomCode].queue = queue;
+      activeRooms[roomCode].activeIndex = 0;
+      
+      // Reset statuses for a new game run
+      for(let id in activeRooms[roomCode].players) {
+        if(!activeRooms[roomCode].players[id].status.includes("👑")) {
+          activeRooms[roomCode].players[id].status = "Thinking... 🧠";
+        }
       }
-      io.to(roomCode).emit('update_host_dashboard', rooms[roomCode].players);
-      socket.to(roomCode).emit('sync_session_state', rooms[roomCode]);
+
+      io.to(roomCode).emit('update_host_dashboard', activeRooms[roomCode].players);
+      socket.to(roomCode).emit('sync_session_state', { queue, activeIndex: 0 });
     }
   });
 
-  // Triggered when a student submits their individual response
+  socket.on('host_nav_card', ({ roomCode, activeIndex }) => {
+    if(activeRooms[roomCode]) {
+      activeRooms[roomCode].activeIndex = activeIndex;
+      
+      // Reset student indicators back to thinking for the new card slide
+      for(let id in activeRooms[roomCode].players) {
+        if(!activeRooms[roomCode].players[id].status.includes("👑")) {
+          activeRooms[roomCode].players[id].status = "Thinking... 🧠";
+        }
+      }
+
+      io.to(roomCode).emit('update_host_dashboard', activeRooms[roomCode].players);
+      socket.to(roomCode).emit('sync_session_state', { 
+        queue: activeRooms[roomCode].queue, 
+        activeIndex: activeIndex 
+      });
+    }
+  });
+
   socket.on('student_submit_status', ({ roomCode, status }) => {
-    if (rooms[roomCode] && rooms[roomCode].players[socket.id]) {
-      rooms[roomCode].players[socket.id].status = status;
-      io.to(roomCode).emit('update_host_dashboard', rooms[roomCode].players);
+    if(activeRooms[roomCode] && activeRooms[roomCode].players[socket.id]) {
+      activeRooms[roomCode].players[socket.id].status = status;
+      io.to(roomCode).emit('update_host_dashboard', activeRooms[roomCode].players);
     }
   });
 
-  // Handle a user disconnecting from the call gracefully
   socket.on('disconnect', () => {
-    for (let roomCode in rooms) {
-      if (rooms[roomCode].players[socket.id]) {
-        delete rooms[roomCode].players[socket.id];
-        io.to(roomCode).emit('update_host_dashboard', rooms[roomCode].players);
+    const roomCode = socket.roomCode;
+    if (roomCode && activeRooms[roomCode]) {
+      delete activeRooms[roomCode].players[socket.id];
+      io.to(roomCode).emit('update_host_dashboard', activeRooms[roomCode].players);
+      
+      // Clean up empty configurations after 15 mins of complete inactivity
+      if (Object.keys(activeRooms[roomCode].players).length === 0) {
+        setTimeout(() => {
+          if (activeRooms[roomCode] && Object.keys(activeRooms[roomCode].players).length === 0) {
+            delete activeRooms[roomCode];
+          }
+        }, 900000);
       }
     }
   });
 });
 
 const PORT = process.env.PORT || 3000;
-http.listen(PORT, () => console.log(`Server running smoothly on port ${PORT}`));
+http.listen(PORT, () => console.log(`Hangeul Engine executing on port ${PORT}`));
