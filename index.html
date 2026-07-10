@@ -275,7 +275,7 @@
   if (SpeechRecognition) {
     recognition = new SpeechRecognition();
     recognition.continuous = false;
-    recognition.lang = 'ko-KR'; // Hard target to capture accurate Korean pronunciation
+    recognition.lang = 'ko-KR'; 
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
   }
@@ -427,7 +427,7 @@
 
     const mainDisplay = document.getElementById("mainWord");
 
-    // --- TRUE EXECUTION MAPPING ---
+    // --- INTERFACES ARE UNLOCKED FOR HOSTS AS WELL ---
     if (activeMode === "reading") {
       document.getElementById("choicesBox").classList.add("active");
       mainDisplay.textContent = currentCard.hangeul; mainDisplay.style.fontSize = "64px";
@@ -441,12 +441,12 @@
     else if (activeMode === "writing") {
       document.getElementById("writingInterfaceBox").classList.add("active");
       document.getElementById("writingInputField").value = "";
-      document.getElementById("writingInputField").disabled = clientState.isHost;
+      document.getElementById("writingInputField").disabled = false; // Unlocked
       mainDisplay.textContent = currentCard.hangeul; mainDisplay.style.fontSize = "64px";
     }
     else if (activeMode === "speaking") {
       document.getElementById("speakingInterfaceBox").classList.add("active");
-      document.getElementById("speechTriggerBtn").disabled = clientState.isHost;
+      document.getElementById("speechTriggerBtn").disabled = false; // Unlocked
       mainDisplay.textContent = currentCard.english; mainDisplay.style.fontSize = "42px";
     }
   }
@@ -462,14 +462,13 @@
       const btn = document.createElement("button"); btn.className = "choice-btn";
       let displayValue = opt[propertyToCompare === "english" ? "english" : "hangeul"];
       btn.textContent = displayValue;
-      btn.disabled = clientState.isHost;
+      btn.disabled = false; // Unlocked
       btn.onclick = () => processEvaluationResult(displayValue === targetAnswer, currentCard.hangeul, btn);
       box.appendChild(btn);
     });
   }
 
   function checkWritingSubmission() {
-    if(clientState.isHost) return;
     const guess = document.getElementById("writingInputField").value.trim().toLowerCase();
     const target = gameQueue[activeIndex].english.trim().toLowerCase();
     
@@ -481,7 +480,6 @@
 
   function triggerVoiceCapture() {
     if (!recognition) { alert("Speech engine error."); return; }
-    if (clientState.isHost) return;
 
     const wave = document.getElementById("voiceWaveElement");
     const feedback = document.getElementById("speechTranscriptionFeedback");
@@ -495,7 +493,6 @@
       const userSpoke = event.results[0][0].transcript.trim();
       const targetKorean = gameQueue[activeIndex].hangeul.trim();
 
-      // Basic comparison check
       const isMatch = (userSpoke === targetKorean);
       if(!isMatch) {
         feedback.textContent = `❌ Heard Sound: "${userSpoke}" (Expected: "${targetKorean}")`;
@@ -546,7 +543,7 @@
     
     let worstWord = "None!"; let maxOwnWrong = 0;
     for(let w in myStats.wrongWordsMap) {
-      if(myStats.wrongWordsMap[w] > maxOwnWrong) { maxOwnWrong = myStats.wrongWordsMap[w]; worstWord = `${w}`; }
+      if(myStats.wrongWordsMap[w] > maxWrong) { maxOwnWrong = myStats.wrongWordsMap[w]; worstWord = `${w}`; }
     }
     document.getElementById("myStruggle").textContent = worstWord;
 
@@ -555,7 +552,6 @@
     let groupAvgPercentage = overallClicks > 0 ? Math.round((trueClicks / overallClicks) * 100) : 100;
     document.getElementById("myAccuracy").textContent = `${accuracy}% (Classroom Avg: ${groupAvgPercentage}%)`;
 
-    // Visual Word Error Aggregates
     let globalWrongMap = {};
     let totalIncorrectClicksByPlayer = {};
 
@@ -568,7 +564,6 @@
       }
     });
 
-    // Render detailed classroom fail tags
     const cloud = document.getElementById("classroomStruggleCloud"); cloud.innerHTML = "";
     let elementsAdded = 0;
     for (let word in globalWrongMap) {
@@ -581,14 +576,11 @@
     }
     if(elementsAdded === 0) cloud.innerHTML = "<div style='color:var(--pop-green); font-weight:700;'>🎉 No mistakes recorded across the session! Solid memory base!</div>";
 
-    // Render classroom engagement list
     const board = document.getElementById("struggleLeaderboard"); board.innerHTML = "";
     for(let user in totalIncorrectClicksByPlayer) {
-      if(!user.includes("👑")) {
-        const row = document.createElement("div"); row.className = "stat-row";
-        row.innerHTML = `<span>👤 ${user}</span> <span style="color:var(--pop-pink)">${totalIncorrectClicksByPlayer[user]} incorrect submissions</span>`;
-        board.appendChild(row);
-      }
+      const row = document.createElement("div"); row.className = "stat-row";
+      row.innerHTML = `<span>👤 ${user}</span> <span style="color:var(--pop-pink)">${totalIncorrectClicksByPlayer[user]} incorrect submissions</span>`;
+      board.appendChild(row);
     }
   }
 </script>
