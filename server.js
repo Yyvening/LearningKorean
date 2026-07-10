@@ -1,145 +1,84 @@
 const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 const path = require('path');
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
+app.use(express.static(path.join(__dirname, '/')));
 
-const PORT = process.env.PORT || 3000;
-
-// Serve public static assets if needed, and route home to index.html
-app.use(express.static(path.join(__dirname, 'public')));
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// --- PERSISTENT WORKSHOP STATE MEMORY ---
-let activePlayers = {};        // Tracks socket.id -> { name, status, isHost }
-let currentServerQueue = [];   // Cached active deck words
-let currentActiveIndex = 0;    // Current active card position
-let currentActiveMode = "reading"; // Active quiz format state
-let sessionGlobalClickLogs = [];   // Persistent workspace error log history
+let activeClassroomPlayers = {};
+let runningSessionState = {
+  queue: [],
+  activeIndex: 0,
+  mode: "reading"
+};
+let evaluationAuditHistory = [];
 
 io.on('connection', (socket) => {
-    console.log(`📡 New Townsville Comm-Link Established: ${socket.id}`);
 
-    // 1. CHANNELS: PLAYER REGISTRATION & FORCE LATE-SYNC
-    socket.on('join_session', (data) => {
-        // Enforce host validation rules based on structural configuration or explicit flag
-        const checksIfHost = !!data.isHost || (data.name && data.name.includes("👑"));
-        
-        // Register player profile attributes
-        activePlayers[socket.id] = {
-            name: data.name || "Anonymous Squadmate",
-            status: checksIfHost ? "Facilitating Session 🧪" : "Ready for Duty! 🦸‍♀️",
-            isHost: checksIfHost
-        };
+  socket.on('join_session', (profile) => {
+    activeClassroomPlayers[socket.id] = {
+      name: profile.name,
+      isHost: profile.isHost,
+      status: "Lobby"
+    };
+    io.emit('update_roster', activeClassroomPlayers);
+    if(runningSessionState.queue.length > 0) {
+      socket.emit('sync_game', runningSessionState);
+    }
+  });
 
-        console.log(`👤 Character [${data.name}] spawned in active classroom grid.`);
-        
-        // Push full roster table update to all clients instantly
-        io.emit('update_roster', activePlayers);
+  socket.on('start_game', (payload) => {
+    runningSessionState.queue = payload.queue;
+    runningSessionState.activeIndex = 0;
+    runningSessionState.mode = payload.mode;
+    
+    for (let id in activeClassroomPlayers) {
+      activeClassroomPlayers[id].status = "Active Solving";
+    }
+    
+    io.emit('update_roster', activeClassroomPlayers);
+    io.emit('sync_game', runningSessionState);
+  });
 
-        // CRITICAL PATCH: Force-sync data parameters if this user joined late
-        if (currentServerQueue && currentServerQueue.length > 0) {
-            socket.emit('sync_game', {
-                queue: currentServerQueue,
-                activeIndex: currentActiveIndex,
-                mode: currentActiveMode
-            });
-        }
+  socket.on('nav_card', (payload) => {
+    runningSessionState.activeIndex = payload.activeIndex;
+    runningSessionState.mode = payload.mode;
+    io.emit('sync_game', runningSessionState);
+  });
+
+  socket.on('submit_click', (metric) => {
+    const player = activeClassroomPlayers[socket.id];
+    if (!player) return;
+
+    evaluationAuditHistory.push({
+      name: player.name,
+      word: metric.word,
+      isCorrect: metric.isCorrect,
+      timestamp: Date.now()
     });
 
-    // 2. CHANNELS: DECK INITIATION LOOP
-    socket.on('start_game', (data) => {
-        // Overwrite standard parameters with fresh quiz targets passed from Host dashboard
-        currentServerQueue = data.queue || [];
-        currentActiveIndex = 0;
-        if (data.mode) currentActiveMode = data.mode;
+    if(metric.isCorrect) {
+      player.status = `✅ Cleared Card ${runningSessionState.activeIndex + 1}`;
+    } else {
+      player.status = `⚠️ Error on Card ${runningSessionState.activeIndex + 1}`;
+    }
+    io.emit('update_roster', activeClassroomPlayers);
+  });
 
-        // Reset player standing flags to active engagement targets
-        for (let id in activePlayers) {
-            if (!activePlayers[id].isHost) {
-                activePlayers[id].status = "Analyzing Prompt... 🤔";
-            }
-        }
-        
-        io.emit('update_roster', activePlayers);
-        io.emit('sync_game', {
-            queue: currentServerQueue,
-            activeIndex: currentActiveIndex,
-            mode: currentActiveMode
-        });
-    });
+  socket.on('end_game', () => {
+    io.emit('game_over_analytics', evaluationAuditHistory);
+    evaluationAuditHistory = []; 
+    runningSessionState = { queue: [], activeIndex: 0, mode: "reading" };
+  });
 
-    // 3. CHANNELS: REAL-TIME SLIDE SYNCHRONIZATION
-    socket.on('nav_card', (data) => {
-        currentActiveIndex = data.activeIndex;
-        if (data.mode) currentActiveMode = data.mode;
-
-        // Reset user status flags cleanly for the next upcoming card
-        for (let id in activePlayers) {
-            if (!activePlayers[id].isHost) {
-                activePlayers[id].status = "Analyzing Prompt... 🤔";
-            }
-        }
-
-        io.emit('update_roster', activePlayers);
-        io.emit('sync_game', {
-            queue: currentServerQueue,
-            activeIndex: currentActiveIndex,
-            mode: currentActiveMode
-        });
-    });
-
-    // 4. CHANNELS: STREAM EVALUATION LOG
-    socket.on('submit_click', (data) => {
-        const player = activePlayers[socket.id];
-        if (!player) return;
-
-        // Append log parameters directly into master evaluation history array
-        sessionGlobalClickLogs.push({
-            name: player.name,
-            word: data.word,
-            isCorrect: !!data.isCorrect,
-            mode: currentActiveMode,
-            timestamp: new Date().toISOString()
-        });
-
-        // Dynamic status adjustments for your sidebar feed tracker
-        if (data.isCorrect) {
-            player.status = "Cleared Card! Waiting... 🎯";
-        } else {
-            player.status = "Reviewing Mistake... ⚠️";
-        }
-
-        io.emit('update_roster', activePlayers);
-    });
-
-    // 5. CHANNELS: END MULTI-QUIZ WORKSHOP RUN
-    socket.on('end_game', () => {
-        // Direct broadcast of all cumulative evaluation entries to render full metrics
-        io.emit('game_over_analytics', sessionGlobalClickLogs);
-    });
-
-    // 6. CHANNELS: CONNECTION TERMINATION CLEANUP
-    socket.on('disconnect', () => {
-        if (activePlayers[socket.id]) {
-            console.log(`🛑 Character [${activePlayers[socket.id].name}] left the map.`);
-            delete activePlayers[socket.id];
-            io.emit('update_roster', activePlayers);
-        }
-    });
+  socket.on('disconnect', () => {
+    delete activeClassroomPlayers[socket.id];
+    io.emit('update_roster', activeClassroomPlayers);
+  });
 });
 
-// Run server pipeline
-server.listen(PORT, () => {
-    console.log(`
-============================================================
-  🚀 한글 스튜디오 · Powerpuff Server Engine Live!
-  📂 Local Dev Endpoint Loop: http://localhost:${PORT}
-============================================================
-    `);
+const PORT = 3000;
+http.listen(PORT, () => {
+  console.log(`Server executing live environment on http://localhost:${PORT}`);
 });
