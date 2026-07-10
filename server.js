@@ -10,12 +10,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Single global room state for you and your friends
 let sessionState = {
   players: {},
   queue: [],
-  activeIndex: -1, // -1 means game has not started yet
-  statsLog: [] // Tracks every single click: { name, word, isCorrect }
+  activeIndex: -1, 
+  statsLog: [] 
 };
 
 io.on('connection', (socket) => {
@@ -24,7 +23,6 @@ io.on('connection', (socket) => {
     socket.playerName = name;
     socket.isHost = isHost;
 
-    // Register or recover player
     sessionState.players[socket.id] = {
       name: name,
       isHost: isHost,
@@ -33,7 +31,6 @@ io.on('connection', (socket) => {
 
     io.emit('update_roster', sessionState.players);
     
-    // Send current game state to the player
     socket.emit('sync_game', {
       queue: sessionState.queue,
       activeIndex: sessionState.activeIndex
@@ -44,7 +41,7 @@ io.on('connection', (socket) => {
     if (!socket.isHost) return;
     sessionState.queue = queue;
     sessionState.activeIndex = 0;
-    sessionState.statsLog = []; // Reset stats for new game
+    sessionState.statsLog = []; 
 
     for (let id in sessionState.players) {
       if (!sessionState.players[id].isHost) {
@@ -59,8 +56,6 @@ io.on('connection', (socket) => {
   socket.on('submit_click', ({ word, isCorrect }) => {
     if (sessionState.players[socket.id]) {
       const name = sessionState.players[socket.id].name;
-      
-      // Log the action for stats processing
       sessionState.statsLog.push({ name, word, isCorrect });
 
       if (isCorrect) {
@@ -76,7 +71,6 @@ io.on('connection', (socket) => {
     if (!socket.isHost) return;
     sessionState.activeIndex = activeIndex;
 
-    // Reset player active statuses for the next slide card
     for (let id in sessionState.players) {
       if (!sessionState.players[id].isHost) {
         sessionState.players[id].status = "Thinking... 🧠";
@@ -89,8 +83,7 @@ io.on('connection', (socket) => {
 
   socket.on('end_game', () => {
     if (!socket.isHost) return;
-    sessionState.activeIndex = 999; // Code for summary view
-    
+    sessionState.activeIndex = 999; 
     io.emit('game_over_analytics', sessionState.statsLog);
   });
 
