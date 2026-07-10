@@ -66,47 +66,53 @@
   .roster-list { background: #F8FAFC; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 100px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
   .roster-item { padding: 10px 14px; background: white; border: 1px solid #CBD5E1; border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; }
 
-  /* --- RESPONSIVE ARENA ENVIRONMENT --- */
+  /* --- ARENA DESIGN --- */
   .arena-wrapper { max-width: 1000px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: start; }
-  
-  @media (max-width: 850px) {
-    .arena-wrapper { grid-template-columns: 1fr; }
-    .sidebar-tracker { margin-top: 10px; }
-  }
+  @media (max-width: 850px) { .arena-wrapper { grid-template-columns: 1fr; } }
 
-  .main-deck-workspace { background: var(--surface); border: var(--border-thick); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-flat); position: relative; min-height: 440px; display: flex; flex-direction: column; justify-content: space-between; }
+  .main-deck-workspace { background: var(--surface); border: var(--border-thick); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-flat); position: relative; min-height: 460px; display: flex; flex-direction: column; justify-content: space-between; }
   .sidebar-tracker { background: #F8FAFC; border: var(--border-thick); border-radius: var(--radius-lg); padding: 16px; box-shadow: var(--shadow-flat); }
 
   .progress-bar-container { position: absolute; top: -4px; left: -4px; right: -4px; height: 12px; background: #E2E8F0; border: var(--border-thick); border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--pop-green); width: 0%; transition: width 0.3s; }
   
-  .display-hub { text-align: center; margin: 20px 0; min-height: 120px; display: flex; align-items: center; justify-content: center; }
-  .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 48px; font-weight: 700; color: var(--border-color); line-height: 1.3; padding: 0 10px; }
+  .display-hub { text-align: center; margin: 20px 0; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 48px; font-weight: 700; color: var(--border-color); line-height: 1.3; }
   
-  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; width: 100%; }
   @media (max-width: 500px) { .choices-grid { grid-template-columns: 1fr; } }
   
   .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 3px 3px 0px var(--border-color); }
   .choice-btn.correct { background: var(--pop-green) !important; color: white !important; }
   .choice-btn.incorrect { background: var(--pop-pink) !important; color: white !important; opacity: 0.4; text-decoration: line-through; }
 
+  /* Input panel layouts for True Modes */
+  .interaction-block-container { width: 100%; margin-bottom: 20px; display: none; text-align: center; }
+  .interaction-block-container.active { display: block; }
+  
+  .speech-wave-indicator { font-size: 13px; font-weight: 700; color: var(--pop-pink); display: none; margin-top: 8px; animation: pulse 1s infinite alternate; }
+  @keyframes pulse { from { opacity: 0.5; } to { opacity: 1; } }
+
   .sidebar-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; border-bottom: 2px solid #CBD5E1; padding-bottom: 4px; margin-top: 14px; }
   .sidebar-title:first-child { margin-top: 0; }
   .badge-stack { display: flex; flex-direction: column; gap: 6px; }
   .live-badge { padding: 8px 12px; background: white; border: var(--border-thin); border-radius: var(--radius-md); font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; }
 
-  .stat-block { border: var(--border-thin); padding: 16px; border-radius: var(--radius-md); margin-bottom: 16px; text-align: left; background: #F8FAFC; }
-  .stat-title { font-weight: 700; text-transform: uppercase; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; border-bottom: 1px dashed #CBD5E1; padding-bottom: 4px; }
-  .stat-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; font-weight: 600; }
+  .stat-block { border: var(--border-thick); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 20px; text-align: left; background: white; box-shadow: 4px 4px 0px var(--border-color); }
+  .stat-title { font-weight: 700; text-transform: uppercase; font-size: 13px; color: var(--border-color); margin-bottom: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 4px; }
+  .stat-row { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; font-weight: 600; border-bottom: 1px dashed #E2E8F0; }
 
-  /* Onboarding Lesson Cards */
+  .review-item-tag { display: inline-block; padding: 4px 10px; background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 12px; margin: 4px; font-weight: 600; }
+  .review-item-tag.heavy-fail { background: #FEE2E2; border-color: var(--pop-pink); color: #B91C1C; }
+
   .guide-box { background: #EFF6FF; border: 2px dashed #2563EB; border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; font-size: 13px; text-align: left; line-height: 1.4; color: #1E3A8A; }
   .guide-box strong { color: #1D4ED8; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 4px; }
 </style>
-<script src="/socket.io/socket.io.js" onerror="console.log('Local active.')"></script>
+<script src="/socket.io/socket.io.js" onerror="console.log('Local fallback system online.')"></script>
 </head>
 <body>
 
+  <!-- ================= VIEW 1: GATEWAY ================= -->
   <div id="viewGateway" class="view-panel active">
     <div class="compact-container studio-card">
       <div class="brand-header">
@@ -122,6 +128,7 @@
     </div>
   </div>
 
+  <!-- ================= VIEW 2: LOBBY ================= -->
   <div id="viewLobby" class="view-panel">
     <div class="compact-container studio-card">
       <div class="brand-header">
@@ -131,7 +138,7 @@
       
       <div class="guide-box" id="lobbyGuide">
         <strong>🗺️ Workshop Roadmap Guide</strong>
-        We will rotate through all 4 interactive modes today: <strong>Reading ➔ Speaking ➔ Writing ➔ Context Cases</strong>. Sit tight until the Facilitator launches the deck!
+        We will rotate through all 4 interactive modes today: <strong>Reading ➔ Speaking ➔ Writing ➔ Context Cases</strong>.
       </div>
 
       <div class="roster-list" id="lobbyRoster"></div>
@@ -139,12 +146,10 @@
       <div id="facilitatorControls" style="display:none;">
         <button class="action-btn success" onclick="startQuiz()">Launch First Quiz Deck ▶</button>
       </div>
-      <div id="studentLobbyMsg" style="text-align:center; color:var(--text-secondary); font-weight:600; font-size:14px; padding:10px;">
-        The game will instantly open once the facilitator fires the deck... ☕
-      </div>
     </div>
   </div>
 
+  <!-- ================= VIEW 3: ARENA ENVIRONMENT ================= -->
   <div id="viewArena" class="view-panel">
     <div class="arena-wrapper">
       
@@ -158,13 +163,27 @@
 
         <div class="display-hub">
           <div class="stimulus-main" id="mainWord">한글</div>
+          <div id="speechTranscriptionFeedback" style="margin-top:10px; font-size:14px; font-weight:600; color:var(--pop-pink); min-height:20px;"></div>
         </div>
 
-        <div id="mistakeReviewBanner" style="display:none; text-align:center; padding:10px; background:var(--surface-alt); border:var(--border-thin); border-radius:var(--radius-sm); font-weight:700; font-size:14px; color:var(--border-color); margin-bottom:14px;">
-          ⚠️ Heads Up! This word was missed by classmates earlier this session. Focus!
+        <!-- MODE INTERACTION AREAS -->
+        <!-- 1. Grid Options (Reading & Context) -->
+        <div class="choices-grid interaction-block-container" id="choicesBox"></div>
+
+        <!-- 2. True Text Input Field (Writing Mode) -->
+        <div class="interaction-block-container" id="writingInterfaceBox">
+          <div class="form-group">
+            <label>Type out the correct translation memory match below:</label>
+            <input type="text" id="writingInputField" class="sync-input" placeholder="Type answer here..." autocomplete="off">
+          </div>
+          <button class="action-btn primary" onclick="checkWritingSubmission()">Verify Written Answer ✍️</button>
         </div>
 
-        <div class="choices-grid" id="choicesBox"></div>
+        <!-- 3. True Voice Input (Speaking Mode) -->
+        <div class="interaction-block-container" id="speakingInterfaceBox">
+          <button class="action-btn danger" id="speechTriggerBtn" style="background:var(--pop-pink);" onclick="triggerVoiceCapture()">Tap to Record Pronunciation 🎙️</button>
+          <div class="speech-wave-indicator" id="voiceWaveElement">🎙️ Listening intently to spoken audio... Speak clearly!</div>
+        </div>
 
         <div>
           <div id="facilitatorNavBox" style="display:none; gap:10px;">
@@ -173,7 +192,7 @@
           </div>
           
           <div id="studentWaitMsg" style="display:none; text-align:center; font-size:13px; font-weight:600; color:var(--text-secondary); padding:10px; background:var(--bg-base); border-radius:var(--radius-sm); border: 1px dashed var(--border-color);">
-            Find the match! Look at the card layout options above... 🎉
+            Solve the prompt on your screen... 🎉
           </div>
         </div>
       </main>
@@ -190,12 +209,12 @@
         </div>
 
         <div id="hostEndSessionContainer" style="display:none; margin-bottom:14px; border-top:2px dashed #CBD5E1; padding-top:10px;">
-          <button class="action-btn danger" style="padding:10px; font-size:11px;" onclick="triggerEndGame()">End Whole Session & Show Stats 🏁</button>
+          <button class="action-btn danger" style="padding:10px; font-size:11px;" onclick="triggerEndGame()">End Session & Show Stats 🏁</button>
         </div>
 
         <div class="sidebar-title">Live Instructions</div>
         <div class="guide-box" id="arenaInstructionText" style="margin-bottom:0; padding:10px; font-size:11px;">
-          Select answers to clear cards. Facilitator updates the mode from the selection dropdown box when done!
+          Select answers to clear cards.
         </div>
 
         <div class="sidebar-title">Squad Status Feed</div>
@@ -205,32 +224,34 @@
     </div>
   </div>
 
+  <!-- ================= VIEW 4: MASTER WORKSHOP SUMMARY REPORT ================= -->
   <div id="viewSummary" class="view-panel">
-    <div class="compact-container studio-card" style="text-align: center;">
+    <div class="compact-container studio-card" style="text-align: center; max-width:650px;">
       <div class="brand-header">
-        <h1>Workshop Wrap Report 📊</h1>
-        <p style="font-size:13px; font-weight:600; color:var(--text-secondary);">Cumulative Workshop Analytics</p>
+        <h1>Workshop Analytics Report 📊</h1>
+        <p style="font-size:13px; font-weight:600; color:var(--text-secondary);">Complete Cumulative Session Evaluation</p>
       </div>
 
       <div class="stat-block">
-        <div class="stat-title">Your Personal Performance</div>
-        <div class="stat-row"><span>Accuracy:</span><span id="myAccuracy">100%</span></div>
-        <div class="stat-row"><span>First-Try Aces:</span><span id="myAces">0</span></div>
-        <div class="stat-row"><span>Most Guesses Spent On:</span><span id="myStruggle">None</span></div>
+        <div class="stat-title">Personal Performance Report</div>
+        <div class="stat-row"><span>First-Try Precision Score:</span><span id="myAccuracy" style="color:var(--pop-blue)">100%</span></div>
+        <div class="stat-row"><span>Total Completed Cards:</span><span id="myAces">0 words</span></div>
+        <div class="stat-row"><span>Your Hardest Hurdle:</span><span id="myStruggle" style="color:var(--pop-pink)">None</span></div>
       </div>
 
       <div class="stat-block">
-        <div class="stat-title">Overall Classroom Metrics</div>
-        <div class="stat-row"><span>Classroom Average Precision:</span><span id="groupAvg">100%</span></div>
-        <div class="stat-row"><span>Highest Review Priority (Most Misses):</span><span id="groupTroubleWord" style="color:var(--pop-pink);">None</span></div>
+        <div class="stat-title">🚨 Classroom Struggle Breakdown (Review These Words!)</div>
+        <div id="classroomStruggleCloud" style="padding:10px; min-height:50px; text-align:left;">
+          <!-- Items print here with red weight variations if missed multiple times -->
+        </div>
       </div>
 
-      <div class="stat-block" id="facilitatorStrugglePanel" style="display:none;">
-        <div class="stat-title">Facilitator Insights: Total Mistakes By Player</div>
-        <div id="struggleLeaderboard"></div>
+      <div class="stat-block">
+        <div class="stat-title">👥 Engagement Tracker: Mistakes Made By Learner</div>
+        <div id="struggleLeaderboard" style="min-height:40px;"></div>
       </div>
 
-      <button class="action-btn primary" onclick="location.reload()">Restart Workspace Session</button>
+      <button class="action-btn primary" onclick="location.reload()">Restart New Workspace Session</button>
     </div>
   </div>
 
@@ -246,14 +267,21 @@
   let activeMode = "reading"; 
   
   let currentCardClicks = 0;
-  // Stats stick around globally and NEVER wipe out mid-session when moving between quizzes
   let myStats = { totalCards: 0, firstTryCorrect: 0, totalClicks: 0, wrongWordsMap: {} };
-  let sessionGlobalMissedWords = new Set();
+
+  // Native Browser Speech Recognition Context Hook
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'ko-KR'; // Hard target to capture accurate Korean pronunciation
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+  }
 
   function initAudio() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
 
   function playSound(type) {
@@ -261,28 +289,18 @@
     try {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
+      osc.connect(gain); gain.connect(audioCtx.destination);
       if (type === 'success') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+        osc.type = 'triangle'; osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
         osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); 
-        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); 
         gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.35);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.25);
       } else if (type === 'error') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.25);
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(140, audioCtx.currentTime);
         gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.25);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
       }
-    } catch(e) { console.log("Audio exception context safe."); }
+    } catch(e){}
   }
 
   function switchView(viewId) {
@@ -292,11 +310,7 @@
 
   function promptFacilitator() {
     const pw = prompt("Enter Facilitator Access Passcode:");
-    if(pw === "1234") { 
-      joinRoom(true);
-    } else if (pw !== null) {
-      alert("Invalid Passcode!");
-    }
+    if(pw === "1234") joinRoom(true);
   }
 
   async function joinRoom(becomeHost) {
@@ -304,16 +318,11 @@
     let name = document.getElementById("playerNameInput").value.trim();
     if(!name) {
       if(becomeHost) name = "Facilitator 👑";
-      else { alert("Please input your name to join!"); return; }
+      else { alert("Please enter your name!"); return; }
     }
 
     clientState = { name: name, isHost: becomeHost };
     await loadDatabase();
-
-    if(typeof io === 'undefined') {
-      alert("Socket server context missing.");
-      return;
-    }
 
     socket = io();
     socket.emit("join_session", { name: name, isHost: becomeHost });
@@ -323,28 +332,17 @@
       document.getElementById("facilitatorControls").style.display = "block";
       document.getElementById("workspaceFilterContainer").style.display = "block";
       document.getElementById("hostEndSessionContainer").style.display = "block";
-      
-      // Update Guide for Host
-      document.getElementById("lobbyGuide").innerHTML = `<strong>👑 Facilitator Playbook</strong><br>1. Wait for students to join.<br>2. Use the sidebar menu anytime to change modes.<br>3. Hit <strong>Launch Quiz</strong> below to start!`;
-    } else {
-      document.getElementById("lobbyGuide").innerHTML = `<strong>👤 Student Playbook</strong><br>1. Wait here in the lobby.<br>2. When the Facilitator starts a quiz, your screen will change automatically.<br>3. Earn full precision scores by matching elements on the first attempt!`;
     }
 
     socket.on("update_roster", (players) => {
-      const lobbyList = document.getElementById("lobbyRoster");
-      lobbyList.innerHTML = "";
-      const arenaList = document.getElementById("liveRosterStatus");
-      arenaList.innerHTML = "";
-
+      const lobbyList = document.getElementById("lobbyRoster"); lobbyList.innerHTML = "";
+      const arenaList = document.getElementById("liveRosterStatus"); arenaList.innerHTML = "";
       for(let id in players) {
-        const row = document.createElement("div");
-        row.className = "roster-item";
+        const row = document.createElement("div"); row.className = "roster-item";
         row.innerHTML = `<span>👤 ${players[id].name}</span> <span>${players[id].status}</span>`;
         lobbyList.appendChild(row);
-
         if(!players[id].name.includes("👑")) {
-          const div = document.createElement("div");
-          div.className = "live-badge";
+          const div = document.createElement("div"); div.className = "live-badge";
           div.innerHTML = `<span>👤 ${players[id].name}</span> <span>${players[id].status}</span>`;
           arenaList.appendChild(div);
         }
@@ -352,14 +350,10 @@
     });
 
     socket.on("sync_game", (serverData) => {
-      gameQueue = serverData.queue;
-      activeIndex = serverData.activeIndex;
+      gameQueue = serverData.queue; activeIndex = serverData.activeIndex;
       if (serverData.mode) activeMode = serverData.mode;
-
-      if(activeIndex >= 0 && activeIndex < 500) {
-        if(!document.getElementById("viewArena").classList.contains("active")) {
-          switchView("viewArena");
-        }
+      if(activeIndex >= 0 && activeIndex < gameQueue.length) {
+        if(!document.getElementById("viewArena").classList.contains("active")) switchView("viewArena");
         renderCard();
       }
     });
@@ -371,15 +365,10 @@
 
   async function loadDatabase() {
     try {
-      const res = await fetch(CSV_URL);
-      const txt = await res.text();
+      const res = await fetch(CSV_URL); const txt = await res.text();
       let lines = txt.split("\n").map(l => l.split(","));
-      
       vocabPool = lines.slice(1).map(l => ({ 
-        hangeul: l[0]?.trim() || "", 
-        english: l[1]?.trim() || "",
-        type: l[2]?.trim() || "",
-        useCase: l[3]?.trim() || ""
+        hangeul: l[0]?.trim() || "", english: l[1]?.trim() || "", type: l[2]?.trim() || "", useCase: l[3]?.trim() || ""
       })).filter(v => v.hangeul && v.english);
     } catch(e) {
       vocabPool = [{ hangeul: "하루", english: "a day", type: "Vocab", useCase: "" }];
@@ -388,15 +377,7 @@
 
   function startQuiz() {
     let poolToUse = [...vocabPool];
-    
-    if (activeMode === "context") {
-      poolToUse = vocabPool.filter(v => v.useCase && v.useCase.length > 2);
-      if (poolToUse.length === 0) {
-        alert("No sheet rows contain valid Scenario UseCase descriptions. Defaulting to standard rows.");
-        poolToUse = [...vocabPool];
-      }
-    }
-
+    if (activeMode === "context") poolToUse = vocabPool.filter(v => v.useCase && v.useCase.length > 2);
     let shuffled = poolToUse.sort(() => Math.random() - 0.5);
     gameQueue = shuffled.slice(0, Math.min(10, shuffled.length));
     socket.emit("start_game", { queue: gameQueue, mode: activeMode });
@@ -405,118 +386,144 @@
   function changeClassroomMode() {
     if(!clientState.isHost) return;
     activeMode = document.getElementById("gameModeSelector").value;
-    activeIndex = 0;
-    startQuiz();
+    activeIndex = 0; startQuiz();
   }
 
   function resetCurrentDeckLoop() {
-    activeIndex = 0;
-    startQuiz();
+    activeIndex = 0; startQuiz();
+  }
+
+  function hideAllInterfaces() {
+    document.getElementById("choicesBox").classList.remove("active");
+    document.getElementById("writingInterfaceBox").classList.remove("active");
+    document.getElementById("speakingInterfaceBox").classList.remove("active");
   }
 
   function renderCard() {
     currentCardClicks = 0;
-    initAudio(); 
-    
+    document.getElementById("speechTranscriptionFeedback").textContent = "";
+    hideAllInterfaces();
+
     if(clientState.isHost) {
       document.getElementById("studentWaitMsg").style.display = "none";
       document.getElementById("facilitatorNavBox").style.display = "flex";
-      
       if(activeIndex === gameQueue.length - 1) {
         document.getElementById("nextCardBtn").style.display = "none";
         document.getElementById("resetDeckBtn").style.display = "inline-flex";
-        document.getElementById("arenaInstructionText").textContent = "👑 This is the final card of this quiz! Tell your class to complete it, then select a new Mode from your dropdown menu to keep learning!";
       } else {
         document.getElementById("nextCardBtn").style.display = "inline-flex";
         document.getElementById("resetDeckBtn").style.display = "none";
-        document.getElementById("arenaInstructionText").textContent = "👑 Click 'Next Slide Card' when you are ready to advance the screens for the entire classroom.";
       }
     } else {
       document.getElementById("studentWaitMsg").style.display = "block";
       document.getElementById("facilitatorNavBox").style.display = "none";
-      document.getElementById("arenaInstructionText").textContent = "👤 Solve the flashcard on the screen. Wait for your facilitator to step forward when done!";
     }
 
     const currentCard = gameQueue[activeIndex];
     document.getElementById("cardProgress").textContent = `Card ${activeIndex + 1} / ${gameQueue.length}`;
     
     const modeLabels = { reading: "📚 Reading Mode", speaking: "🗣️ Speaking Mode", writing: "✍️ Writing Mode", context: "🧠 Context Mode" };
-    document.getElementById("currentCardMode").textContent = modeLabels[activeMode] || "Quiz Deck";
-
-    // --- Dynamic Mistake Review Highlight Feature ---
-    const reviewBanner = document.getElementById("mistakeReviewBanner");
-    if(sessionGlobalMissedWords.has(currentCard.hangeul)) {
-      reviewBanner.style.display = "block";
-    } else {
-      reviewBanner.style.display = "none";
-    }
+    document.getElementById("currentCardMode").textContent = modeLabels[activeMode];
 
     const mainDisplay = document.getElementById("mainWord");
-    const box = document.getElementById("choicesBox");
-    box.innerHTML = "";
 
-    let correctAnswerText = "";
-    let distribution = [];
-
-    if (activeMode === "reading" || activeMode === "writing") {
-      mainDisplay.textContent = currentCard.hangeul;
-      mainDisplay.style.fontSize = "64px";
-      correctAnswerText = currentCard.english;
-
-      let wrongPool = vocabPool.filter(v => v.english !== currentCard.english);
-      let wrongChoices = wrongPool.sort(() => Math.random() - 0.5).slice(0, 3);
-      distribution = [currentCard, ...wrongChoices].sort((a, b) => a.english.localeCompare(b.english));
-    } 
-    else if (activeMode === "speaking") {
-      mainDisplay.textContent = currentCard.english;
-      mainDisplay.style.fontSize = "42px";
-      correctAnswerText = currentCard.hangeul;
-
-      let wrongPool = vocabPool.filter(v => v.hangeul !== currentCard.hangeul);
-      let wrongChoices = wrongPool.sort(() => Math.random() - 0.5).slice(0, 3);
-      distribution = [currentCard, ...wrongChoices].sort((a, b) => a.hangeul.localeCompare(b.hangeul));
+    // --- TRUE EXECUTION MAPPING ---
+    if (activeMode === "reading") {
+      document.getElementById("choicesBox").classList.add("active");
+      mainDisplay.textContent = currentCard.hangeul; mainDisplay.style.fontSize = "64px";
+      buildMultipleChoices(currentCard, "english");
     } 
     else if (activeMode === "context") {
-      mainDisplay.textContent = currentCard.useCase || "Scenario situation text field is blank!";
-      mainDisplay.style.fontSize = "22px"; 
-      correctAnswerText = currentCard.hangeul;
-
-      let wrongPool = vocabPool.filter(v => v.hangeul !== currentCard.hangeul);
-      let wrongChoices = wrongPool.sort(() => Math.random() - 0.5).slice(0, 3);
-      distribution = [currentCard, ...wrongChoices].sort((a, b) => a.hangeul.localeCompare(b.hangeul));
+      document.getElementById("choicesBox").classList.add("active");
+      mainDisplay.textContent = currentCard.useCase || "Scenario missing!"; mainDisplay.style.fontSize = "22px";
+      buildMultipleChoices(currentCard, "hangeul");
     }
+    else if (activeMode === "writing") {
+      document.getElementById("writingInterfaceBox").classList.add("active");
+      document.getElementById("writingInputField").value = "";
+      document.getElementById("writingInputField").disabled = clientState.isHost;
+      mainDisplay.textContent = currentCard.hangeul; mainDisplay.style.fontSize = "64px";
+    }
+    else if (activeMode === "speaking") {
+      document.getElementById("speakingInterfaceBox").classList.add("active");
+      document.getElementById("speechTriggerBtn").disabled = clientState.isHost;
+      mainDisplay.textContent = currentCard.english; mainDisplay.style.fontSize = "42px";
+    }
+  }
+
+  function buildMultipleChoices(currentCard, propertyToCompare) {
+    const box = document.getElementById("choicesBox"); box.innerHTML = "";
+    let targetAnswer = currentCard[propertyToCompare === "english" ? "english" : "hangeul"];
+    let wrongPool = vocabPool.filter(v => v[propertyToCompare === "english" ? "english" : "hangeul"] !== targetAnswer);
+    let wrongChoices = wrongPool.sort(() => Math.random() - 0.5).slice(0, 3);
+    let distribution = [currentCard, ...wrongChoices].sort(() => Math.random() - 0.5);
 
     distribution.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.className = "choice-btn";
-      const choiceValue = (activeMode === "reading" || activeMode === "writing") ? opt.english : opt.hangeul;
-      btn.textContent = choiceValue;
-      btn.onclick = () => submitGuess(btn, choiceValue === correctAnswerText, currentCard.hangeul);
+      const btn = document.createElement("button"); btn.className = "choice-btn";
+      let displayValue = opt[propertyToCompare === "english" ? "english" : "hangeul"];
+      btn.textContent = displayValue;
+      btn.disabled = clientState.isHost;
+      btn.onclick = () => processEvaluationResult(displayValue === targetAnswer, currentCard.hangeul, btn);
       box.appendChild(btn);
     });
   }
 
-  function submitGuess(btn, isCorrect, hangeulWord) {
-    currentCardClicks++;
-    myStats.totalClicks++;
+  function checkWritingSubmission() {
+    if(clientState.isHost) return;
+    const guess = document.getElementById("writingInputField").value.trim().toLowerCase();
+    const target = gameQueue[activeIndex].english.trim().toLowerCase();
+    
+    if(!guess) return;
+    const isCorrect = (guess === target);
+    if(isCorrect) document.getElementById("writingInputField").disabled = true;
+    processEvaluationResult(isCorrect, gameQueue[activeIndex].hangeul, null);
+  }
+
+  function triggerVoiceCapture() {
+    if (!recognition) { alert("Speech engine error."); return; }
+    if (clientState.isHost) return;
+
+    const wave = document.getElementById("voiceWaveElement");
+    const feedback = document.getElementById("speechTranscriptionFeedback");
+    wave.style.display = "block";
+    feedback.textContent = "";
+
+    recognition.start();
+
+    recognition.onresult = function(event) {
+      wave.style.display = "none";
+      const userSpoke = event.results[0][0].transcript.trim();
+      const targetKorean = gameQueue[activeIndex].hangeul.trim();
+
+      // Basic comparison check
+      const isMatch = (userSpoke === targetKorean);
+      if(!isMatch) {
+        feedback.textContent = `❌ Heard Sound: "${userSpoke}" (Expected: "${targetKorean}")`;
+      } else {
+        feedback.textContent = `✅ Perfect Pronunciation match!`;
+      }
+      processEvaluationResult(isMatch, targetKorean, null);
+    };
+
+    recognition.onerror = function() { wave.style.display = "none"; };
+    recognition.onspeechend = function() { recognition.stop(); wave.style.display = "none"; };
+  }
+
+  function processEvaluationResult(isCorrect, hangeulWord, clickedBtnElement) {
+    currentCardClicks++; myStats.totalClicks++;
 
     if(isCorrect) {
       playSound('success');
-      btn.classList.add("correct");
+      if(clickedBtnElement) clickedBtnElement.classList.add("correct");
       document.querySelectorAll(".choice-btn").forEach(b => b.disabled = true);
       
       myStats.totalCards++;
       if(currentCardClicks === 1) myStats.firstTryCorrect++;
-
       socket.emit("submit_click", { word: hangeulWord, isCorrect: true });
     } else {
       playSound('error');
-      btn.classList.add("incorrect");
-      btn.disabled = true;
-
+      if(clickedBtnElement) { clickedBtnElement.classList.add("incorrect"); clickedBtnElement.disabled = true; }
       myStats.wrongWordsMap[hangeulWord] = (myStats.wrongWordsMap[hangeulWord] || 0) + 1;
-      sessionGlobalMissedWords.add(hangeulWord); // Track live inside the classroom review feed
-
       socket.emit("submit_click", { word: hangeulWord, isCorrect: false });
     }
   }
@@ -527,11 +534,7 @@
   }
 
   function triggerEndGame() {
-    // Only fires summary view when facilitator actively confirms completion of the workshop session
-    const confirmEnd = confirm("Are you sure you want to end the whole session? This will lock answer inputs and show final cumulative scores to all students.");
-    if(confirmEnd) {
-      socket.emit("end_game");
-    }
+    if(confirm("Generate cumulative session logs now?")) socket.emit("end_game");
   }
 
   function calculateAndDisplayStats(logs) {
@@ -539,21 +542,20 @@
 
     const accuracy = myStats.totalCards > 0 ? Math.round((myStats.firstTryCorrect / myStats.totalCards) * 100) : 100;
     document.getElementById("myAccuracy").textContent = `${accuracy}%`;
-    document.getElementById("myAces").textContent = `${myStats.firstTryCorrect} / ${myStats.totalCards} words`;
+    document.getElementById("myAces").textContent = `${myStats.firstTryCorrect} / ${myStats.totalCards} cards`;
     
     let worstWord = "None!"; let maxOwnWrong = 0;
     for(let w in myStats.wrongWordsMap) {
-      if(myStats.wrongWordsMap[w] > maxOwnWrong) {
-        maxOwnWrong = myStats.wrongWordsMap[w]; worstWord = `${w} (${maxOwnWrong} extra clicks)`;
-      }
+      if(myStats.wrongWordsMap[w] > maxOwnWrong) { maxOwnWrong = myStats.wrongWordsMap[w]; worstWord = `${w}`; }
     }
     document.getElementById("myStruggle").textContent = worstWord;
 
     let overallClicks = logs.length;
     let trueClicks = logs.filter(l => l.isCorrect).length;
     let groupAvgPercentage = overallClicks > 0 ? Math.round((trueClicks / overallClicks) * 100) : 100;
-    document.getElementById("groupAvg").textContent = `${groupAvgPercentage}%`;
+    document.getElementById("myAccuracy").textContent = `${accuracy}% (Classroom Avg: ${groupAvgPercentage}%)`;
 
+    // Visual Word Error Aggregates
     let globalWrongMap = {};
     let totalIncorrectClicksByPlayer = {};
 
@@ -566,27 +568,26 @@
       }
     });
 
-    let topTroubleWord = "None! Flawless run! 🎉"; let topTroubleCount = 0;
-    for(let w in globalWrongMap) {
-      if(globalWrongMap[w] > topTroubleCount) {
-        topTroubleCount = globalWrongMap[w]; topTroubleWord = `${w} (Missed ${topTroubleCount} times total across workshop)`;
-      }
+    // Render detailed classroom fail tags
+    const cloud = document.getElementById("classroomStruggleCloud"); cloud.innerHTML = "";
+    let elementsAdded = 0;
+    for (let word in globalWrongMap) {
+      elementsAdded++;
+      const span = document.createElement("span");
+      const failCount = globalWrongMap[word];
+      span.className = "review-item-tag" + (failCount > 2 ? " heavy-fail" : "");
+      span.textContent = `${word} (${failCount} errors total)`;
+      cloud.appendChild(span);
     }
-    document.getElementById("groupTroubleWord").textContent = topTroubleWord;
+    if(elementsAdded === 0) cloud.innerHTML = "<div style='color:var(--pop-green); font-weight:700;'>🎉 No mistakes recorded across the session! Solid memory base!</div>";
 
-    if(clientState.isHost) {
-      const dashboard = document.getElementById("facilitatorStrugglePanel");
-      const listContainer = document.getElementById("struggleLeaderboard");
-      dashboard.style.display = "block";
-      listContainer.innerHTML = "";
-
-      for(let user in totalIncorrectClicksByPlayer) {
-        if(!user.includes("👑")) {
-          const row = document.createElement("div");
-          row.className = "stat-row";
-          row.innerHTML = `<span>👤 ${user}:</span> <span style="color:var(--pop-pink)">${totalIncorrectClicksByPlayer[user]} mistakes</span>`;
-          listContainer.appendChild(row);
-        }
+    // Render classroom engagement list
+    const board = document.getElementById("struggleLeaderboard"); board.innerHTML = "";
+    for(let user in totalIncorrectClicksByPlayer) {
+      if(!user.includes("👑")) {
+        const row = document.createElement("div"); row.className = "stat-row";
+        row.innerHTML = `<span>👤 ${user}</span> <span style="color:var(--pop-pink)">${totalIncorrectClicksByPlayer[user]} incorrect submissions</span>`;
+        board.appendChild(row);
       }
     }
   }
