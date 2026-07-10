@@ -1,179 +1,225 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const path = require('path');
+// 한글 스튜디오 · Powerpuff Edition — realtime server
+//
+// Responsibilities added on top of the original protocol:
+//  - Loads the vocab CSV ONCE on the server and broadcasts it to every
+//    client, so the host and every student always quiz against the exact
+//    same word pool, even if the sheet is edited mid-session.
+//  - Tracks players by a persistent `clientId` (generated client-side and
+//    stored in sessionStorage) instead of the ephemeral socket id, so a
+//    wifi blip + reconnect is recognized as the same player rather than
+//    a brand new one.
+//  - Resolves duplicate display names ("로즈" -> "로즈 (2)") so the roster
+//    and analytics can always tell two same-named players apart.
+//  - Tracks how many (non-host) players have answered the current card
+//    correctly and broadcasts that count for the host's pacing indicator.
+//
+// Run with: node server.js   (requires Node 18+ for global fetch)
+
+const express = require("express");
+const http = require("http");
+const path = require("path");
+const { Server } = require("socket.io");
+
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXpcCILEulBysiVCgHZWNbdIIDz-isW0CeiCkpg0FXerZ8o2N3dD5PNonYkK5nxsCauUWN93JbkZWH/pub?gid=0&single=true&output=csv";
+const PORT = process.env.PORT || 3000;
 
 const app = express();
+app.use(express.static(__dirname));
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
+
 const server = http.createServer(app);
 const io = new Server(server);
 
-const PORT = process.env.PORT || 3000;
+// ------------------------------------------------------------------
+// Vocab pool - single source of truth, loaded once and on host refresh
+// ------------------------------------------------------------------
+let vocabPool = [];
+let vocabLoadError = null;
 
-// Serve public static assets if needed, and route home to index.html
-app.use(express.static(path.join(__dirname, 'public')));
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// --- PERSISTENT WORKSHOP STATE MEMORY ---
-let activePlayers = {};          // Tracks socket.id -> { name, status, isHost }
-let currentServerQueue = [];     // Cached active deck words
-let currentActiveIndex = 0;      // Current active card position
-let currentActiveMode = "reading"; // Active quiz format state
-let sessionGlobalClickLogs = [];   // Persistent workspace error log history
-let hostSocketId = null;         // The ONE socket allowed to control the session
-
-const MAX_NAME_LENGTH = 40;
-
-// Strip anything that could be interpreted as HTML before it's ever
-// broadcast to other clients (defense in depth - the client also escapes).
-function sanitizeName(raw) {
-    const str = (typeof raw === 'string' ? raw : 'Anonymous Squadmate').slice(0, MAX_NAME_LENGTH);
-    return str.replace(/[<>&"']/g, (c) => ({
-        '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;'
-    }[c]));
+function parseCsv(text) {
+  const clean = (v) => (v ? v.replace(/^"|"$/g, "").trim() : "");
+  const lines = text.split(/\r?\n/);
+  return lines
+    .slice(1)
+    .map((line) => {
+      const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+      return {
+        hangeul: clean(cols[0]),
+        english: clean(cols[1]),
+        type: clean(cols[2]),
+        useCase: clean(cols[3]) || "",
+      };
+    })
+    .filter((v) => v.hangeul && v.english);
 }
 
-function isFromHost(socket) {
-    return hostSocketId !== null && socket.id === hostSocketId;
+async function loadVocabFromSheet() {
+  try {
+    const res = await fetch(CSV_URL);
+    if (!res.ok) throw new Error(`sheet responded HTTP ${res.status}`);
+    const text = await res.text();
+    const parsed = parseCsv(text);
+    if (parsed.length === 0) throw new Error("sheet had no usable rows");
+    vocabPool = parsed;
+    vocabLoadError = null;
+  } catch (err) {
+    vocabLoadError = err.message || "unknown error";
+    console.error("Vocab sheet load failed:", vocabLoadError);
+    if (vocabPool.length === 0) {
+      // Only fall back if we have never successfully loaded anything yet -
+      // a transient refresh failure should not nuke a working pool.
+      vocabPool = [{ hangeul: "하루", english: "a day", type: "Vocab", useCase: "" }];
+    }
+  }
+  return { vocabPool, vocabLoadError };
 }
 
-io.on('connection', (socket) => {
-    console.log(`📡 New Townsville Comm-Link Established: ${socket.id}`);
+// Kick off the first load immediately so it's ready before anyone joins.
+loadVocabFromSheet();
 
-    // 1. CHANNELS: PLAYER REGISTRATION & FORCE LATE-SYNC
-    socket.on('join_session', (data) => {
-        const safeName = sanitizeName(data && data.name);
-        const wantsHost = !!(data && data.isHost);
+// ------------------------------------------------------------------
+// Session state
+// ------------------------------------------------------------------
+let sessions = {};          // clientId -> { clientId, baseName, displayName, isHost, socketId, connected }
+let socketToClient = {};    // socket.id -> clientId
+let hostClientId = null;
 
-        // Only grant host if nobody currently holds it. A name containing a
-        // crown emoji is no longer sufficient on its own to become host -
-        // that let any student claim control of the class.
-        let grantedHost = false;
-        if (wantsHost) {
-            if (hostSocketId === null) {
-                hostSocketId = socket.id;
-                grantedHost = true;
-            } else {
-                grantedHost = (hostSocketId === socket.id);
-            }
-        }
+let gameQueue = [];
+let activeIndex = -1;
+let activeMode = "reading";
+let clearedThisCard = new Set(); // clientIds who answered correctly on the current card
+let sessionLogs = [];             // { clientId, name, word, isCorrect, cardIndex } for the whole workshop
 
-        activePlayers[socket.id] = {
-            name: safeName,
-            status: grantedHost ? "Facilitating Session 🧪" : "Ready for Duty! 🦸‍♀️",
-            isHost: grantedHost
-        };
+function uniqueDisplayName(base, ownerClientId) {
+  const taken = new Set(
+    Object.values(sessions)
+      .filter((s) => s.clientId !== ownerClientId)
+      .map((s) => s.displayName)
+  );
+  if (!taken.has(base)) return base;
+  let n = 2;
+  while (taken.has(`${base} (${n})`)) n++;
+  return `${base} (${n})`;
+}
 
-        console.log(`👤 Character [${safeName}] spawned in active classroom grid.`);
+function broadcastRoster() {
+  const roster = {};
+  for (const clientId in sessions) {
+    const s = sessions[clientId];
+    roster[clientId] = {
+      name: s.displayName,
+      isHost: s.isHost,
+      status: !s.connected ? "⚪ Reconnecting…" : s.isHost ? "👑 Hosting" : "🟢 Ready",
+    };
+  }
+  io.emit("update_roster", roster);
+}
 
-        // Tell the requester whether their host request actually succeeded,
-        // since a second person requesting host will silently be denied.
-        socket.emit('host_status', { isHost: grantedHost, requestedHost: wantsHost });
+function broadcastProgress() {
+  const total = Object.values(sessions).filter((s) => !s.isHost).length;
+  io.emit("progress_update", { cleared: clearedThisCard.size, total, cardIndex: activeIndex });
+}
 
-        io.emit('update_roster', activePlayers);
+io.on("connection", (socket) => {
+  socket.on("join_session", ({ clientId, name, isHost }) => {
+    clientId = clientId || `anon-${socket.id}`;
+    const baseName = (name || "Guest").trim();
+    socketToClient[socket.id] = clientId;
 
-        // CRITICAL PATCH: Force-sync data parameters if this user joined late
-        if (currentServerQueue && currentServerQueue.length > 0) {
-            socket.emit('sync_game', {
-                queue: currentServerQueue,
-                activeIndex: currentActiveIndex,
-                mode: currentActiveMode
-            });
-        }
-    });
+    // Host allocation: first isHost:true request for a given clientId claims
+    // it; the same clientId reconnecting always keeps it. Nobody else can
+    // take over an active host slot.
+    let grantedHost = false;
+    if (isHost) {
+      if (!hostClientId || hostClientId === clientId) {
+        hostClientId = clientId;
+        grantedHost = true;
+      }
+    }
+    if (hostClientId === clientId) grantedHost = true;
 
-    // 2. CHANNELS: DECK INITIATION LOOP (host-only)
-    socket.on('start_game', (data) => {
-        if (!isFromHost(socket)) return;
+    const existing = sessions[clientId];
+    const displayName = existing ? existing.displayName : uniqueDisplayName(baseName, clientId);
 
-        currentServerQueue = Array.isArray(data && data.queue) ? data.queue : [];
-        currentActiveIndex = 0;
-        if (data && data.mode) currentActiveMode = data.mode;
+    sessions[clientId] = {
+      clientId,
+      baseName,
+      displayName,
+      isHost: grantedHost,
+      socketId: socket.id,
+      connected: true,
+    };
 
-        for (let id in activePlayers) {
-            if (!activePlayers[id].isHost) {
-                activePlayers[id].status = "Analyzing Prompt... 🤔";
-            }
-        }
+    socket.emit("host_status", { isHost: grantedHost, requestedHost: !!isHost, displayName });
+    socket.emit("vocab_ready", { vocabPool, error: vocabLoadError });
+    broadcastRoster();
 
-        io.emit('update_roster', activePlayers);
-        io.emit('sync_game', {
-            queue: currentServerQueue,
-            activeIndex: currentActiveIndex,
-            mode: currentActiveMode
-        });
-    });
+    // Late-joiners / reconnectors get caught up on the live game state.
+    if (activeIndex >= 0 && gameQueue.length > 0) {
+      socket.emit("sync_game", { queue: gameQueue, activeIndex, mode: activeMode });
+      broadcastProgress();
+    }
+  });
 
-    // 3. CHANNELS: REAL-TIME SLIDE SYNCHRONIZATION (host-only)
-    socket.on('nav_card', (data) => {
-        if (!isFromHost(socket)) return;
+  socket.on("reload_vocab", async () => {
+    const clientId = socketToClient[socket.id];
+    const s = sessions[clientId];
+    if (!s || !s.isHost) return;
+    await loadVocabFromSheet();
+    io.emit("vocab_ready", { vocabPool, error: vocabLoadError });
+  });
 
-        const requestedIndex = Number.isInteger(data && data.activeIndex) ? data.activeIndex : currentActiveIndex;
-        // Clamp so a stray click can't push the deck out of bounds for everyone.
-        currentActiveIndex = Math.max(0, Math.min(requestedIndex, Math.max(currentServerQueue.length - 1, 0)));
-        if (data && data.mode) currentActiveMode = data.mode;
+  socket.on("start_game", ({ queue, mode }) => {
+    const clientId = socketToClient[socket.id];
+    const s = sessions[clientId];
+    if (!s || !s.isHost) return;
+    gameQueue = Array.isArray(queue) ? queue : [];
+    activeMode = mode || "reading";
+    activeIndex = 0;
+    clearedThisCard = new Set();
+    io.emit("sync_game", { queue: gameQueue, activeIndex, mode: activeMode });
+    broadcastProgress();
+  });
 
-        for (let id in activePlayers) {
-            if (!activePlayers[id].isHost) {
-                activePlayers[id].status = "Analyzing Prompt... 🤔";
-            }
-        }
+  socket.on("nav_card", ({ activeIndex: idx, mode }) => {
+    const clientId = socketToClient[socket.id];
+    const s = sessions[clientId];
+    if (!s || !s.isHost) return;
+    activeIndex = idx;
+    if (mode) activeMode = mode;
+    clearedThisCard = new Set();
+    io.emit("sync_game", { queue: gameQueue, activeIndex, mode: activeMode });
+    broadcastProgress();
+  });
 
-        io.emit('update_roster', activePlayers);
-        io.emit('sync_game', {
-            queue: currentServerQueue,
-            activeIndex: currentActiveIndex,
-            mode: currentActiveMode
-        });
-    });
+  socket.on("submit_click", ({ word, isCorrect }) => {
+    const clientId = socketToClient[socket.id];
+    const s = sessions[clientId];
+    if (!s) return;
+    sessionLogs.push({ clientId, name: s.displayName, word, isCorrect, cardIndex: activeIndex });
+    if (isCorrect && !s.isHost) {
+      clearedThisCard.add(clientId);
+      broadcastProgress();
+    }
+  });
 
-    // 4. CHANNELS: STREAM EVALUATION LOG
-    socket.on('submit_click', (data) => {
-        const player = activePlayers[socket.id];
-        if (!player || !data || typeof data.word !== 'string') return;
+  socket.on("end_game", () => {
+    const clientId = socketToClient[socket.id];
+    const s = sessions[clientId];
+    if (!s || !s.isHost) return;
+    io.emit("game_over_analytics", sessionLogs);
+  });
 
-        sessionGlobalClickLogs.push({
-            name: player.name,
-            word: data.word,
-            isCorrect: !!data.isCorrect,
-            mode: currentActiveMode,
-            timestamp: new Date().toISOString()
-        });
-
-        player.status = data.isCorrect ? "Cleared Card! Waiting... 🎯" : "Reviewing Mistake... ⚠️";
-        io.emit('update_roster', activePlayers);
-    });
-
-    // 5. CHANNELS: END MULTI-QUIZ WORKSHOP RUN (host-only)
-    socket.on('end_game', () => {
-        if (!isFromHost(socket)) return;
-        io.emit('game_over_analytics', sessionGlobalClickLogs);
-    });
-
-    // 6. CHANNELS: CONNECTION TERMINATION CLEANUP
-    socket.on('disconnect', () => {
-        if (activePlayers[socket.id]) {
-            console.log(`🛑 Character [${activePlayers[socket.id].name}] left the map.`);
-            delete activePlayers[socket.id];
-
-            // Free up the host slot so the class isn't stuck if the
-            // facilitator's tab crashes or refreshes.
-            if (hostSocketId === socket.id) {
-                hostSocketId = null;
-            }
-
-            io.emit('update_roster', activePlayers);
-        }
-    });
+  socket.on("disconnect", () => {
+    const clientId = socketToClient[socket.id];
+    if (clientId && sessions[clientId] && sessions[clientId].socketId === socket.id) {
+      sessions[clientId].connected = false;
+      broadcastRoster();
+    }
+    delete socketToClient[socket.id];
+  });
 });
 
-// Run server pipeline
 server.listen(PORT, () => {
-    console.log(`
-============================================================
-  🚀 한글 스튜디오 · Powerpuff Server Engine Live!
-  📂 Local Dev Endpoint Loop: http://localhost:${PORT}
-============================================================
-    `);
+  console.log(`한글 스튜디오 server listening on http://localhost:${PORT}`);
 });
