@@ -41,7 +41,6 @@
     padding: 20px; 
   }
 
-  /* --- VIEW LAYOUTS --- */
   .view-panel { display: none; width: 100%; animation: slideUp 0.2s ease-out; }
   .view-panel.active { display: block; }
   @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -51,6 +50,8 @@
   
   .brand-header { text-align: center; margin-bottom: 24px; }
   .brand-header h1 { font-size: 34px; color: var(--border-color); text-shadow: 2px 2px 0px var(--pop-yellow); }
+
+  .identity-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 16px; }
 
   .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; text-align: left; }
   .form-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); }
@@ -66,7 +67,6 @@
   .roster-list { background: #F8FAFC; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 100px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
   .roster-item { padding: 10px 14px; background: white; border: 1px solid #CBD5E1; border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; }
 
-  /* --- ARENA DESIGN --- */
   .arena-wrapper { max-width: 1000px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: start; }
   @media (max-width: 850px) { .arena-wrapper { grid-template-columns: 1fr; } }
 
@@ -86,7 +86,6 @@
   .choice-btn.correct { background: var(--pop-green) !important; color: white !important; }
   .choice-btn.incorrect { background: var(--pop-pink) !important; color: white !important; opacity: 0.4; text-decoration: line-through; }
 
-  /* Input panel layouts for True Modes */
   .interaction-block-container { width: 100%; margin-bottom: 20px; display: none; text-align: center; }
   .interaction-block-container.active { display: block; }
   
@@ -116,14 +115,14 @@
     <div class="compact-container studio-card">
       <div class="brand-header">
         <h1>한글 스튜디오</h1>
-        <p>Study Squad Edition 💬</p>
+        <p>Who is entering the workspace? 💬</p>
       </div>
-      <div class="form-group">
-        <label>Enter Your Name</label>
-        <input type="text" id="playerNameInput" class="sync-input" placeholder="e.g. Minji" autocomplete="off">
+      <div class="form-group" style="text-align: center;">
+        <label style="text-align: center; display: block; margin-bottom: 10px;">Select Your Profile Button Below:</label>
+        <div class="identity-grid" id="profileSelectorContainer">
+          <div style="font-size:13px; color:var(--text-secondary)">Loading room roster metrics...</div>
+        </div>
       </div>
-      <button class="action-btn primary" onclick="joinRoom(false)">Join Study Room 🚀</button>
-      <button class="action-btn host" style="font-size:12px;" onclick="promptFacilitator()">Facilitator Dashboard 👑</button>
     </div>
   </div>
 
@@ -269,6 +268,12 @@
     recognition.maxAlternatives = 1;
   }
 
+  // Self-execute on page presentation to pull profile buttons out of CSV row configurations
+  window.addEventListener("DOMContentLoaded", async () => {
+    await loadDatabase();
+    generateIdentityButtons();
+  });
+
   function initAudio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
@@ -297,24 +302,55 @@
     document.getElementById(viewId).classList.add('active');
   }
 
-  function promptFacilitator() {
-    const pw = prompt("Enter Facilitator Access Passcode:");
-    if(pw === "1234") joinRoom(true);
+  async function loadDatabase() {
+    try {
+      const res = await fetch(CSV_URL); const txt = await res.text();
+      let lines = txt.split("\n").map(l => l.split(","));
+      vocabPool = lines.slice(1).map(l => ({ 
+        hangeul: l[0]?.trim() || "", english: l[1]?.trim() || "", type: l[2]?.trim() || "", useCase: l[3]?.trim() || ""
+      })).filter(v => v.hangeul && v.english);
+    } catch(e) {
+      vocabPool = [{ hangeul: "하루", english: "a day", type: "Vocab", useCase: "" }];
+    }
   }
 
-  async function joinRoom(becomeHost) {
-    initAudio(); 
-    let name = document.getElementById("playerNameInput").value.trim();
-    if(!name) {
-      if(becomeHost) name = "Facilitator 👑";
-      else { alert("Please enter your name!"); return; }
+  function generateIdentityButtons() {
+    const container = document.getElementById("profileSelectorContainer");
+    container.innerHTML = "";
+
+    // Pull unique classifications out of column 3 (type) to construct user pathways dynamically
+    let uniqueProfiles = [...new Set(vocabPool.map(v => v.type))].filter(Boolean);
+    
+    if(uniqueProfiles.length === 0) {
+        uniqueProfiles = ["Student Profile A", "Student Profile B"];
     }
 
-    clientState = { name: name, isHost: becomeHost };
-    await loadDatabase();
+    // 1. Render Facilitator Control Access Button
+    const hostBtn = document.createElement("button");
+    hostBtn.className = "action-btn host";
+    hostBtn.innerHTML = "👑 Facilitator Dashboard";
+    hostBtn.onclick = () => {
+        const pw = prompt("Enter Facilitator Access Passcode:");
+        if(pw === "1234") selectIdentity("Facilitator 👑", true);
+    };
+    container.appendChild(hostBtn);
+
+    // 2. Render targeted choice channels for standard student variations
+    uniqueProfiles.forEach(profileName => {
+        const btn = document.createElement("button");
+        btn.className = "action-btn primary";
+        btn.innerHTML = `👤 ${profileName}`;
+        btn.onclick = () => selectIdentity(profileName, false);
+        container.appendChild(btn);
+    });
+  }
+
+  async function selectIdentity(assignedName, becomeHost) {
+    initAudio(); 
+    clientState = { name: assignedName, isHost: becomeHost };
 
     socket = io();
-    socket.emit("join_session", { name: name, isHost: becomeHost });
+    socket.emit("join_session", { name: assignedName, isHost: becomeHost });
     switchView("viewLobby");
 
     if(becomeHost) {
@@ -350,18 +386,6 @@
     socket.on("game_over_analytics", (fullLogs) => {
       calculateAndDisplayStats(fullLogs);
     });
-  }
-
-  async function loadDatabase() {
-    try {
-      const res = await fetch(CSV_URL); const txt = await res.text();
-      let lines = txt.split("\n").map(l => l.split(","));
-      vocabPool = lines.slice(1).map(l => ({ 
-        hangeul: l[0]?.trim() || "", english: l[1]?.trim() || "", type: l[2]?.trim() || "", useCase: l[3]?.trim() || ""
-      })).filter(v => v.hangeul && v.english);
-    } catch(e) {
-      vocabPool = [{ hangeul: "하루", english: "a day", type: "Vocab", useCase: "" }];
-    }
   }
 
   function startQuiz() {
