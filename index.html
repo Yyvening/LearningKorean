@@ -61,12 +61,13 @@
   .action-btn.primary { background: var(--pop-blue); color: white; }
   .action-btn.host { background: var(--pop-yellow); }
   .action-btn.success { background: var(--pop-green); color: white; }
+  .action-btn.danger { background: var(--pop-pink); color: white; }
 
   .roster-list { background: #F8FAFC; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 100px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
   .roster-item { padding: 10px 14px; background: white; border: 1px solid #CBD5E1; border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; }
 
   /* --- RESPONSIVE ARENA ENVIRONMENT --- */
-  .arena-wrapper { max-width: 1000px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr 240px; gap: 20px; align-items: start; }
+  .arena-wrapper { max-width: 1000px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: start; }
   
   @media (max-width: 850px) {
     .arena-wrapper { grid-template-columns: 1fr; }
@@ -89,19 +90,23 @@
   .choice-btn.correct { background: var(--pop-green) !important; color: white !important; }
   .choice-btn.incorrect { background: var(--pop-pink) !important; color: white !important; opacity: 0.4; text-decoration: line-through; }
 
-  .sidebar-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; border-bottom: 2px solid #CBD5E1; padding-bottom: 4px; }
+  .sidebar-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 10px; border-bottom: 2px solid #CBD5E1; padding-bottom: 4px; margin-top: 14px; }
+  .sidebar-title:first-child { margin-top: 0; }
   .badge-stack { display: flex; flex-direction: column; gap: 6px; }
   .live-badge { padding: 8px 12px; background: white; border: var(--border-thin); border-radius: var(--radius-md); font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; }
 
   .stat-block { border: var(--border-thin); padding: 16px; border-radius: var(--radius-md); margin-bottom: 16px; text-align: left; background: #F8FAFC; }
   .stat-title { font-weight: 700; text-transform: uppercase; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; border-bottom: 1px dashed #CBD5E1; padding-bottom: 4px; }
   .stat-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; font-weight: 600; }
+
+  /* Onboarding Lesson Cards */
+  .guide-box { background: #EFF6FF; border: 2px dashed #2563EB; border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; font-size: 13px; text-align: left; line-height: 1.4; color: #1E3A8A; }
+  .guide-box strong { color: #1D4ED8; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 4px; }
 </style>
 <script src="/socket.io/socket.io.js" onerror="console.log('Local active.')"></script>
 </head>
 <body>
 
-  <!-- ================= VIEW 1: GATEWAY ================= -->
   <div id="viewGateway" class="view-panel active">
     <div class="compact-container studio-card">
       <div class="brand-header">
@@ -117,7 +122,6 @@
     </div>
   </div>
 
-  <!-- ================= VIEW 2: LOBBY ================= -->
   <div id="viewLobby" class="view-panel">
     <div class="compact-container studio-card">
       <div class="brand-header">
@@ -125,10 +129,15 @@
         <p>Waiting for everyone to arrive...</p>
       </div>
       
+      <div class="guide-box" id="lobbyGuide">
+        <strong>🗺️ Workshop Roadmap Guide</strong>
+        We will rotate through all 4 interactive modes today: <strong>Reading ➔ Speaking ➔ Writing ➔ Context Cases</strong>. Sit tight until the Facilitator launches the deck!
+      </div>
+
       <div class="roster-list" id="lobbyRoster"></div>
       
       <div id="facilitatorControls" style="display:none;">
-        <button class="action-btn success" onclick="startQuiz()">Launch Study Deck ▶</button>
+        <button class="action-btn success" onclick="startQuiz()">Launch First Quiz Deck ▶</button>
       </div>
       <div id="studentLobbyMsg" style="text-align:center; color:var(--text-secondary); font-weight:600; font-size:14px; padding:10px;">
         The game will instantly open once the facilitator fires the deck... ☕
@@ -136,11 +145,9 @@
     </div>
   </div>
 
-  <!-- ================= VIEW 3: ARENA ENVIRONMENT ================= -->
   <div id="viewArena" class="view-panel">
     <div class="arena-wrapper">
       
-      <!-- Main Workstation Box -->
       <main class="main-deck-workspace">
         <div class="progress-bar-container"><div class="progress-fill" id="pBar"></div></div>
         
@@ -153,28 +160,42 @@
           <div class="stimulus-main" id="mainWord">한글</div>
         </div>
 
+        <div id="mistakeReviewBanner" style="display:none; text-align:center; padding:10px; background:var(--surface-alt); border:var(--border-thin); border-radius:var(--radius-sm); font-weight:700; font-size:14px; color:var(--border-color); margin-bottom:14px;">
+          ⚠️ Heads Up! This word was missed by classmates earlier this session. Focus!
+        </div>
+
         <div class="choices-grid" id="choicesBox"></div>
 
         <div>
-          <button class="action-btn success" id="nextCardBtn" style="display:none; margin-top:0;" onclick="sendNav(1)">Next Slide Card ▶</button>
-          <button class="action-btn primary" id="endGameBtn" style="display:none; margin-top:0; background:var(--pop-pink);" onclick="triggerEndGame()">Wrap Up & View Stats 🏁</button>
+          <div id="facilitatorNavBox" style="display:none; gap:10px;">
+            <button class="action-btn success" id="nextCardBtn" style="margin-top:0; flex:1;" onclick="sendNav(1)">Next Slide Card ▶</button>
+            <button class="action-btn host" id="resetDeckBtn" style="margin-top:0; display:none; background:var(--pop-yellow);" onclick="resetCurrentDeckLoop()">Run Another Mode 🔄</button>
+          </div>
+          
           <div id="studentWaitMsg" style="display:none; text-align:center; font-size:13px; font-weight:600; color:var(--text-secondary); padding:10px; background:var(--bg-base); border-radius:var(--radius-sm); border: 1px dashed var(--border-color);">
             Find the match! Look at the card layout options above... 🎉
           </div>
         </div>
       </main>
 
-      <!-- Balanced Sidebar Feed Box -->
       <aside class="sidebar-tracker">
-        <!-- Live Workspace Activity Filter Mode (Visible on Facilitator Device) -->
-        <div id="workspaceFilterContainer" style="display:none; margin-bottom:20px;">
-          <div class="sidebar-title">Select Classroom Mode</div>
+        <div id="workspaceFilterContainer" style="display:none; margin-bottom:14px;">
+          <div class="sidebar-title">Switch Quiz Mode</div>
           <select id="gameModeSelector" class="sync-input" style="cursor:pointer; font-weight:600; padding:8px; font-size:13px;" onchange="changeClassroomMode()">
-            <option value="reading">📚 Reading Mode</option>
-            <option value="speaking">🗣️ Speaking Mode</option>
-            <option value="writing">✍️ Writing Mode</option>
-            <option value="context">🧠 Context (Use Case) Mode</option>
+            <option value="reading">📚 1. Reading Mode</option>
+            <option value="speaking">🗣️ 2. Speaking Mode</option>
+            <option value="writing">✍️ 3. Writing Mode</option>
+            <option value="context">🧠 4. Context Mode</option>
           </select>
+        </div>
+
+        <div id="hostEndSessionContainer" style="display:none; margin-bottom:14px; border-top:2px dashed #CBD5E1; padding-top:10px;">
+          <button class="action-btn danger" style="padding:10px; font-size:11px;" onclick="triggerEndGame()">End Whole Session & Show Stats 🏁</button>
+        </div>
+
+        <div class="sidebar-title">Live Instructions</div>
+        <div class="guide-box" id="arenaInstructionText" style="margin-bottom:0; padding:10px; font-size:11px;">
+          Select answers to clear cards. Facilitator updates the mode from the selection dropdown box when done!
         </div>
 
         <div class="sidebar-title">Squad Status Feed</div>
@@ -184,11 +205,11 @@
     </div>
   </div>
 
-  <!-- ================= VIEW 4: ANALYTICS REPORT ================= -->
   <div id="viewSummary" class="view-panel">
     <div class="compact-container studio-card" style="text-align: center;">
       <div class="brand-header">
-        <h1>Analytics Wrap Report 📊</h1>
+        <h1>Workshop Wrap Report 📊</h1>
+        <p style="font-size:13px; font-weight:600; color:var(--text-secondary);">Cumulative Workshop Analytics</p>
       </div>
 
       <div class="stat-block">
@@ -222,10 +243,12 @@
   let vocabPool = []; 
   let gameQueue = []; 
   let activeIndex = 0;
-  let activeMode = "reading"; // Track game behavior instantly
+  let activeMode = "reading"; 
   
   let currentCardClicks = 0;
+  // Stats stick around globally and NEVER wipe out mid-session when moving between quizzes
   let myStats = { totalCards: 0, firstTryCorrect: 0, totalClicks: 0, wrongWordsMap: {} };
+  let sessionGlobalMissedWords = new Set();
 
   function initAudio() {
     if (!audioCtx) {
@@ -259,7 +282,7 @@
         osc.start();
         osc.stop(audioCtx.currentTime + 0.25);
       }
-    } catch(e) { console.log("Audio block error:", e); }
+    } catch(e) { console.log("Audio exception context safe."); }
   }
 
   function switchView(viewId) {
@@ -279,7 +302,7 @@
   async function joinRoom(becomeHost) {
     initAudio(); 
     let name = document.getElementById("playerNameInput").value.trim();
-    if(!name) { 
+    if(!name) {
       if(becomeHost) name = "Facilitator 👑";
       else { alert("Please input your name to join!"); return; }
     }
@@ -299,6 +322,12 @@
     if(becomeHost) {
       document.getElementById("facilitatorControls").style.display = "block";
       document.getElementById("workspaceFilterContainer").style.display = "block";
+      document.getElementById("hostEndSessionContainer").style.display = "block";
+      
+      // Update Guide for Host
+      document.getElementById("lobbyGuide").innerHTML = `<strong>👑 Facilitator Playbook</strong><br>1. Wait for students to join.<br>2. Use the sidebar menu anytime to change modes.<br>3. Hit <strong>Launch Quiz</strong> below to start!`;
+    } else {
+      document.getElementById("lobbyGuide").innerHTML = `<strong>👤 Student Playbook</strong><br>1. Wait here in the lobby.<br>2. When the Facilitator starts a quiz, your screen will change automatically.<br>3. Earn full precision scores by matching elements on the first attempt!`;
     }
 
     socket.on("update_roster", (players) => {
@@ -353,7 +382,6 @@
         useCase: l[3]?.trim() || ""
       })).filter(v => v.hangeul && v.english);
     } catch(e) {
-      console.log("Database load failed, fallback applied.");
       vocabPool = [{ hangeul: "하루", english: "a day", type: "Vocab", useCase: "" }];
     }
   }
@@ -361,11 +389,10 @@
   function startQuiz() {
     let poolToUse = [...vocabPool];
     
-    // Context Mode filters down dynamically to only use cards that contain a UseCase description
     if (activeMode === "context") {
       poolToUse = vocabPool.filter(v => v.useCase && v.useCase.length > 2);
       if (poolToUse.length === 0) {
-        alert("No lines inside your sheet contain UseCase scenario text! Defaulting to all rows.");
+        alert("No sheet rows contain valid Scenario UseCase descriptions. Defaulting to standard rows.");
         poolToUse = [...vocabPool];
       }
     }
@@ -382,29 +409,47 @@
     startQuiz();
   }
 
+  function resetCurrentDeckLoop() {
+    activeIndex = 0;
+    startQuiz();
+  }
+
   function renderCard() {
     currentCardClicks = 0;
     initAudio(); 
     
     if(clientState.isHost) {
       document.getElementById("studentWaitMsg").style.display = "none";
+      document.getElementById("facilitatorNavBox").style.display = "flex";
+      
       if(activeIndex === gameQueue.length - 1) {
         document.getElementById("nextCardBtn").style.display = "none";
-        document.getElementById("endGameBtn").style.display = "inline-flex";
+        document.getElementById("resetDeckBtn").style.display = "inline-flex";
+        document.getElementById("arenaInstructionText").textContent = "👑 This is the final card of this quiz! Tell your class to complete it, then select a new Mode from your dropdown menu to keep learning!";
       } else {
         document.getElementById("nextCardBtn").style.display = "inline-flex";
-        document.getElementById("endGameBtn").style.display = "none";
+        document.getElementById("resetDeckBtn").style.display = "none";
+        document.getElementById("arenaInstructionText").textContent = "👑 Click 'Next Slide Card' when you are ready to advance the screens for the entire classroom.";
       }
     } else {
       document.getElementById("studentWaitMsg").style.display = "block";
+      document.getElementById("facilitatorNavBox").style.display = "none";
+      document.getElementById("arenaInstructionText").textContent = "👤 Solve the flashcard on the screen. Wait for your facilitator to step forward when done!";
     }
 
     const currentCard = gameQueue[activeIndex];
     document.getElementById("cardProgress").textContent = `Card ${activeIndex + 1} / ${gameQueue.length}`;
     
-    // Set UI Mode header badge text nicely
-    const modeLabels = { reading: "📚 Reading", speaking: "🗣️ Speaking", writing: "✍️ Writing", context: "🧠 Context Mode" };
-    document.getElementById("currentCardMode").textContent = modeLabels[activeMode] || "Game Deck";
+    const modeLabels = { reading: "📚 Reading Mode", speaking: "🗣️ Speaking Mode", writing: "✍️ Writing Mode", context: "🧠 Context Mode" };
+    document.getElementById("currentCardMode").textContent = modeLabels[activeMode] || "Quiz Deck";
+
+    // --- Dynamic Mistake Review Highlight Feature ---
+    const reviewBanner = document.getElementById("mistakeReviewBanner");
+    if(sessionGlobalMissedWords.has(currentCard.hangeul)) {
+      reviewBanner.style.display = "block";
+    } else {
+      reviewBanner.style.display = "none";
+    }
 
     const mainDisplay = document.getElementById("mainWord");
     const box = document.getElementById("choicesBox");
@@ -413,9 +458,7 @@
     let correctAnswerText = "";
     let distribution = [];
 
-    // --- RENDER CARD CONFIGURATIONS BY ACTIVE GAME MODE ---
     if (activeMode === "reading" || activeMode === "writing") {
-      // Prompt: Hangeul word -> Answer options: English translations
       mainDisplay.textContent = currentCard.hangeul;
       mainDisplay.style.fontSize = "64px";
       correctAnswerText = currentCard.english;
@@ -425,7 +468,6 @@
       distribution = [currentCard, ...wrongChoices].sort((a, b) => a.english.localeCompare(b.english));
     } 
     else if (activeMode === "speaking") {
-      // Prompt: English translation -> Answer options: Hangeul words
       mainDisplay.textContent = currentCard.english;
       mainDisplay.style.fontSize = "42px";
       correctAnswerText = currentCard.hangeul;
@@ -435,9 +477,8 @@
       distribution = [currentCard, ...wrongChoices].sort((a, b) => a.hangeul.localeCompare(b.hangeul));
     } 
     else if (activeMode === "context") {
-      // Prompt: UseCase Scenario text -> Answer options: Hangeul words
-      mainDisplay.textContent = currentCard.useCase || "Scenario missing!";
-      mainDisplay.style.fontSize = "24px"; 
+      mainDisplay.textContent = currentCard.useCase || "Scenario situation text field is blank!";
+      mainDisplay.style.fontSize = "22px"; 
       correctAnswerText = currentCard.hangeul;
 
       let wrongPool = vocabPool.filter(v => v.hangeul !== currentCard.hangeul);
@@ -445,15 +486,11 @@
       distribution = [currentCard, ...wrongChoices].sort((a, b) => a.hangeul.localeCompare(b.hangeul));
     }
 
-    // Build choice action items
     distribution.forEach(opt => {
       const btn = document.createElement("button");
       btn.className = "choice-btn";
-      
-      // Select text matching prompt target properties
       const choiceValue = (activeMode === "reading" || activeMode === "writing") ? opt.english : opt.hangeul;
       btn.textContent = choiceValue;
-      
       btn.onclick = () => submitGuess(btn, choiceValue === correctAnswerText, currentCard.hangeul);
       box.appendChild(btn);
     });
@@ -478,6 +515,7 @@
       btn.disabled = true;
 
       myStats.wrongWordsMap[hangeulWord] = (myStats.wrongWordsMap[hangeulWord] || 0) + 1;
+      sessionGlobalMissedWords.add(hangeulWord); // Track live inside the classroom review feed
 
       socket.emit("submit_click", { word: hangeulWord, isCorrect: false });
     }
@@ -489,7 +527,11 @@
   }
 
   function triggerEndGame() {
-    socket.emit("end_game");
+    // Only fires summary view when facilitator actively confirms completion of the workshop session
+    const confirmEnd = confirm("Are you sure you want to end the whole session? This will lock answer inputs and show final cumulative scores to all students.");
+    if(confirmEnd) {
+      socket.emit("end_game");
+    }
   }
 
   function calculateAndDisplayStats(logs) {
@@ -527,7 +569,7 @@
     let topTroubleWord = "None! Flawless run! 🎉"; let topTroubleCount = 0;
     for(let w in globalWrongMap) {
       if(globalWrongMap[w] > topTroubleCount) {
-        topTroubleCount = globalWrongMap[w]; topTroubleWord = `${w} (Missed ${topTroubleCount} times total)`;
+        topTroubleCount = globalWrongMap[w]; topTroubleWord = `${w} (Missed ${topTroubleCount} times total across workshop)`;
       }
     }
     document.getElementById("groupTroubleWord").textContent = topTroubleWord;
