@@ -9,15 +9,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-base: #FFF1F2;       /* Soft nostalgic pink tint */
+    --bg-base: #FFF1F2;       
     --surface: #FFFFFF;       
-    --border-color: #000000;  /* Bold cartoon outlines */
+    --border-color: #000000;  
     --border-thick: 5px solid var(--border-color);
     --border-thin: 3px solid var(--border-color);
     --text-primary: #000000;  
     --text-secondary: #334155;
     
-    /* Powerpuff Identity Palette */
     --blossom-pink: #FF6B8B;  
     --bubbles-blue: #4EA8DE;  
     --buttercup-green: #4ECDC4; 
@@ -47,7 +46,6 @@
     background-position: 0 0, 30px 30px;
   }
 
-  /* --- VIEW LAYOUTS --- */
   .view-panel { display: none; width: 100%; animation: slideUp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   .view-panel.active { display: block; }
   @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -59,7 +57,6 @@
   .brand-header h1 { font-size: 38px; color: var(--border-color); text-shadow: 3px 3px 0px var(--pop-yellow); -webkit-text-stroke: 1px var(--border-color); }
   .brand-header p { font-weight: 600; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; margin-top: 4px; }
 
-  /* --- HERO IDENTITY PICKER GRID --- */
   .hero-select-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 20px; }
   
   .profile-pick-btn { font-family: inherit; font-size: 18px; font-weight: 700; color: white; border: var(--border-thin); border-radius: var(--radius-md); padding: 20px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; box-shadow: 5px 5px 0px var(--border-color); position: relative; overflow: hidden; text-shadow: 2px 2px 0px rgba(0,0,0,0.4); }
@@ -68,7 +65,6 @@
   .profile-pick-btn.jannica { background: var(--blossom-pink); }
   .profile-pick-btn.rose { background: var(--bubbles-blue); }
   .profile-pick-btn.krystal { background: var(--buttercup-green); }
-  .profile-pick-btn.hangeul { background: var(--chemical-x-black); color: var(--pop-yellow); }
   
   .profile-subtitle { font-size: 11px; font-weight: 500; text-transform: uppercase; opacity: 0.9; display: block; margin-top: 2px; text-shadow: none; color: white; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 20px; width: fit-content; }
 
@@ -81,7 +77,6 @@
   .roster-list { background: #FFF; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 100px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.05); }
   .roster-item { padding: 12px 16px; background: white; border: var(--border-thin); border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 700; font-size: 15px; box-shadow: 2px 2px 0px var(--border-color); }
 
-  /* --- ARENA DESIGN --- */
   .arena-wrapper { max-width: 1000px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr 280px; gap: 24px; align-items: start; }
   @media (max-width: 850px) { .arena-wrapper { grid-template-columns: 1fr; } }
 
@@ -95,11 +90,10 @@
   .stimulus-main { font-family: 'Gowun Dodum', sans-serif; font-size: 52px; font-weight: 700; color: var(--text-primary); line-height: 1.3; text-shadow: 2px 2px 0px #E2E8F0; }
   
   .choices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; width: 100%; }
-  @media (max-width: 500px) { .choices-grid { grid-template-columns: 1fr; } }
   
-  .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 18px; font-family: inherit; font-size: 17px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 4px 4px 0px var(--border-color); transition: 0.1s; }
-  .choice-btn.correct { background: var(--buttercup-green) !important; color: white !important; text-shadow: 1px 1px 0px rgba(0,0,0,0.2); }
-  .choice-btn.incorrect { background: var(--blossom-pink) !important; color: white !important; opacity: 0.5; text-decoration: line-through; text-shadow: 1px 1px 0px rgba(0,0,0,0.2); }
+  .choice-btn { background: var(--surface); border: var(--border-thin); border-radius: var(--radius-md); padding: 18px; font-family: inherit; font-size: 17px; font-weight: 700; cursor: pointer; text-align: left; box-shadow: 4px 4px 0px var(--border-color); }
+  .choice-btn.correct { background: var(--buttercup-green) !important; color: white !important; }
+  .choice-btn.incorrect { background: var(--blossom-pink) !important; color: white !important; opacity: 0.5; text-decoration: line-through; }
 
   .interaction-block-container { width: 100%; margin-bottom: 20px; display: none; text-align: center; }
   .interaction-block-container.active { display: block; }
@@ -107,7 +101,7 @@
   .speech-wave-indicator { font-size: 13px; font-weight: 700; color: var(--blossom-pink); display: none; margin-top: 8px; animation: pulse 0.8s infinite alternate; }
   @keyframes pulse { from { opacity: 0.4; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-  .sidebar-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-primary); margin-bottom: 12px; border-bottom: 3px solid var(--border-color); padding-bottom: 4px; margin-top: 18px; letter-spacing: 0.5px; }
+  .sidebar-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--text-primary); margin-bottom: 12px; border-bottom: 3px solid var(--border-color); padding-bottom: 4px; margin-top: 18px; }
   .sidebar-title:first-child { margin-top: 0; }
   .badge-stack { display: flex; flex-direction: column; gap: 8px; }
   .live-badge { padding: 10px 14px; background: white; border: var(--border-thin); border-radius: var(--radius-md); font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; box-shadow: 3px 3px 0px var(--border-color); }
@@ -119,13 +113,14 @@
   .review-item-tag { display: inline-block; padding: 6px 12px; background: #F1F5F9; border: var(--border-thin); border-radius: var(--radius-sm); font-size: 13px; margin: 6px; font-weight: 700; box-shadow: 2px 2px 0px var(--border-color); }
   .review-item-tag.heavy-fail { background: #FEE2E2; border-color: var(--blossom-pink); color: #B91C1C; }
 
-  .guide-box { background: #EFF6FF; border: var(--border-thin); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; font-size: 13px; text-align: left; line-height: 1.4; color: #1E3A8A; box-shadow: 3px 3px 0px var(--border-color); }
+  .guide-box { background: #EFF6FF; border: var(--border-thin); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; font-size: 13px; text-align: left; color: #1E3A8A; box-shadow: 3px 3px 0px var(--border-color); }
   .guide-box strong { color: #1D4ED8; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 4px; }
 </style>
-<script src="/socket.io/socket.io.js" onerror="console.log('Local fallback system online.')"></script>
+<script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 
+  <!-- ================= VIEW 1: IDENTITY SELECTION GATEWAY ================= -->
   <div id="viewGateway" class="view-panel active">
     <div class="compact-container studio-card">
       <div class="brand-header">
@@ -133,34 +128,32 @@
         <p>🎀 Townsville Academy Edition 🧬</p>
       </div>
       
-      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; color: var(--text-secondary);">Select Your Character Profile:</div>
+      <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 10px; color: var(--text-secondary); text-align:center;">Who are you today?</div>
       <div class="hero-select-grid">
-        <button class="profile-pick-btn jannica" onclick="pickHeroProfile('Jannica', false)">
-          <div>Jannica <span class="profile-subtitle">Blossom Pink 💗</span></div> <span>🎯</span>
+        <button class="profile-pick-btn jannica" onclick="selectProfile('Jannica')">
+          <div>Jannica <span class="profile-subtitle">Blossom Pink (Jan-ni-ka) 💗</span></div> <span>🎯</span>
         </button>
-        <button class="profile-pick-btn rose" onclick="pickHeroProfile('Rose', false)">
+        <button class="profile-pick-btn rose" onclick="selectProfile('Rose')">
           <div>Rose <span class="profile-subtitle">Bubbles Blue 💙</span></div> <span>🫧</span>
         </button>
-        <button class="profile-pick-btn krystal" onclick="pickHeroProfile('Krystal', false)">
+        <button class="profile-pick-btn krystal" onclick="selectProfile('Krystal')">
           <div>Krystal <span class="profile-subtitle">Buttercup Green 💚</span></div> <span>⚡</span>
-        </button>
-        <button class="profile-pick-btn hangeul" onclick="pickHeroProfile('Hangeul 👑', true)">
-          <div>Hangeul <span class="profile-subtitle">Chemical X Host Dashboard</span></div> <span>🧪</span>
         </button>
       </div>
     </div>
   </div>
 
+  <!-- ================= VIEW 2: LOBBY ================= -->
   <div id="viewLobby" class="view-panel">
     <div class="compact-container studio-card">
       <div class="brand-header">
         <h1>Classroom Lobby</h1>
-        <p>Assembling the Squad...</p>
+        <p id="lobbySubtitle">Assembling the Squad...</p>
       </div>
       
-      <div class="guide-box" id="lobbyGuide" style="background:#FFF1F2; border-color:var(--blossom-pink); color:#9F1239">
+      <div class="guide-box" style="background:#FFF1F2; border-color:var(--blossom-pink); color:#9F1239">
         <strong>🗺️ Workshop Strategy Board</strong>
-        We will rotate through all 4 learning tracks today: <strong>Reading ➔ Speaking ➔ Writing ➔ Context Cases</strong>.
+        Rotate through all learning modes: <strong>Reading ➔ Speaking ➔ Writing ➔ Context Cases</strong>.
       </div>
 
       <div class="roster-list" id="lobbyRoster"></div>
@@ -171,6 +164,7 @@
     </div>
   </div>
 
+  <!-- ================= VIEW 3: ARENA ENVIRONMENT ================= -->
   <div id="viewArena" class="view-panel">
     <div class="arena-wrapper">
       
@@ -187,6 +181,401 @@
           <div id="speechTranscriptionFeedback" style="margin-top:10px; font-size:14px; font-weight:700; color:var(--blossom-pink); min-height:20px;"></div>
         </div>
 
+        <!-- MODE INTERACTION AREAS -->
         <div class="choices-grid interaction-block-container" id="choicesBox"></div>
 
-        <div class
+        <div class="interaction-block-container" id="writingInterfaceBox">
+          <input type="text" id="writingInputField" style="width:100%; padding:14px; border:var(--border-thin); border-radius:var(--radius-md); font-weight:600; text-align:center; margin-bottom:12px;" placeholder="Type Korean text here..." autocomplete="off">
+          <button class="action-btn primary" onclick="checkWritingSubmission()">Verify Written Answer ✍️</button>
+        </div>
+
+        <div class="interaction-block-container" id="speakingInterfaceBox">
+          <button class="action-btn danger" id="speechTriggerBtn" onclick="triggerVoiceCapture()">Tap to Record Pronunciation 🎙️</button>
+          <div class="speech-wave-indicator" id="voiceWaveElement">🎙️ Powerpuff Comm-Link Open... Speak now!</div>
+        </div>
+
+        <div>
+          <div id="facilitatorNavBox" style="display:none; gap:10px;">
+            <button class="action-btn success" id="nextCardBtn" style="margin-top:0; flex:1;" onclick="sendNav(1)">Next Slide Card ▶</button>
+            <button class="action-btn host" id="resetDeckBtn" style="margin-top:0; display:none; background:var(--pop-yellow);" onclick="resetCurrentDeckLoop()">Run Another Mode 🔄</button>
+          </div>
+          
+          <div id="studentWaitMsg" style="display:none; text-align:center; font-size:13px; font-weight:700; color:var(--text-secondary); padding:10px; background:var(--bg-base); border-radius:var(--radius-sm); border: 2px dashed var(--border-color);">
+            Solve the prompt on your screen... 🎉
+          </div>
+        </div>
+      </main>
+
+      <aside class="sidebar-tracker">
+        <div id="workspaceFilterContainer" style="display:none; margin-bottom:14px;">
+          <div class="sidebar-title">Switch Quiz Mode</div>
+          <select id="gameModeSelector" style="width:100%; cursor:pointer; font-weight:700; padding:8px; font-size:13px; border:var(--border-thin);" onchange="changeClassroomMode()">
+            <option value="reading">📚 1. Reading Mode</option>
+            <option value="speaking">🗣️ 2. Speaking Mode</option>
+            <option value="writing">✍️ 3. Writing Mode</option>
+            <option value="context">🧠 4. Context Mode</option>
+          </select>
+        </div>
+
+        <div id="hostEndSessionContainer" style="display:none; margin-bottom:14px; border-top:3px dashed var(--border-color); padding-top:10px;">
+          <button class="action-btn danger" style="padding:10px; font-size:11px;" onclick="triggerEndGame()">End Session & Show Stats 🏁</button>
+        </div>
+
+        <div class="sidebar-title">Live Instructions</div>
+        <div class="guide-box" id="arenaInstructionText" style="margin-bottom:0; padding:10px; font-size:12px; font-weight:600; color:black; background:white;">
+          Submit your match to clear cards.
+        </div>
+
+        <div class="sidebar-title">Squad Status Feed</div>
+        <div class="badge-stack" id="liveRosterStatus"></div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- ================= VIEW 4: MASTER WORKSHOP SUMMARY REPORT ================= -->
+  <div id="viewSummary" class="view-panel">
+    <div class="compact-container studio-card" style="text-align: center; max-width:650px;">
+      <div class="brand-header">
+        <h1>Workshop Analytics Report 📊</h1>
+      </div>
+
+      <div class="stat-block">
+        <div class="stat-title">Personal Performance Report</div>
+        <div class="stat-row"><span>First-Try Precision Score:</span><span id="myAccuracy" style="color:var(--bubbles-blue)">100%</span></div>
+        <div class="stat-row"><span>Total Completed Cards:</span><span id="myAces">0 words</span></div>
+        <div class="stat-row"><span>Your Hardest Hurdle:</span><span id="myStruggle" style="color:var(--blossom-pink)">None</span></div>
+      </div>
+
+      <div class="stat-block">
+        <div class="stat-title">🚨 Classroom Struggle Breakdown</div>
+        <div id="classroomStruggleCloud" style="padding:10px; min-height:50px; text-align:left;"></div>
+      </div>
+
+      <div class="stat-block">
+        <div class="stat-title">👥 Mistakes Made By Learner</div>
+        <div id="struggleLeaderboard" style="min-height:40px;"></div>
+      </div>
+
+      <button class="action-btn primary" onclick="location.reload()">Restart Session</button>
+    </div>
+  </div>
+
+<script>
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXpcCILEulBysiVCgHZWNbdIIDz-isW0CeiCkpg0FXerZ8o2N3dD5PNonYkK5nxsCauUWN93JbkZWH/pub?gid=0&single=true&output=csv";
+  
+  let audioCtx = null;
+  let socket = null;
+  let clientState = { name: "", isHost: false };
+  let vocabPool = []; 
+  let gameQueue = []; 
+  let activeIndex = 0;
+  let activeMode = "reading"; 
+  let currentCardClicks = 0;
+  let myStats = { totalCards: 0, firstTryCorrect: 0, totalClicks: 0, wrongWordsMap: {} };
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ko-KR'; 
+  }
+
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  function playSound(type) {
+    if (!audioCtx) return;
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      if (type === 'success') {
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); 
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+      } else if (type === 'error') {
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+      }
+    } catch(e){}
+  }
+
+  function switchView(viewId) {
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+  }
+
+  // Ask the user if they are running the session when clicking their profile button
+  function selectProfile(name) {
+    const isFaci = confirm(`Are you the facilitator/teacher for this session, ${name}?`);
+    
+    let displayName = name;
+    if (isFaci) {
+      displayName = name + " 👑"; // Add crown automatically to identify host visually
+    }
+    
+    pickHeroProfile(displayName, isFaci);
+  }
+
+  async function pickHeroProfile(selectedName, becomeHost) {
+    initAudio(); 
+    clientState = { name: selectedName, isHost: becomeHost };
+    await loadDatabase();
+
+    // Check if socket connection framework is accessible
+    if (typeof io === 'undefined') {
+      alert("Socket server connection down. Please make sure to run 'node server.js' in your terminal!");
+      return;
+    }
+
+    socket = io();
+    socket.emit("join_session", { name: selectedName, isHost: becomeHost });
+    switchView("viewLobby");
+
+    if(becomeHost) {
+      document.getElementById("lobbySubtitle").textContent = "👑 Hosting Workspace Session";
+      document.getElementById("facilitatorControls").style.display = "block";
+      document.getElementById("workspaceFilterContainer").style.display = "block";
+      document.getElementById("hostEndSessionContainer").style.display = "block";
+    }
+
+    socket.on("update_roster", (players) => {
+      const lobbyList = document.getElementById("lobbyRoster"); lobbyList.innerHTML = "";
+      const arenaList = document.getElementById("liveRosterStatus"); arenaList.innerHTML = "";
+      for(let id in players) {
+        const row = document.createElement("div"); row.className = "roster-item";
+        row.innerHTML = `<span>👤 ${players[id].name}</span> <span>${players[id].status}</span>`;
+        lobbyList.appendChild(row);
+        if(!players[id].name.includes("👑")) {
+          const div = document.createElement("div"); div.className = "live-badge";
+          div.innerHTML = `<span>👤 ${players[id].name}</span> <span>${players[id].status}</span>`;
+          arenaList.appendChild(div);
+        }
+      }
+    });
+
+    socket.on("sync_game", (serverData) => {
+      gameQueue = serverData.queue; activeIndex = serverData.activeIndex;
+      if (serverData.mode) activeMode = serverData.mode;
+      if(activeIndex >= 0 && activeIndex < gameQueue.length) {
+        if(!document.getElementById("viewArena").classList.contains("active")) switchView("viewArena");
+        renderCard();
+      }
+    });
+
+    socket.on("game_over_analytics", (fullLogs) => {
+      calculateAndDisplayStats(fullLogs);
+    });
+  }
+
+  async function loadDatabase() {
+    try {
+      const res = await fetch(CSV_URL); const txt = await res.text();
+      let lines = txt.split("\n").map(l => l.split(","));
+      vocabPool = lines.slice(1).map(l => ({ 
+        hangeul: l[0]?.trim() || "", english: l[1]?.trim() || "", type: l[2]?.trim() || "", useCase: l[3]?.trim() || ""
+      })).filter(v => v.hangeul && v.english);
+    } catch(e) {
+      vocabPool = [{ hangeul: "하루", english: "a day", type: "Vocab", useCase: "" }];
+    }
+  }
+
+  function startQuiz() {
+    let poolToUse = [...vocabPool];
+    if (activeMode === "context") poolToUse = vocabPool.filter(v => v.useCase && v.useCase.length > 2);
+    let shuffled = poolToUse.sort(() => Math.random() - 0.5);
+    gameQueue = shuffled.slice(0, Math.min(10, shuffled.length));
+    socket.emit("start_game", { queue: gameQueue, mode: activeMode });
+  }
+
+  function changeClassroomMode() {
+    if(!clientState.isHost) return;
+    activeMode = document.getElementById("gameModeSelector").value;
+    activeIndex = 0; startQuiz();
+  }
+
+  function resetCurrentDeckLoop() {
+    activeIndex = 0; startQuiz();
+  }
+
+  function hideAllInterfaces() {
+    document.getElementById("choicesBox").classList.remove("active");
+    document.getElementById("writingInterfaceBox").classList.remove("active");
+    document.getElementById("speakingInterfaceBox").classList.remove("active");
+  }
+
+  function renderCard() {
+    currentCardClicks = 0;
+    document.getElementById("speechTranscriptionFeedback").textContent = "";
+    hideAllInterfaces();
+
+    if(clientState.isHost) {
+      document.getElementById("studentWaitMsg").style.display = "none";
+      document.getElementById("facilitatorNavBox").style.display = "flex";
+      if(activeIndex === gameQueue.length - 1) {
+        document.getElementById("nextCardBtn").style.display = "none";
+        document.getElementById("resetDeckBtn").style.display = "inline-flex";
+      } else {
+        document.getElementById("nextCardBtn").style.display = "inline-flex";
+        document.getElementById("resetDeckBtn").style.display = "none";
+      }
+    } else {
+      document.getElementById("studentWaitMsg").style.display = "block";
+      document.getElementById("facilitatorNavBox").style.display = "none";
+    }
+
+    const currentCard = gameQueue[activeIndex];
+    document.getElementById("pBar").style.width = `${((activeIndex + 1) / gameQueue.length) * 100}%`;
+    document.getElementById("cardProgress").textContent = `Card ${activeIndex + 1} / ${gameQueue.length}`;
+    
+    const modeLabels = { reading: "📚 Reading Mode", speaking: "🗣️ Speaking Mode", writing: "✍️ Writing Mode", context: "🧠 Context Mode" };
+    document.getElementById("currentCardMode").textContent = modeLabels[activeMode];
+
+    const mainDisplay = document.getElementById("mainWord");
+
+    if (activeMode === "reading") {
+      document.getElementById("choicesBox").classList.add("active");
+      mainDisplay.textContent = currentCard.hangeul; mainDisplay.style.fontSize = "64px";
+      buildMultipleChoices(currentCard, "english");
+    } 
+    else if (activeMode === "context") {
+      document.getElementById("choicesBox").classList.add("active");
+      mainDisplay.textContent = currentCard.useCase || "Scenario missing!"; mainDisplay.style.fontSize = "22px";
+      buildMultipleChoices(currentCard, "hangeul");
+    }
+    else if (activeMode === "writing") {
+      document.getElementById("writingInterfaceBox").classList.add("active");
+      document.getElementById("writingInputField").value = "";
+      document.getElementById("writingInputField").disabled = false;
+      mainDisplay.textContent = currentCard.english; mainDisplay.style.fontSize = "42px";
+    }
+    else if (activeMode === "speaking") {
+      document.getElementById("speakingInterfaceBox").classList.add("active");
+      document.getElementById("speechTriggerBtn").disabled = false;
+      mainDisplay.textContent = currentCard.hangeul; mainDisplay.style.fontSize = "64px";
+    }
+  }
+
+  function buildMultipleChoices(currentCard, propertyToCompare) {
+    const box = document.getElementById("choicesBox"); box.innerHTML = "";
+    let targetAnswer = currentCard[propertyToCompare === "english" ? "english" : "hangeul"];
+    let wrongPool = vocabPool.filter(v => v[propertyToCompare === "english" ? "english" : "hangeul"] !== targetAnswer);
+    let wrongChoices = wrongPool.sort(() => Math.random() - 0.5).slice(0, 3);
+    let distribution = [currentCard, ...wrongChoices].sort(() => Math.random() - 0.5);
+
+    distribution.forEach(opt => {
+      const btn = document.createElement("button"); btn.className = "choice-btn";
+      let displayValue = opt[propertyToCompare === "english" ? "english" : "hangeul"];
+      btn.textContent = displayValue;
+      btn.onclick = () => processEvaluationResult(displayValue === targetAnswer, currentCard.hangeul, btn);
+      box.appendChild(btn);
+    });
+  }
+
+  function checkWritingSubmission() {
+    const guess = document.getElementById("writingInputField").value.trim().toLowerCase();
+    const target = gameQueue[activeIndex].hangeul.trim().toLowerCase();
+    if(!guess) return;
+    const isCorrect = (guess === target);
+    if(isCorrect) document.getElementById("writingInputField").disabled = true;
+    processEvaluationResult(isCorrect, gameQueue[activeIndex].hangeul, null);
+  }
+
+  function triggerVoiceCapture() {
+    if (!recognition) { alert("Speech engine error."); return; }
+    const wave = document.getElementById("voiceWaveElement");
+    const feedback = document.getElementById("speechTranscriptionFeedback");
+    wave.style.display = "block"; feedback.textContent = "";
+    recognition.start();
+
+    recognition.onresult = function(event) {
+      wave.style.display = "none";
+      const userSpoke = event.results[0][0].transcript.trim();
+      const targetKorean = gameQueue[activeIndex].hangeul.trim();
+      const isMatch = (userSpoke === targetKorean);
+      feedback.textContent = isMatch ? `✅ Perfect!` : `❌ Heard: "${userSpoke}"`;
+      processEvaluationResult(isMatch, targetKorean, null);
+    };
+    recognition.onerror = function() { wave.style.display = "none"; };
+    recognition.onspeechend = function() { recognition.stop(); wave.style.display = "none"; };
+  }
+
+  function processEvaluationResult(isCorrect, hangeulWord, clickedBtnElement) {
+    currentCardClicks++; myStats.totalClicks++;
+    if(isCorrect) {
+      playSound('success');
+      if(clickedBtnElement) clickedBtnElement.classList.add("correct");
+      document.querySelectorAll(".choice-btn").forEach(b => b.disabled = true);
+      myStats.totalCards++;
+      if(currentCardClicks === 1) myStats.firstTryCorrect++;
+      socket.emit("submit_click", { word: hangeulWord, isCorrect: true });
+    } else {
+      playSound('error');
+      if(clickedBtnElement) { clickedBtnElement.classList.add("incorrect"); clickedBtnElement.disabled = true; }
+      myStats.wrongWordsMap[hangeulWord] = (myStats.wrongWordsMap[hangeulWord] || 0) + 1;
+      socket.emit("submit_click", { word: hangeulWord, isCorrect: false });
+    }
+  }
+
+  function sendNav(direction) {
+    activeIndex += direction;
+    socket.emit("nav_card", { activeIndex: activeIndex, mode: activeMode });
+  }
+
+  function triggerEndGame() {
+    if(confirm("Generate cumulative session logs now?")) socket.emit("end_game");
+  }
+
+  function calculateAndDisplayStats(logs) {
+    switchView("viewSummary");
+    const accuracy = myStats.totalCards > 0 ? Math.round((myStats.firstTryCorrect / myStats.totalCards) * 100) : 100;
+    document.getElementById("myAces").textContent = `${myStats.firstTryCorrect} / ${myStats.totalCards} cards`;
+    let worstWord = "None!"; let maxOwnWrong = 0;
+    for(let w in myStats.wrongWordsMap) {
+      if(myStats.wrongWordsMap[w] > maxOwnWrong) { maxOwnWrong = myStats.wrongWordsMap[w]; worstWord = `${w}`; }
+    }
+    document.getElementById("myStruggle").textContent = worstWord;
+
+    let overallClicks = logs.length;
+    let trueClicks = logs.filter(l => l.isCorrect).length;
+    let groupAvgPercentage = overallClicks > 0 ? Math.round((trueClicks / overallClicks) * 100) : 100;
+    document.getElementById("myAccuracy").textContent = `${accuracy}% (Classroom Avg: ${groupAvgPercentage}%)`;
+
+    let globalWrongMap = {};
+    let totalIncorrectClicksByPlayer = {};
+
+    logs.forEach(entry => {
+      if(!entry.isCorrect) {
+        globalWrongMap[entry.word] = (globalWrongMap[entry.word] || 0) + 1;
+        totalIncorrectClicksByPlayer[entry.name] = (totalIncorrectClicksByPlayer[entry.name] || 0) + 1;
+      } else {
+        if(!totalIncorrectClicksByPlayer[entry.name]) totalIncorrectClicksByPlayer[entry.name] = 0;
+      }
+    });
+
+    const cloud = document.getElementById("classroomStruggleCloud"); cloud.innerHTML = "";
+    let elementsAdded = 0;
+    for (let word in globalWrongMap) {
+      elementsAdded++;
+      const span = document.createElement("span");
+      const failCount = globalWrongMap[word];
+      span.className = "review-item-tag" + (failCount > 2 ? " heavy-fail" : "");
+      span.textContent = `${word} (${failCount} errors)`;
+      cloud.appendChild(span);
+    }
+    if(elementsAdded === 0) cloud.innerHTML = "<div style='color:var(--buttercup-green); font-weight:700;'>🎉 Perfect clear across the squad!</div>";
+
+    const board = document.getElementById("struggleLeaderboard"); board.innerHTML = "";
+    for(let user in totalIncorrectClicksByPlayer) {
+      const row = document.createElement("div"); row.className = "stat-row";
+      row.innerHTML = `<span>👤 ${user}</span> <span style="color:var(--blossom-pink)">${totalIncorrectClicksByPlayer[user]} mistakes</span>`;
+      board.appendChild(row);
+    }
+  }
+</script>
+</body>
+</html>
