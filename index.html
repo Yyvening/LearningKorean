@@ -41,12 +41,11 @@
     padding: 20px; 
   }
 
-  /* --- FIXED STRUCTURAL VIEW LAYOUTS --- */
+  /* --- VIEW LAYOUTS --- */
   .view-panel { display: none; width: 100%; animation: slideUp 0.2s ease-out; }
   .view-panel.active { display: block; }
   @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Centered block view handling for Login, Lobby, and Summary reports */
   .compact-container { max-width: 550px; width: 100%; margin: 0 auto; }
   .studio-card { background: var(--surface); border: var(--border-thick); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-flat); }
   
@@ -66,10 +65,9 @@
   .roster-list { background: #F8FAFC; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 100px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; }
   .roster-item { padding: 10px 14px; background: white; border: 1px solid #CBD5E1; border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; }
 
-  /* --- RESPONSIBLE GRID ARENA LAYOUT (Adaptive Wide Design) --- */
+  /* --- RESPONSIVE ARENA ENVIRONMENT --- */
   .arena-wrapper { max-width: 1000px; width: 100%; margin: 0 auto; display: grid; grid-template-columns: 1fr 240px; gap: 20px; align-items: start; }
   
-  /* Mobile Breakpoint Fixes */
   @media (max-width: 850px) {
     .arena-wrapper { grid-template-columns: 1fr; }
     .sidebar-tracker { margin-top: 10px; }
@@ -127,12 +125,6 @@
         <p>Waiting for everyone to arrive...</p>
       </div>
       
-      <!-- Category Selection Panel (Only displays on host screen) -->
-      <div class="form-group" id="categoryContainer" style="display:none; margin-bottom:20px;">
-        <label>Select Deck Category Filter</label>
-        <select id="categorySelector" class="sync-input" style="cursor:pointer; font-weight:600;"></select>
-      </div>
-
       <div class="roster-list" id="lobbyRoster"></div>
       
       <div id="facilitatorControls" style="display:none;">
@@ -154,7 +146,7 @@
         
         <div style="display: flex; justify-content: space-between; font-size:12px; font-weight:700; margin-top:8px;">
           <span id="cardProgress">Card 0/0</span>
-          <span style="background:var(--pop-yellow); padding:2px 10px; border:var(--border-thin); border-radius:12px;">Active Word</span>
+          <span style="background:var(--pop-yellow); padding:2px 10px; border:var(--border-thin); border-radius:12px;" id="currentCardCategory">Category</span>
         </div>
 
         <div class="display-hub">
@@ -174,6 +166,18 @@
 
       <!-- Balanced Sidebar Feed Box -->
       <aside class="sidebar-tracker">
+        <!-- Live Workspace Filter Control (Visible on Facilitator Device) -->
+        <div id="workspaceFilterContainer" style="display:none; margin-bottom:20px;">
+          <div class="sidebar-title">Active Deck Filter</div>
+          <select id="categorySelector" class="sync-input" style="cursor:pointer; font-weight:600; padding:8px; font-size:13px;" onchange="filterActiveDeck()">
+            <option value="All Words">All Words</option>
+            <option value="Reading">Reading</option>
+            <option value="Speaking">Speaking</option>
+            <option value="Writing">Writing</option>
+            <option value="Context (Use Case)">Context (Use Case)</option>
+          </select>
+        </div>
+
         <div class="sidebar-title">Squad Status Feed</div>
         <div class="badge-stack" id="liveRosterStatus"></div>
       </aside>
@@ -212,19 +216,19 @@
 
 <script>
   const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXpcCILEulBysiVCgHZWNbdIIDz-isW0CeiCkpg0FXerZ8o2N3dD5PNonYkK5nxsCauUWN93JbkZWH/pub?gid=0&single=true&output=csv";
-  const FALLBACK_DATA = [["하루", "a day", "Basic"], ["시간", "time", "Basic"], ["휴식", "rest / break", "Basic"], ["정말", "really", "Basic"]];
+  const FALLBACK_DATA = [["하루", "a day", "Reading"], ["시간", "time", "Speaking"], ["휴식", "rest / break", "Writing"], ["정말", "really", "Context (Use Case)"]];
 
   let audioCtx = null;
   let socket = null;
   let clientState = { name: "", isHost: false };
-  let vocabPool = [];
-  let gameQueue = [];
+  let vocabPool = []; // Original loaded rows from Sheet
+  let filteredPool = []; // Active subset safely matching dropdown choices
+  let gameQueue = []; // Shuffled layout elements synchronized on screens
   let activeIndex = 0;
   
   let currentCardClicks = 0;
   let myStats = { totalCards: 0, firstTryCorrect: 0, totalClicks: 0, wrongWordsMap: {} };
 
-  // --- AUDIO SYNTHESIS MODULE ---
   function initAudio() {
     if (!audioCtx) {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -241,9 +245,9 @@
 
       if (type === 'success') {
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
-        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); 
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); 
+        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); 
         gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
         osc.start();
@@ -257,7 +261,7 @@
         osc.start();
         osc.stop(audioCtx.currentTime + 0.25);
       }
-    } catch(e) { console.log("Audio block error:", e); }
+    } catch(e) { console.log("Audio play exception:", e); }
   }
 
   function switchView(viewId) {
@@ -275,7 +279,7 @@
   }
 
   async function joinRoom(becomeHost) {
-    initAudio(); // Unlocks user sound engine safely
+    initAudio(); 
     let name = document.getElementById("playerNameInput").value.trim();
     if(!name) { 
       if(becomeHost) name = "Facilitator 👑";
@@ -286,7 +290,7 @@
     await loadDatabase();
 
     if(typeof io === 'undefined') {
-      alert("Socket server connection omitted.");
+      alert("Socket server context missing.");
       return;
     }
 
@@ -296,8 +300,7 @@
 
     if(becomeHost) {
       document.getElementById("facilitatorControls").style.display = "block";
-      document.getElementById("categoryContainer").style.display = "block";
-      document.getElementById("studentLobbyMsg").style.display = "none";
+      document.getElementById("workspaceFilterContainer").style.display = "block";
     }
 
     socket.on("update_roster", (players) => {
@@ -344,48 +347,41 @@
       const txt = await res.text();
       let lines = txt.split("\n").map(l => l.split(","));
       
-      // Clear empty returns and normalize whitespace
       vocabPool = lines.slice(1).map(l => ({ 
         hangeul: l[0]?.trim(), 
         english: l[1]?.trim(),
-        category: l[2]?.trim() || "All Words"
+        category: l[2]?.trim() || "Reading" // Default back to reading skill type safely
       })).filter(v => v.hangeul && v.english);
     } catch(e) {
       vocabPool = FALLBACK_DATA.map(l => ({ hangeul: l[0], english: l[1], category: l[2] }));
     }
-
-    // Capture explicit, distinct category groupings safely
-    const uniqueCats = new Set();
-    vocabPool.forEach(v => { if(v.category) uniqueCats.add(v.category); });
-    
-    const categories = ["All Words", ...Array.from(uniqueCats)];
-    const selector = document.getElementById("categorySelector");
-    selector.innerHTML = "";
-    
-    categories.forEach(cat => {
-      const opt = document.createElement("option");
-      opt.value = cat;
-      opt.textContent = cat;
-      selector.appendChild(opt);
-    });
+    filteredPool = [...vocabPool];
   }
 
   function startQuiz() {
+    // Generates initial 10 cards based on currently applied selection
     const chosenCategory = document.getElementById("categorySelector").value;
-    
-    let filteredPool = vocabPool;
-    if(chosenCategory !== "All Words") {
-      filteredPool = vocabPool.filter(v => v.category === chosenCategory);
+    if(chosenCategory === "All Words") {
+      filteredPool = [...vocabPool];
+    } else {
+      filteredPool = vocabPool.filter(v => v.category.toLowerCase().includes(chosenCategory.toLowerCase().split(" ")[0]));
     }
 
     if(filteredPool.length === 0) {
-      alert("Selected category has no valid rows!");
-      return;
+      alert(`No words currently match "${chosenCategory}" inside your Sheet database. Defaulting to all rows.`);
+      filteredPool = [...vocabPool];
     }
 
     let shuffled = [...filteredPool].sort(() => Math.random() - 0.5);
     gameQueue = shuffled.slice(0, Math.min(10, shuffled.length));
     socket.emit("start_game", { queue: gameQueue });
+  }
+
+  function filterActiveDeck() {
+    // Allows facilitator to hot-swap filtering dynamically during live sessions
+    if(!clientState.isHost) return;
+    activeIndex = 0;
+    startQuiz();
   }
 
   function renderCard() {
@@ -407,6 +403,7 @@
 
     const currentCard = gameQueue[activeIndex];
     document.getElementById("cardProgress").textContent = `Card ${activeIndex + 1} / ${gameQueue.length}`;
+    document.getElementById("currentCardCategory").textContent = currentCard.category;
     document.getElementById("pBar").style.width = `${((activeIndex) / gameQueue.length) * 100}%`;
     document.getElementById("mainWord").textContent = currentCard.hangeul;
 
