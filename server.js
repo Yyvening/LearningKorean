@@ -10,102 +10,97 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Server storage for live games
-const activeRooms = {}; 
+// Single global room state for you and your friends
+let sessionState = {
+  players: {},
+  queue: [],
+  activeIndex: -1, // -1 means game has not started yet
+  statsLog: [] // Tracks every single click: { name, word, isCorrect }
+};
 
 io.on('connection', (socket) => {
   
-  socket.on('join_room', ({ roomCode, name, isHost }) => {
-    socket.join(roomCode);
-    
-    socket.roomCode = roomCode;
+  socket.on('join_session', ({ name, isHost }) => {
     socket.playerName = name;
     socket.isHost = isHost;
 
-    if (!activeRooms[roomCode]) {
-      activeRooms[roomCode] = {
-        players: {},
-        queue: [],
-        activeIndex: 0
-      };
-    }
-
-    // Register player info
-    activeRooms[roomCode].players[socket.id] = { 
-      name: name, 
-      status: isHost ? "Host 👑" : "Thinking... 🧠" 
+    // Register or recover player
+    sessionState.players[socket.id] = {
+      name: name,
+      isHost: isHost,
+      status: isHost ? "Facilitator 👑" : "In Lobby 💬"
     };
 
-    // Broadcast updated lists back to room
-    io.to(roomCode).emit('update_host_dashboard', activeRooms[roomCode].players);
+    io.emit('update_roster', sessionState.players);
     
-    // Sync newly joined/refreshed players to where the session currently is
-    socket.emit('sync_session_state', {
-      queue: activeRooms[roomCode].queue,
-      activeIndex: activeRooms[roomCode].activeIndex
+    // Send current game state to the player
+    socket.emit('sync_game', {
+      queue: sessionState.queue,
+      activeIndex: sessionState.activeIndex
     });
   });
 
-  socket.on('host_initialized_queue', ({ roomCode, queue }) => {
-    if(activeRooms[roomCode]) {
-      activeRooms[roomCode].queue = queue;
-      activeRooms[roomCode].activeIndex = 0;
-      
-      // Reset statuses for a new game run
-      for(let id in activeRooms[roomCode].players) {
-        if(!activeRooms[roomCode].players[id].status.includes("👑")) {
-          activeRooms[roomCode].players[id].status = "Thinking... 🧠";
-        }
-      }
+  socket.on('start_game', ({ queue }) => {
+    if (!socket.isHost) return;
+    sessionState.queue = queue;
+    sessionState.activeIndex = 0;
+    sessionState.statsLog = []; // Reset stats for new game
 
-      io.to(roomCode).emit('update_host_dashboard', activeRooms[roomCode].players);
-      socket.to(roomCode).emit('sync_session_state', { queue, activeIndex: 0 });
+    for (let id in sessionState.players) {
+      if (!sessionState.players[id].isHost) {
+        sessionState.players[id].status = "Thinking... 🧠";
+      }
+    }
+
+    io.emit('update_roster', sessionState.players);
+    io.emit('sync_game', { queue: sessionState.queue, activeIndex: sessionState.activeIndex });
+  });
+
+  socket.on('submit_click', ({ word, isCorrect }) => {
+    if (sessionState.players[socket.id]) {
+      const name = sessionState.players[socket.id].name;
+      
+      // Log the action for stats processing
+      sessionState.statsLog.push({ name, word, isCorrect });
+
+      if (isCorrect) {
+        sessionState.players[socket.id].status = "Passed! 🎉";
+      } else {
+        sessionState.players[socket.id].status = "Retrying... ❌";
+      }
+      io.emit('update_roster', sessionState.players);
     }
   });
 
-  socket.on('host_nav_card', ({ roomCode, activeIndex }) => {
-    if(activeRooms[roomCode]) {
-      activeRooms[roomCode].activeIndex = activeIndex;
-      
-      // Reset student indicators back to thinking for the new card slide
-      for(let id in activeRooms[roomCode].players) {
-        if(!activeRooms[roomCode].players[id].status.includes("👑")) {
-          activeRooms[roomCode].players[id].status = "Thinking... 🧠";
-        }
-      }
+  socket.on('nav_card', ({ activeIndex }) => {
+    if (!socket.isHost) return;
+    sessionState.activeIndex = activeIndex;
 
-      io.to(roomCode).emit('update_host_dashboard', activeRooms[roomCode].players);
-      socket.to(roomCode).emit('sync_session_state', { 
-        queue: activeRooms[roomCode].queue, 
-        activeIndex: activeIndex 
-      });
+    // Reset player active statuses for the next slide card
+    for (let id in sessionState.players) {
+      if (!sessionState.players[id].isHost) {
+        sessionState.players[id].status = "Thinking... 🧠";
+      }
     }
+
+    io.emit('update_roster', sessionState.players);
+    io.emit('sync_game', { queue: sessionState.queue, activeIndex: sessionState.activeIndex });
   });
 
-  socket.on('student_submit_status', ({ roomCode, status }) => {
-    if(activeRooms[roomCode] && activeRooms[roomCode].players[socket.id]) {
-      activeRooms[roomCode].players[socket.id].status = status;
-      io.to(roomCode).emit('update_host_dashboard', activeRooms[roomCode].players);
-    }
+  socket.on('end_game', () => {
+    if (!socket.isHost) return;
+    sessionState.activeIndex = 999; // Code for summary view
+    
+    io.emit('game_over_analytics', sessionState.statsLog);
   });
 
   socket.on('disconnect', () => {
-    const roomCode = socket.roomCode;
-    if (roomCode && activeRooms[roomCode]) {
-      delete activeRooms[roomCode].players[socket.id];
-      io.to(roomCode).emit('update_host_dashboard', activeRooms[roomCode].players);
-      
-      // Clean up empty configurations after 15 mins of complete inactivity
-      if (Object.keys(activeRooms[roomCode].players).length === 0) {
-        setTimeout(() => {
-          if (activeRooms[roomCode] && Object.keys(activeRooms[roomCode].players).length === 0) {
-            delete activeRooms[roomCode];
-          }
-        }, 900000);
-      }
+    if (sessionState.players[socket.id]) {
+      delete sessionState.players[socket.id];
+      io.emit('update_roster', sessionState.players);
     }
   });
 });
 
 const PORT = process.env.PORT || 3000;
-http.listen(PORT, () => console.log(`Hangeul Engine executing on port ${PORT}`));
+http.listen(PORT, () => console.log(`Hangeul Lab running on port ${PORT}`));
