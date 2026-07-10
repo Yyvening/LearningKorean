@@ -73,6 +73,7 @@
   .action-btn.success { background: var(--buttercup-green); color: white; }
   .action-btn.danger { background: var(--blossom-pink); color: white; }
   .action-btn.primary { background: var(--bubbles-blue); color: white; }
+  .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .roster-list { background: #FFF; border: var(--border-thin); border-radius: var(--radius-md); padding: 16px; min-height: 100px; margin: 14px 0; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.05); }
   .roster-item { padding: 12px 16px; background: white; border: var(--border-thin); border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-weight: 700; font-size: 15px; box-shadow: 2px 2px 0px var(--border-color); }
@@ -119,10 +120,14 @@
 
   .guide-box { background: #EFF6FF; border: var(--border-thin); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px; font-size: 13px; text-align: left; color: #1E3A8A; box-shadow: 3px 3px 0px var(--border-color); }
   .guide-box strong { color: #1D4ED8; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 4px; }
+
+  .toast-banner { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: var(--chemical-x-black); color: white; padding: 12px 22px; border-radius: var(--radius-md); border: var(--border-thin); font-weight: 700; font-size: 13px; box-shadow: var(--shadow-flat); z-index: 999; display: none; max-width: 90vw; text-align: center; }
 </style>
 <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
+
+  <div id="toastBanner" class="toast-banner"></div>
 
   <!-- ================= VIEW 1: IDENTITY SELECTION GATEWAY ================= -->
   <div id="viewGateway" class="view-panel active">
@@ -313,6 +318,14 @@
     document.getElementById(viewId).classList.add('active');
   }
 
+  function showToast(message) {
+    const banner = document.getElementById('toastBanner');
+    banner.textContent = message;
+    banner.style.display = 'block';
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => { banner.style.display = 'none'; }, 3500);
+  }
+
   function selectProfile(name) {
     const isFaci = confirm(`Are you the facilitator/teacher for this session, ${name}?`);
     let displayName = name;
@@ -336,32 +349,48 @@
     socket.emit("join_session", { name: selectedName, isHost: becomeHost });
     switchView("viewLobby");
 
-    if(becomeHost) {
-      document.getElementById("lobbySubtitle").textContent = "👑 Hosting Workspace Session";
-      document.getElementById("facilitatorControls").style.display = "block";
-      document.getElementById("workspaceFilterContainer").style.display = "block";
-      document.getElementById("hostEndSessionContainer").style.display = "block";
-    }
+    // The server has the final say on who is host - it only grants host
+    // to whoever asked for it first. Reconcile our local UI with that.
+    socket.on("host_status", ({ isHost, requestedHost }) => {
+      clientState.isHost = isHost;
+
+      document.getElementById("lobbySubtitle").textContent = isHost
+        ? "👑 Hosting Workspace Session"
+        : "Waiting for the facilitator to launch a deck...";
+      document.getElementById("facilitatorControls").style.display = isHost ? "block" : "none";
+      document.getElementById("workspaceFilterContainer").style.display = isHost ? "block" : "none";
+      document.getElementById("hostEndSessionContainer").style.display = isHost ? "block" : "none";
+
+      if (requestedHost && !isHost) {
+        showToast("⚠️ Someone is already facilitating this session - you've joined as a participant.");
+      }
+    });
 
     socket.on("update_roster", (players) => {
       const lobbyList = document.getElementById("lobbyRoster"); lobbyList.innerHTML = "";
       const arenaList = document.getElementById("liveRosterStatus"); arenaList.innerHTML = "";
       for(let id in players) {
+        const p = players[id];
+
         const row = document.createElement("div"); row.className = "roster-item";
-        row.innerHTML = `<span>👤 ${players[id].name}</span> <span>${players[id].status}</span>`;
+        row.appendChild(buildLabeledSpan("👤 " + p.name));
+        row.appendChild(buildLabeledSpan(p.status));
         lobbyList.appendChild(row);
-        if(!players[id].name.includes("👑")) {
+
+        if(!p.isHost) {
           const div = document.createElement("div"); div.className = "live-badge";
-          div.innerHTML = `<span>👤 ${players[id].name}</span> <span>${players[id].status}</span>`;
+          div.appendChild(buildLabeledSpan("👤 " + p.name));
+          div.appendChild(buildLabeledSpan(p.status));
           arenaList.appendChild(div);
         }
       }
     });
 
     socket.on("sync_game", (serverData) => {
-      gameQueue = serverData.queue; activeIndex = serverData.activeIndex;
+      gameQueue = Array.isArray(serverData.queue) ? serverData.queue : [];
+      activeIndex = serverData.activeIndex;
       if (serverData.mode) activeMode = serverData.mode;
-      if(activeIndex >= 0 && activeIndex < gameQueue.length) {
+      if(gameQueue.length > 0 && activeIndex >= 0 && activeIndex < gameQueue.length) {
         if(!document.getElementById("viewArena").classList.contains("active")) switchView("viewArena");
         renderCard();
       }
@@ -370,6 +399,14 @@
     socket.on("game_over_analytics", (fullLogs) => {
       calculateAndDisplayStats(fullLogs);
     });
+  }
+
+  // Builds a <span> using textContent so player-supplied names can never
+  // be interpreted as HTML/scripts, even if something upstream missed it.
+  function buildLabeledSpan(text) {
+    const span = document.createElement("span");
+    span.textContent = text;
+    return span;
   }
 
   async function loadDatabase() {
@@ -396,6 +433,8 @@
   }
 
   function startQuiz() {
+    if (!clientState.isHost) return;
+
     let poolToUse = [...vocabPool];
     if (activeMode === "context") {
       poolToUse = vocabPool.filter(v => v.useCase && v.useCase.trim().length > 3);
@@ -404,6 +443,9 @@
     if (poolToUse.length === 0) {
       alert("No matching items found for this mode in your sheet data!");
       return;
+    }
+    if (poolToUse.length < 4 && (activeMode === "reading" || activeMode === "context")) {
+      showToast("⚠️ Fewer than 4 words available - multiple choice will repeat some distractors.");
     }
 
     let shuffled = poolToUse.sort(() => Math.random() - 0.5);
@@ -418,6 +460,7 @@
   }
 
   function resetCurrentDeckLoop() {
+    if (!clientState.isHost) return;
     activeIndex = 0; startQuiz();
   }
 
@@ -437,6 +480,8 @@
     writeInput.className = "writing-box-input"; 
     writeInput.value = "";
     writeInput.disabled = false;
+
+    document.getElementById("speechTriggerBtn").disabled = false;
 
     hideAllInterfaces();
 
@@ -517,7 +562,6 @@
     
     const isCorrect = (guess === target);
     
-    // Reset temporary animation indicator layout states
     writeInput.classList.remove("correct-flash", "incorrect-flash");
     
     if(isCorrect) {
@@ -535,9 +579,12 @@
   }
 
   function triggerVoiceCapture() {
-    if (!recognition) { alert("Speech engine failure."); return; }
+    if (!recognition) { alert("Speech engine failure - this browser doesn't support voice recognition."); return; }
     const wave = document.getElementById("voiceWaveElement");
     const feedbackBox = document.getElementById("globalEvaluationFeedback");
+    const btn = document.getElementById("speechTriggerBtn");
+
+    btn.disabled = true;
     wave.style.display = "block"; 
     feedbackBox.textContent = "";
     recognition.start();
@@ -554,10 +601,11 @@
       } else {
         feedbackBox.style.color = "var(--blossom-pink)";
         feedbackBox.textContent = `❌ Detected: "${userSpoke}". Try again!`;
+        btn.disabled = false;
       }
       processEvaluationResult(isMatch, targetKorean, null);
     };
-    recognition.onerror = function() { wave.style.display = "none"; };
+    recognition.onerror = function() { wave.style.display = "none"; btn.disabled = false; };
     recognition.onspeechend = function() { recognition.stop(); wave.style.display = "none"; };
   }
 
@@ -579,11 +627,13 @@
   }
 
   function sendNav(direction) {
+    if (!clientState.isHost) return;
     activeIndex += direction;
     socket.emit("nav_card", { activeIndex: activeIndex, mode: activeMode });
   }
 
   function triggerEndGame() {
+    if (!clientState.isHost) return;
     if(confirm("Generate cumulative session logs now?")) socket.emit("end_game");
   }
 
@@ -618,18 +668,28 @@
     let elementsAdded = 0;
     for (let word in globalWrongMap) {
       elementsAdded++;
-      const span = document.createElement("span");
       const failCount = globalWrongMap[word];
+      const span = document.createElement("span");
       span.className = "review-item-tag" + (failCount > 2 ? " heavy-fail" : "");
       span.textContent = `${word} (${failCount} errors)`;
       cloud.appendChild(span);
     }
-    if(elementsAdded === 0) cloud.innerHTML = "<div style='color:var(--buttercup-green); font-weight:700;'>🎉 Perfect clear across the squad!</div>";
+    if(elementsAdded === 0) {
+      const div = document.createElement("div");
+      div.style.cssText = "color:var(--buttercup-green); font-weight:700;";
+      div.textContent = "🎉 Perfect clear across the squad!";
+      cloud.appendChild(div);
+    }
 
     const board = document.getElementById("struggleLeaderboard"); board.innerHTML = "";
     for(let user in totalIncorrectClicksByPlayer) {
       const row = document.createElement("div"); row.className = "stat-row";
-      row.innerHTML = `<span>👤 ${user}</span> <span style="color:var(--blossom-pink)">${totalIncorrectClicksByPlayer[user]} mistakes</span>`;
+      const nameSpan = buildLabeledSpan("👤 " + user);
+      const countSpan = document.createElement("span");
+      countSpan.style.color = "var(--blossom-pink)";
+      countSpan.textContent = `${totalIncorrectClicksByPlayer[user]} mistakes`;
+      row.appendChild(nameSpan);
+      row.appendChild(countSpan);
       board.appendChild(row);
     }
   }
