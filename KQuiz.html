@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>한글 팝콘 · Hangeul Popcorn Studio</title>
+<title>한글 팝콘 · Hangeul Popcorn Studio XL</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -13,34 +13,60 @@
     --surface-white: #FFFFFF;
     --text-dark: #1E293B;
     --text-cool: #64748B;
-    
     --brand-pop: #FF6B6B;
     --brand-pop-hover: #FF4A4A;
     --primary-blue: #4D96FF;
     --mint-green: #6BCB77;
     --banana-yellow: #FFD93D;
-    
     --radius-playful: 24px;
     --radius-standard: 16px;
     --bounce-transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --neon-glow: none;
+  }
+
+  /* Cyber Neon Theme */
+  body.theme-cyber {
+    --bg-app: #0F172A;
+    --surface-white: #1E293B;
+    --text-dark: #F8FAFC;
+    --text-cool: #94A3B8;
+    --brand-pop: #FF007F;
+    --primary-blue: #00F0FF;
+    --mint-green: #39FF14;
+    --banana-yellow: #FFEA00;
+    --neon-glow: 0 0 12px var(--brand-pop);
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Cozy Matcha Theme */
+  body.theme-matcha {
+    --bg-app: #F3F4F0;
+    --surface-white: #FAF9F5;
+    --text-dark: #2F3E35;
+    --text-cool: #6E7E75;
+    --brand-pop: #D96A6A;
+    --primary-blue: #7EA1A5;
+    --mint-green: #8AA882;
+    --banana-yellow: #E6C57E;
+    background-image: radial-gradient(#D0D5C7 2px, transparent 2px);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background-color: var(--bg-app);
-    background-image: radial-gradient(#DCE4EC 2px, transparent 2px);
-    background-size: 24px 24px;
     color: var(--text-dark);
     font-family: 'Fredoka', -apple-system, sans-serif;
     min-height: 100vh;
     padding: 24px 12px;
+    transition: background 0.3s ease, color 0.3s ease;
   }
 
   .wrapper { max-width: 760px; margin: 0 auto; }
 
   header {
     background: var(--surface-white);
-    padding: 20px 24px;
+    padding: 24px;
     border-radius: var(--radius-playful);
     border: 4px solid var(--text-dark);
     box-shadow: 0 8px 0 var(--text-dark);
@@ -49,19 +75,27 @@
     justify-content: space-between;
     gap: 16px;
     margin-bottom: 24px;
+    position: relative;
   }
   .header-left { display: flex; align-items: center; gap: 16px; }
   .mascot-avatar {
-    width: 60px; height: 60px;
+    width: 64px; height: 64px;
     background: var(--banana-yellow);
     border: 3px solid var(--text-dark);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 32px;
+    font-size: 36px;
     animation: simpleWiggle 3s infinite ease-in-out;
+    box-shadow: var(--neon-glow);
   }
-  h1 { font-size: 26px; color: var(--text-dark); font-weight: 700; letter-spacing: -0.5px; }
-  header p { color: var(--text-cool); font-size: 14px; margin-top: 2px; font-weight: 600; }
+  h1 { font-size: 28px; color: var(--text-dark); font-weight: 700; letter-spacing: -0.5px; }
+  header p { color: var(--text-cool); font-size: 14px; margin-top: 4px; font-weight: 600; }
+
+  .theme-select-menu {
+    font-family: inherit; font-weight: 600; font-size: 13px;
+    padding: 6px 12px; border: 2px solid var(--text-dark);
+    border-radius: 12px; background: var(--surface-white); color: var(--text-dark); cursor: pointer;
+  }
 
   .card-board {
     background: var(--surface-white);
@@ -77,15 +111,17 @@
     letter-spacing: 1px;
     color: var(--text-cool);
     margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
   }
 
   .badge-cluster { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .badge-pill {
     font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 30px;
-    background: #F1F5F9; color: var(--text-cool); border: 2px solid #CBD5E1;
+    background: rgba(0,0,0,0.05); color: var(--text-cool); border: 2px solid var(--text-dark);
   }
-  .badge-pill.status-online { background: var(--mint-green); color: white; border-color: var(--text-dark); box-shadow: 0 3px 0 var(--text-dark); }
-  .badge-pill.saved-indicator { background: var(--primary-blue); color: white; border-color: var(--text-dark); box-shadow: 0 3px 0 var(--text-dark); display: none; }
+  body.theme-cyber .badge-pill { background: rgba(255,255,255,0.05); }
+  .badge-pill.status-online { background: var(--mint-green); color: #000; font-weight: 700; }
+  .badge-pill.saved-indicator { background: var(--primary-blue); color: #000; display: none; animation: pulse 1s infinite alternate; }
 
   .arcade-scoreboard {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;
@@ -96,113 +132,122 @@
     box-shadow: 0 6px 0 var(--text-dark); transition: var(--bounce-transition);
     position: relative;
   }
-  .player-box .avatar-spot { font-size: 28px; margin-bottom: 4px; display: block; }
+  .player-box .avatar-spot { font-size: 32px; margin-bottom: 4px; display: block; }
   .player-box.turn-highlight {
     background: var(--banana-yellow);
     transform: translateY(-4px);
-    box-shadow: 0 10px 0 var(--text-dark);
+    box-shadow: 0 10px 0 var(--text-dark), var(--neon-glow);
   }
+  body.theme-cyber .player-box.turn-highlight { color: #000; }
   .player-box.turn-highlight::after {
-    content: '★ MIC ON'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+    content: '🎤 ON AIR'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
     background: var(--brand-pop); color: white; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px; border: 2px solid var(--text-dark); white-space: nowrap;
   }
-  .player-tag { font-size: 13px; color: var(--text-dark); font-weight: 700; }
-  .player-score-num { font-size: 28px; font-weight: 700; color: var(--text-dark); font-family: 'JetBrains Mono', monospace; }
+  .player-tag { font-size: 14px; color: var(--text-dark); font-weight: 700; }
+  body.theme-cyber .player-box.turn-highlight .player-tag { color: #000; }
+  .player-score-num { font-size: 32px; font-weight: 700; color: var(--text-dark); font-family: 'JetBrains Mono', monospace; }
+  body.theme-cyber .player-box.turn-highlight .player-score-num { color: #000; }
 
-  .modes-flex { display: flex; gap: 10px; flex-wrap: wrap; }
-  .mode-bubble {
-    flex: 1; min-width: 110px;
-    background: var(--surface-white); border: 3px solid var(--text-dark); border-radius: var(--radius-standard);
-    padding: 12px 6px; text-align: center; cursor: pointer; box-shadow: 0 4px 0 var(--text-dark); transition: var(--bounce-transition);
+  .streak-fire-badge {
+    position: absolute; bottom: -8px; right: -4px; background: #FF9F43; color: white;
+    font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 8px; border: 2px solid var(--text-dark);
+    display: none; box-shadow: 0 2px 0 var(--text-dark);
   }
-  .mode-bubble:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--text-dark); }
-  .mode-bubble.active { background: var(--primary-blue); color: white; transform: translateY(2px); box-shadow: 0 1px 0 var(--text-dark); }
-  .mode-bubble .icon { display: block; font-size: 24px; margin-bottom: 2px; }
-  .mode-bubble .label { display: block; font-size: 13px; font-weight: 700; }
+
+  .modes-flex { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+  .mode-bubble {
+    background: var(--surface-white); border: 3px solid var(--text-dark); border-radius: var(--radius-standard);
+    padding: 16px 8px; text-align: center; cursor: pointer; box-shadow: 0 5px 0 var(--text-dark); transition: var(--bounce-transition);
+  }
+  .mode-bubble:hover { transform: translateY(-2px); box-shadow: 0 7px 0 var(--text-dark); }
+  .mode-bubble.active { background: var(--primary-blue); color: #000; transform: translateY(3px); box-shadow: 0 1px 0 var(--text-dark); }
+  body.theme-cyber .mode-bubble.active { color: #000; box-shadow: 0 0 15px var(--primary-blue); }
+  .mode-bubble .icon { display: block; font-size: 28px; margin-bottom: 4px; }
+  .mode-bubble .label { display: block; font-size: 14px; font-weight: 700; }
 
   #quizArea { display: none; }
   .stage-header {
     display: flex; justify-content: space-between; align-items: center;
     font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 14px;
   }
-  .fun-progress-bg { flex: 1; height: 16px; background: #E2E8F0; border-radius: 20px; margin: 0 16px; overflow: hidden; border: 3px solid var(--text-dark); }
+  .fun-progress-bg { flex: 1; height: 18px; background: rgba(0,0,0,0.1); border-radius: 20px; margin: 0 16px; overflow: hidden; border: 3px solid var(--text-dark); }
   .fun-progress-fill { height: 100%; background: var(--mint-green); width: 0%; transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); }
 
   .arena-card {
     background: var(--surface-white); border: 4px solid var(--text-dark); border-radius: var(--radius-playful);
-    padding: 36px 20px; text-align: center; box-shadow: 0 10px 0 var(--text-dark); margin-bottom: 24px; position: relative;
+    padding: 40px 24px; text-align: center; box-shadow: 0 12px 0 var(--text-dark); margin-bottom: 24px; position: relative;
   }
   .type-tag-sticker {
     position: absolute; top: -14px; right: 24px; font-size: 11px; font-weight: 700;
     text-transform: uppercase; padding: 4px 12px; border-radius: 12px; border: 3px solid var(--text-dark); box-shadow: 0 4px 0 var(--text-dark); transform: rotate(2deg);
   }
-  .type-tag-sticker.vocab { background: #E8F0FE; color: var(--primary-blue); }
+  .type-tag-sticker.vocab { background: #E8F0FE; color: #1A73E8; }
   .type-tag-sticker.expr { background: #FFF0F0; color: var(--brand-pop); }
 
-  .instructions-banner { font-size: 13px; color: var(--text-cool); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-  .main-word-giant { font-family: 'Gowun Dodum', sans-serif; font-size: 48px; font-weight: 700; margin-bottom: 8px; color: var(--text-dark); }
-  .sub-word-helper { font-size: 18px; color: var(--text-cool); font-weight: 600; margin-bottom: 16px; }
-  
-  .tip-cloud {
-    background: #FFFBEB; border: 3px dashed #F59E0B; padding: 12px;
-    border-radius: var(--radius-standard); max-width: 560px; margin: 18px auto 0; text-align: left; font-size: 14px; color: #B45309;
-  }
+  .instructions-banner { font-size: 13px; color: var(--text-cool); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
+  .main-word-giant { font-family: 'Gowun Dodum', sans-serif; font-size: 52px; font-weight: 700; margin-bottom: 10px; color: var(--text-dark); text-shadow: var(--neon-glow); }
+  .sub-word-helper { font-size: 20px; color: var(--text-cool); font-weight: 600; margin-bottom: 20px; }
 
   .options-buttons-stack { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
   @media(max-width: 540px) { .options-buttons-stack { grid-template-columns: 1fr; } }
   .choice-bubble-btn {
-    background: var(--surface-white); border: 3px solid var(--text-dark); padding: 16px;
+    background: var(--surface-white); border: 3px solid var(--text-dark); padding: 18px;
     border-radius: var(--radius-standard); font-family: inherit; font-size: 16px; font-weight: 600;
     color: var(--text-dark); cursor: pointer; text-align: left; box-shadow: 0 4px 0 var(--text-dark); transition: var(--bounce-transition);
   }
-  .choice-bubble-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 0 var(--text-dark); background: #FAF9F6; }
+  .choice-bubble-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 0 var(--text-dark); background: rgba(0,0,0,0.02); }
+  body.theme-cyber .choice-bubble-btn:hover:not(:disabled) { background: rgba(255,255,255,0.05); }
   .choice-bubble-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--text-dark); }
-  .choice-bubble-btn.correct { background: var(--mint-green) !important; color: white !important; }
+  .choice-bubble-btn.correct { background: var(--mint-green) !important; color: #000 !important; font-weight: 700; }
   .choice-bubble-btn.incorrect { background: var(--brand-pop) !important; color: white !important; }
 
   .typer-nest { margin-top: 24px; }
   .typer-screen {
-    font-family: 'Gowun Dodum', sans-serif; font-size: 38px; min-height: 72px;
-    background: #F8FAFC; border: 3px dashed #CBD5E1; border-radius: var(--radius-standard);
+    font-family: 'Gowun Dodum', sans-serif; font-size: 40px; min-height: 80px;
+    background: rgba(0,0,0,0.03); border: 3px dashed var(--text-cool); border-radius: var(--radius-standard);
     display: flex; align-items: center; justify-content: center; margin-bottom: 16px; padding: 8px; color: var(--text-dark);
   }
-  .typer-screen.empty { font-family: inherit; font-size: 14px; color: var(--text-cool); }
-  .blocks-keyboard { display: flex; flex-direction: column; gap: 8px; background: #F1F5F9; padding: 12px; border-radius: var(--radius-standard); border: 3px solid var(--text-dark); }
-  .kbd-row { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; }
+  .typer-screen.empty { font-family: inherit; font-size: 14px; color: var(--text-cool); font-weight: 600; }
+  .blocks-keyboard { display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.05); padding: 14px; border-radius: var(--radius-standard); border: 3px solid var(--text-dark); }
+  .kbd-row { display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; }
   .char-capsule {
     background: var(--surface-white); border: 2px solid var(--text-dark); border-radius: 8px;
-    padding: 6px 0; width: 34px; font-family: 'Gowun Dodum', sans-serif; font-size: 16px; font-weight: 700; color: var(--text-dark);
+    padding: 8px 0; width: 38px; font-family: 'Gowun Dodum', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-dark);
     cursor: pointer; user-select: none; text-align: center; box-shadow: 0 2px 0 var(--text-dark);
   }
   .char-capsule:active { transform: translateY(1px); box-shadow: 0 1px 0 var(--text-dark); }
-  .char-capsule.utility { width: auto; padding-left: 12px; padding-right: 12px; font-family: inherit; font-size: 12px; background: #E2E8F0; }
+  .char-capsule.utility { width: auto; padding-left: 14px; padding-right: 14px; font-family: inherit; font-size: 12px; background: var(--banana-yellow); color: #000; }
 
   .action-deck { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; min-height: 52px; }
-  .celebration-toast { font-size: 18px; font-weight: 700; }
-  .celebration-toast.good { color: #16A34A; }
+  .celebration-toast { font-size: 20px; font-weight: 700; }
+  .celebration-toast.good { color: var(--mint-green); text-shadow: var(--neon-glow); }
   .celebration-toast.bad { color: var(--brand-pop); }
 
   .mega-btn {
     font-family: inherit; font-size: 14px; font-weight: 700;
-    padding: 12px 24px; border-radius: var(--radius-standard);
+    padding: 14px 28px; border-radius: var(--radius-standard);
     border: 3px solid var(--text-dark); background: var(--surface-white); color: var(--text-dark);
-    cursor: pointer; box-shadow: 0 4px 0 var(--text-dark); transition: var(--bounce-transition);
-    display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase;
+    cursor: pointer; box-shadow: 0 5px 0 var(--text-dark); transition: var(--bounce-transition);
+    display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;
   }
-  .mega-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 0 var(--text-dark); }
+  .mega-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 7px 0 var(--text-dark); }
   .mega-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--text-dark); }
   .mega-btn.primary { background: var(--brand-pop); color: white; }
-  .mega-btn.accent { background: var(--banana-yellow); color: var(--text-dark); }
-  .mega-btn.danger { background: #CBD5E1; color: var(--text-dark); padding: 8px 16px; font-size: 12px; box-shadow: 0 3px 0 var(--text-dark); }
+  .mega-btn.accent { background: var(--banana-yellow); color: #000; }
+  .mega-btn.danger { background: rgba(0,0,0,0.1); color: var(--text-dark); padding: 8px 14px; font-size: 12px; box-shadow: 0 3px 0 var(--text-dark); border-radius: 12px; }
+  body.theme-cyber .mega-btn.danger { background: rgba(255,255,255,0.1); }
   .mega-btn.danger:hover:not(:disabled) { background: #EF4444; color: white; }
 
   #summaryView { display: none; text-align: center; padding: 40px 20px; }
-  .summary-podiums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 500px; margin: 24px auto; }
+  .summary-podiums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 540px; margin: 32px auto; }
 
   @keyframes simpleWiggle {
     0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-5deg); }
-    75% { transform: rotate(5deg); }
+    25% { transform: rotate(-6deg); }
+    75% { transform: rotate(6deg); }
+  }
+  @keyframes pulse {
+    from { opacity: 0.6; } to { opacity: 1; }
   }
 </style>
 </head>
@@ -213,19 +258,29 @@
     <div class="header-left">
       <div class="mascot-avatar">🍿</div>
       <div>
-        <h1>한글 팝콘 · Hangeul Popcorn Studio</h1>
-        <p>Pass the mic and match the items!</p>
+        <h1>한글 팝콘 · Popcorn Studio XL</h1>
+        <p>Pass the mic, match terms, and maintain your streak!</p>
       </div>
     </div>
-    <button class="mega-btn danger" id="clearStorageBtn" onclick="wipeSavedProgress()">Wipe Saved Scores 🧹</button>
+    <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+      <select class="theme-select-menu" id="themeSelector" onchange="changeAppTheme(this.value)">
+        <option value="classic">🎮 Classic Arcade</option>
+        <option value="cyber">⚡ Neon Cyberpunk</option>
+        <option value="matcha">🍵 Cozy Matcha</option>
+      </select>
+      <button class="mega-btn danger" id="clearStorageBtn" onclick="wipeSavedProgress()">Wipe Save 🧹</button>
+    </div>
   </header>
 
   <div class="card-board">
-    <h2>Popcorn Sync Engine Status</h2>
+    <h2>
+      <span>Popcorn Sync Engine Status</span>
+      <span style="cursor:pointer; font-size:11px; text-decoration:underline;" onclick="testAudioEngine()">🔊 Audio Node Test</span>
+    </h2>
     <div class="badge-cluster">
       <span class="badge-pill" id="pipelineStatusTag">Connecting to Spreadsheet Matrix...</span>
-      <span class="badge-pill" id="vocabCountTag">0 Vocabs Ready</span>
-      <span class="badge-pill" id="exprCountTag">0 Expressions Ready</span>
+      <span class="badge-pill" id="vocabCountTag">0 Items Loaded</span>
+      <span class="badge-pill" id="exprCountTag">0 Sayings Loaded</span>
       <span class="badge-pill saved-indicator" id="saveToastTag">Progress Auto-Saved! 💾</span>
     </div>
   </div>
@@ -235,35 +290,38 @@
       <span class="avatar-spot">🐬</span>
       <div class="player-tag">Rose</div>
       <div class="player-score-num" id="pScore_0">0</div>
+      <div class="streak-fire-badge" id="pStreak_0">🔥 0</div>
     </div>
     <div class="player-box" id="pPill_1">
       <span class="avatar-spot">🐈‍⬛</span>
       <div class="player-tag">Krystal</div>
       <div class="player-score-num" id="pScore_1">0</div>
+      <div class="streak-fire-badge" id="pStreak_1">🔥 0</div>
     </div>
     <div class="player-box" id="pPill_2">
       <span class="avatar-spot">🦌</span>
       <div class="player-tag">Jannica</div>
       <div class="player-score-num" id="pScore_2">0</div>
+      <div class="streak-fire-badge" id="pStreak_2">🔥 0</div>
     </div>
   </div>
 
   <div class="card-board">
-    <h2>Pick Your Gameplay Mode</h2>
+    <h2>Pick Your Arena Match</h2>
     <div class="modes-flex">
-      <div class="mode-bubble" data-mode="reading"><span class="icon">👀</span><span class="label">Reading</span></div>
-      <div class="mode-bubble" data-mode="writing"><span class="icon">✏️</span><span class="label">Writing</span></div>
-      <div class="mode-bubble" data-mode="listening"><span class="icon">🎧</span><span class="label">Listening</span></div>
-      <div class="mode-bubble" data-mode="speaking"><span class="icon">🗣️</span><span class="label">Speaking</span></div>
-      <div class="mode-bubble" id="useCaseModeCard" data-mode="usecase"><span class="icon">💡</span><span class="label">Contexts</span></div>
+      <div class="mode-bubble" data-mode="reading"><span class="icon">👀</span><span class="label">Reading Blitz</span></div>
+      <div class="mode-bubble" data-mode="writing"><span class="icon">✏️</span><span class="label">Block Builder</span></div>
+      <div class="mode-bubble" data-mode="listening"><span class="icon">🎧</span><span class="label">Echo Drop</span></div>
+      <div class="mode-bubble" data-mode="speaking"><span class="icon">🗣️</span><span class="label">Voice Check</span></div>
+      <div class="mode-bubble" id="useCaseModeCard" data-mode="usecase"><span class="icon">💡</span><span class="label">Real Contexts</span></div>
     </div>
   </div>
 
   <div id="quizArea">
     <div class="stage-header">
-      <span id="trackerLabel">Question 0/0</span>
+      <span id="trackerLabel">Stage 0/0</span>
       <div class="fun-progress-bg"><div class="fun-progress-fill" id="pBar"></div></div>
-      <span style="color:var(--brand-pop); font-weight:700;" id="activeTurnPrompt">Next Up: Rose</span>
+      <span style="color:var(--brand-pop); font-weight:700;" id="activeTurnPrompt">Up Next: Rose</span>
     </div>
 
     <div class="arena-card">
@@ -271,12 +329,11 @@
       <div class="instructions-banner" id="promptField">Task Assignment Goal</div>
       <div class="main-word-giant" id="primeStimulus">Ready</div>
       <div class="sub-word-helper" id="secondaryStimulus"></div>
-      <div id="contextWrapper"></div>
 
       <div class="options-buttons-stack" id="optionsContainer"></div>
 
       <div class="typer-nest" id="writingComposer" style="display:none;">
-        <div class="typer-screen empty" id="composerOutput">Click buttons below to assemble characters...</div>
+        <div class="typer-screen empty" id="composerOutput">Click blocks to assemble Hangeul characters...</div>
         <div class="blocks-keyboard">
           <div class="kbd-row" id="choLine"></div>
           <div class="kbd-row" id="jungLine"></div>
@@ -285,7 +342,7 @@
             <button class="char-capsule utility" onclick="cwSpace()">Space ␣</button>
             <button class="char-capsule utility" onclick="cwBackspace()">Bksp ⌫</button>
             <button class="char-capsule utility" onclick="cwClear()">Reset 🧼</button>
-            <button class="char-capsule utility" style="background:var(--mint-green); color:white;" id="composerSubmitBtn">Lock In Answer 🔒</button>
+            <button class="char-capsule utility" style="background:var(--mint-green); color:#000;" id="composerSubmitBtn">Lock It In 🔒</button>
           </div>
         </div>
       </div>
@@ -300,7 +357,8 @@
   </div>
 
   <div class="card-board" id="summaryView">
-    <h2>🎉 Victory Lap Evaluation! 🎉</h2>
+    <h2>🏆 Campaign Complete! Victory Lap 🏆</h2>
+    <p style="color:var(--text-cool); font-weight:600; margin-bottom:16px;">Here is how the scores stacked up this match:</p>
     <div class="summary-podiums">
       <div class="player-box">
         <span class="avatar-spot">🐬</span>
@@ -318,20 +376,18 @@
         <div class="player-score-num" id="final_2">0</div>
       </div>
     </div>
-    <button class="mega-btn primary" id="resetRunBtn">Launch Next Campaign 🚀</button>
+    <button class="mega-btn accent" id="resetRunBtn">Start Another Run 🚀</button>
   </div>
 </div>
 
 <script>
-  // 🔗 LINK EMBED: Paste your updated published google sheets public URL here whenever you want!
   const EMBEDDED_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRXpcCILEulBysiVCgHZWNbdIIDz-isW0CeiCkpg0FXerZ8o2N3dD5PNonYkK5nxsCauUWN93JbkZWH/pub?gid=0&single=true&output=csv";
 
-  // 📝 BCD matrix update containing your customized vocabulary arrays
   const DEFAULT_FALLBACK_MATRIX = [
     ["하루", "a day", "Vocab", ""],
     ["시간", "time", "Vocab", ""],
     ["휴식", "rest / break", "Vocab", ""],
-    ["아이고", "ugh / oh no / oh dear", "Expression", "You accidentally drop your 폰 on the floor. What would you say?"],
+    ["아이고", "ugh / oh no / oh dear", "Expression", "You accidentally drop your phone on the floor. What would you say?"],
     ["감사하다", "to appreciate, to thank", "Vocab", ""],
     ["정말", "really", "Vocab", ""],
     ["새로운", "new", "Vocab", ""],
@@ -350,6 +406,7 @@
   let activeIndex = 0; let activeSelectedMode = null; let evaluatedState = false;
   
   let playerScores = [0, 0, 0];
+  let playerStreaks = [0, 0, 0];
   let activePlayerIndex = 0; 
 
   const CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
@@ -357,7 +414,8 @@
   const JONG = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','¼','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
   let currentBlock = { cho: null, jung: null, jong: null }; let committedOutput = "";
 
-  // 🎵 Native Web Audio Synthesizer Engine
+  const P_CELEB_BURSTS = ["Incredible! 🌟", "Absolutely Crushing It! 🔥", "Genius Status Mode! 🧠", "Flawless Delivery! 💎", "On Fire! ⚡"];
+
   function playSoundEffect(isCorrect) {
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -365,45 +423,48 @@
       const ctx = new AudioContext();
       
       if (isCorrect) {
-        // Bright retro major-chord arpeggio (C5 -> E5 -> G5)
-        const notes = [523.25, 659.25, 783.99];
+        const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((freq, index) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'triangle';
           osc.frequency.value = freq;
-          
-          const startTime = ctx.currentTime + (index * 0.08);
-          gain.gain.setValueAtTime(0.15, startTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.3);
-          
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(startTime);
-          osc.stop(startTime + 0.3);
+          const startTime = ctx.currentTime + (index * 0.07);
+          gain.gain.setValueAtTime(0.12, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(startTime); osc.stop(startTime + 0.25);
         });
       } else {
-        // Low arcade buzzer sound (150Hz decaying into 100Hz)
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, ctx.currentTime);
-        osc.frequency.linearRampToValueAtTime(100, ctx.currentTime + 0.25);
-        
-        gain.gain.setValueAtTime(0.2, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-        
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.25);
+        const osc = ctx.createOscillator(); const gain = ctx.createGain();
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(140, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(85, ctx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 0.3);
       }
-    } catch (e) {
-      console.log("Audio context blocked or unsupported.");
+    } catch (e) {}
+  }
+
+  function testAudioEngine() {
+    playSoundEffect(true);
+    setTimeout(() => { triggerAudioSpeech("대박"); }, 400);
+  }
+
+  function changeAppTheme(themeName) {
+    document.body.className = "";
+    if(themeName !== "classic") {
+      document.body.classList.add("theme-" + themeName);
     }
+    localStorage.setItem("hangeul_studio_theme", themeName);
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+    const savedTheme = localStorage.getItem("hangeul_studio_theme") || "classic";
+    document.getElementById("themeSelector").value = savedTheme;
+    changeAppTheme(savedTheme);
+
     setupEventHandlers();
     buildVirtualKeyboard();
     loadDataPipeline(EMBEDDED_CSV_URL);
@@ -443,6 +504,7 @@
 
   function saveSessionToStorage() {
     localStorage.setItem("hangeul_save_scores", JSON.stringify(playerScores));
+    localStorage.setItem("hangeul_save_streaks", JSON.stringify(playerStreaks));
     localStorage.setItem("hangeul_save_activeIndex", activeIndex);
     localStorage.setItem("hangeul_save_activePlayerIndex", activePlayerIndex);
     localStorage.setItem("hangeul_save_activeMode", activeSelectedMode);
@@ -455,6 +517,7 @@
 
   function loadSessionFromStorage() {
     playerScores = JSON.parse(localStorage.getItem("hangeul_save_scores")) || [0, 0, 0];
+    playerStreaks = JSON.parse(localStorage.getItem("hangeul_save_streaks")) || [0, 0, 0];
     activeIndex = parseInt(localStorage.getItem("hangeul_save_activeIndex")) || 0;
     activePlayerIndex = parseInt(localStorage.getItem("hangeul_save_activePlayerIndex")) || 0;
     currentActiveQueue = JSON.parse(localStorage.getItem("hangeul_save_queue")) || [];
@@ -466,16 +529,16 @@
   }
 
   function wipeSavedProgress() {
-    if(confirm("Are you sure you want to completely clear out all saved player scores and active session states?")) {
+    if(confirm("Are you sure you want to wipe all session tracking and streak parameters?")) {
       localStorage.clear();
       playerScores = [0, 0, 0];
+      playerStreaks = [0, 0, 0];
       activeIndex = 0;
       activePlayerIndex = 0;
       syncScoreboardUI();
       document.getElementById("quizArea").style.display = "none";
       document.getElementById("summaryView").style.display = "none";
       document.querySelectorAll(".mode-bubble").forEach(c => c.classList.remove("active"));
-      alert("Scores cleared successfully!");
     }
   }
 
@@ -483,7 +546,7 @@
     const statusTag = document.getElementById("pipelineStatusTag");
     try {
       if(!url || url.includes("2PACX-1vSgD2n5UvExbX")) { 
-        statusTag.textContent = "Using Fallback Arrays"; 
+        statusTag.textContent = "Using Offline Matrix"; 
         statusTag.classList.add("status-online");
         processRawMatrix(DEFAULT_FALLBACK_MATRIX); 
         checkAndResumeInterruptedSession();
@@ -493,12 +556,11 @@
       if (!response.ok) throw new Error('Network error');
       const textData = await response.text();
       processRawMatrix(parseCSVToArrays(textData));
-      statusTag.textContent = "Sheet Live & Synced ✨";
+      statusTag.textContent = "Live Cloud Synced 🟢";
       statusTag.classList.add("status-online");
-      
       checkAndResumeInterruptedSession();
     } catch (e) {
-      statusTag.textContent = "Fallback Backup Array Active";
+      statusTag.textContent = "Offline Storage Mode";
       statusTag.classList.add("status-online");
       processRawMatrix(DEFAULT_FALLBACK_MATRIX);
       checkAndResumeInterruptedSession();
@@ -538,26 +600,27 @@
       const entry = { hangeul: line[0].trim(), english: line[1].trim(), type: (line[2] || "Vocab").trim().toLowerCase(), useCase: (line[3] || "").trim() };
       if(entry.type === "expression") expressionList.push(entry); else vocabList.push(entry);
     }
-    document.getElementById("vocabCountTag").textContent = `${vocabList.length} Cards Found`;
-    document.getElementById("exprCountTag").textContent = `${expressionList.length} Expressions Found`;
+    document.getElementById("vocabCountTag").textContent = `${vocabList.length} Vocabs`;
+    document.getElementById("exprCountTag").textContent = `${expressionList.length} Expressions`;
   }
 
   function initializeSession(mode) {
     document.getElementById("summaryView").style.display = "none";
     document.getElementById("quizArea").style.display = "block";
     playerScores = [0, 0, 0];
+    playerStreaks = [0, 0, 0];
     activePlayerIndex = 0;
     activeIndex = 0;
     syncScoreboardUI();
 
-    let targetPool = (mode === "usecase") ? [...expressionList] : [...vocabList, ...expressionList];
+    let targetPool = (mode === "usecase") ? [...expressionList].filter(e => e.useCase) : [...vocabList, ...expressionList];
     if(targetPool.length === 0) targetPool = [...vocabList, ...expressionList];
     
     for (let i = targetPool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [targetPool[i], targetPool[j]] = [targetPool[j], targetPool[i]];
     }
-    currentActiveQueue = targetPool.slice(0, Math.min(15, targetPool.length));
+    currentActiveQueue = targetPool.slice(0, Math.min(12, targetPool.length));
     saveSessionToStorage();
     renderNextQueueItem();
   }
@@ -566,10 +629,18 @@
     const avatars = ["🐬", "🐈‍⬛", "🦌"];
     for(let i=0; i<3; i++) {
       document.getElementById(`pScore_${i}`).textContent = playerScores[i];
+      const streakEl = document.getElementById(`pStreak_${i}`);
+      if(playerStreaks[i] > 0) {
+        streakEl.textContent = `🔥 ${playerStreaks[i]}`;
+        streakEl.style.display = "block";
+      } else {
+        streakEl.style.display = "none";
+      }
+
       const pill = document.getElementById(`pPill_${i}`);
       if(i === activePlayerIndex) pill.classList.add("turn-highlight"); else pill.classList.remove("turn-highlight");
     }
-    document.getElementById("activeTurnPrompt").textContent = `Pass the Mic 🎙️ ➔ Player ${activePlayerIndex + 1} (${avatars[activePlayerIndex]})`;
+    document.getElementById("activeTurnPrompt").textContent = `Pass the Mic 🎙️ Player ${activePlayerIndex + 1} (${avatars[activePlayerIndex]})`;
   }
 
   function renderNextQueueItem() {
@@ -583,7 +654,7 @@
       return;
     }
 
-    document.getElementById("trackerLabel").textContent = `Challenge ${activeIndex + 1} of ${currentActiveQueue.length}`;
+    document.getElementById("trackerLabel").textContent = `Challenge ${activeIndex + 1} / ${currentActiveQueue.length}`;
     document.getElementById("pBar").style.width = `${((activeIndex) / currentActiveQueue.length) * 100}%`;
     syncScoreboardUI();
     renderActiveItemState();
@@ -599,7 +670,6 @@
     document.getElementById("optionsContainer").innerHTML = "";
     document.getElementById("optionsContainer").style.display = "none";
     document.getElementById("writingComposer").style.display = "none";
-    document.getElementById("contextWrapper").innerHTML = "";
 
     switch(activeSelectedMode) {
       case "reading": executeReadingConfig(currentItem); break;
@@ -610,17 +680,34 @@
     }
   }
 
+  function handlePointsAwarded(isCorrect) {
+    if(isCorrect) {
+      playerStreaks[activePlayerIndex]++;
+      const multiplier = playerStreaks[activePlayerIndex] >= 3 ? 2 : 1;
+      playerScores[activePlayerIndex] += (1 * multiplier);
+      
+      const flavorTxt = P_CELEB_BURSTS[Math.floor(Math.random() * P_CELEB_BURSTS.length)];
+      const bonusAlert = multiplier > 1 ? ` (Streak Bonus x${multiplier}!)` : "";
+      document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">${flavorTxt}${bonusAlert}</span>`;
+      playSoundEffect(true);
+    } else {
+      playerStreaks[activePlayerIndex] = 0;
+      document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">Bummer! Streak reset! 💔</span>`;
+      playSoundEffect(false);
+    }
+  }
+
   function executeReadingConfig(item) {
-    document.getElementById("promptField").textContent = "What is the English meaning of this word?";
+    document.getElementById("promptField").textContent = "Identify the accurate English meaning below:";
     document.getElementById("primeStimulus").textContent = item.hangeul;
     document.getElementById("secondaryStimulus").textContent = "";
-    injectUseCaseCallout(item);
     generateOptionsMatrix(item, "english");
   }
 
-  function generateOptionsMatrix(targetItem, keyField) {
+  function generateOptionsMatrix(targetItem, keyField, displayField = null) {
     const container = document.getElementById("optionsContainer");
     container.style.display = "grid";
+    const activeDisplayField = displayField || keyField;
 
     let pool = [...vocabList, ...expressionList].filter(i => i[keyField] && i[keyField] !== targetItem[keyField]);
     for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
@@ -631,7 +718,7 @@
 
     selections.forEach(opt => {
       const btn = document.createElement("button");
-      btn.className = "choice-bubble-btn"; btn.textContent = opt[keyField] || "Details pending...";
+      btn.className = "choice-bubble-btn"; btn.textContent = opt[activeDisplayField] || "---";
       btn.onclick = () => {
         if(evaluatedState) return;
         evaluatedState = true;
@@ -639,17 +726,14 @@
         allButtons.forEach(b => b.disabled = true);
 
         if(opt[keyField] === targetItem[keyField]) {
-          btn.classList.add("correct"); playerScores[activePlayerIndex]++;
-          document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🎉 Correct entry! +1 point</span>`;
-          playSoundEffect(true);
+          btn.classList.add("correct");
+          handlePointsAwarded(true);
         } else {
           btn.classList.add("incorrect");
-          allButtons.forEach(b => { if(b.textContent === targetItem[keyField]) b.classList.add("correct"); });
-          document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">💥 Missed! Next person up!</span>`;
-          playSoundEffect(false);
+          allButtons.forEach(b => { if(b.textContent === targetItem[activeDisplayField]) b.classList.add("correct"); });
+          handlePointsAwarded(false);
         }
-        syncScoreboardUI();
-        saveSessionToStorage();
+        syncScoreboardUI(); saveSessionToStorage();
         document.getElementById("continueWorkflowBtn").style.display = "inline-flex";
       };
       container.appendChild(btn);
@@ -657,10 +741,9 @@
   }
 
   function executeWritingConfig(item) {
-    document.getElementById("promptField").textContent = "Assemble the Korean blocks for this word:";
+    document.getElementById("promptField").textContent = "Spell out this term using the character block engine:";
     document.getElementById("primeStimulus").textContent = item.english;
     document.getElementById("secondaryStimulus").textContent = "";
-    injectUseCaseCallout(item);
     document.getElementById("writingComposer").style.display = "block";
   }
 
@@ -671,21 +754,18 @@
     const correctString = currentActiveQueue[activeIndex].hangeul.trim();
 
     if(generatedString === correctString) {
-      playerScores[activePlayerIndex]++;
-      document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🏆 Beautiful spelling!</span>`;
-      playSoundEffect(true);
+      handlePointsAwarded(true);
     } else {
-      document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">🩹 Solution: ${correctString}</span>`;
-      playSoundEffect(false);
+      handlePointsAwarded(false);
+      document.getElementById("evalFeedback").innerHTML += ` <span style="font-size:14px; display:block; color:var(--text-cool)">Correct answer: <b>${correctString}</b></span>`;
     }
-    syncScoreboardUI();
-    saveSessionToStorage();
+    syncScoreboardUI(); saveSessionToStorage();
     document.getElementById("continueWorkflowBtn").style.display = "inline-flex";
   }
 
   function executeListeningConfig(item) {
-    document.getElementById("promptField").textContent = "Listen closely and identify the item:";
-    document.getElementById("primeStimulus").textContent = "🔊 Replay Sound"; document.getElementById("primeStimulus").style.cursor = "pointer";
+    document.getElementById("promptField").textContent = "Listen closely to the audio trigger and match the meaning:";
+    document.getElementById("primeStimulus").textContent = "🔊 Replay Audio Cue"; document.getElementById("primeStimulus").style.cursor = "pointer";
     document.getElementById("primeStimulus").onclick = () => triggerAudioSpeech(item.hangeul);
     document.getElementById("secondaryStimulus").textContent = "";
     triggerAudioSpeech(item.hangeul);
@@ -693,60 +773,54 @@
   }
 
   function executeSpeakingConfig(item) {
-    document.getElementById("promptField").textContent = "Unmute in Discord and pronounce cleanly:";
+    document.getElementById("promptField").textContent = "Pronounce the phrase clearly into your microphone:";
     document.getElementById("primeStimulus").textContent = item.hangeul;
-    document.getElementById("secondaryStimulus").textContent = item.english;
-    injectUseCaseCallout(item);
-    const optContainer = document.getElementById("optionsContainer"); optContainer.style.display = "grid";
+    document.getElementById("primeStimulus").style.cursor = "pointer";
+    document.getElementById("primeStimulus").onclick = () => triggerAudioSpeech(item.hangeul);
+    document.getElementById("secondaryStimulus").textContent = `"${item.english}"`;
     
+    const optContainer = document.getElementById("optionsContainer"); optContainer.style.display = "grid";
     const verifyBtn = document.createElement("button"); verifyBtn.className = "choice-bubble-btn"; verifyBtn.style.textAlign = "center";
-    verifyBtn.innerHTML = "🎤 Start Speech Assessment Processing";
+    verifyBtn.innerHTML = "🎤 Initialize Speech Analysis Engine";
     verifyBtn.onclick = () => runSpeechRecognitionProcessing(item, verifyBtn);
     optContainer.appendChild(verifyBtn);
   }
 
   function runSpeechRecognitionProcessing(targetItem, interactiveBtn) {
     const speechSDK = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!speechSDK) { interactiveBtn.textContent = "Audio API Not Supported"; return; }
+    if(!speechSDK) { interactiveBtn.textContent = "Web Speech API Not Supported Here"; return; }
     window.speechSynthesis && window.speechSynthesis.cancel();
     const systemAnalytic = new speechSDK(); systemAnalytic.lang = 'ko-KR'; systemAnalytic.interimResults = false;
-    interactiveBtn.textContent = "📡 Listening... Speak now!"; interactiveBtn.disabled = true;
+    interactiveBtn.textContent = "📡 Listening for Hangeul output..."; interactiveBtn.disabled = true;
 
     systemAnalytic.onresult = (event) => {
       const trackingResult = event.results[0][0].transcript.replace(/\s+/g, '');
       const coreNormalization = targetItem.hangeul.replace(/\s+/g, '');
       if(trackingResult === coreNormalization) {
-        interactiveBtn.className = "choice-bubble-btn correct"; playerScores[activePlayerIndex]++;
-        document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast good">🌟 Flawless recognition match!</span>`;
-        playSoundEffect(true);
+        interactiveBtn.className = "choice-bubble-btn correct";
+        handlePointsAwarded(true);
       } else {
         interactiveBtn.className = "choice-bubble-btn incorrect";
-        document.getElementById("evalFeedback").innerHTML = `<span class="celebration-toast bad">🧐 System read: "${event.results[0][0].transcript}"</span>`;
-        playSoundEffect(false);
+        handlePointsAwarded(false);
+        document.getElementById("evalFeedback").innerHTML += ` <span style="font-size:13px; display:block; color:var(--text-cool)">Read as: "${event.results[0][0].transcript}"</span>`;
       }
       syncScoreboardUI(); saveSessionToStorage(); document.getElementById("continueWorkflowBtn").style.display = "inline-flex";
     };
-    systemAnalytic.onerror = () => { interactiveBtn.textContent = "Mic timeout error."; document.getElementById("continueWorkflowBtn").style.display = "inline-flex"; };
+    systemAnalytic.onerror = () => { interactiveBtn.textContent = "Mic timeout/error."; document.getElementById("continueWorkflowBtn").style.display = "inline-flex"; };
     systemAnalytic.start();
   }
 
   function executeUseCaseConfig(item) {
-    document.getElementById("promptField").textContent = "Identify the appropriate social scenario for this item:";
-    document.getElementById("primeStimulus").textContent = item.hangeul;
-    document.getElementById("secondaryStimulus").textContent = `Meaning: "${item.english}"`;
-    generateOptionsMatrix(item, "useCase");
-  }
-
-  function injectUseCaseCallout(item) {
-    if(item.useCase && activeSelectedMode !== 'usecase') {
-      document.getElementById("contextWrapper").innerHTML = `<div class="tip-cloud"><strong>💡 Scenario Objective:</strong> ${item.useCase}</div>`;
-    }
+    document.getElementById("promptField").textContent = "Read the situational prompt below and pick the right saying:";
+    document.getElementById("primeStimulus").textContent = item.useCase;
+    document.getElementById("secondaryStimulus").textContent = "";
+    generateOptionsMatrix(item, "useCase", "hangeul");
   }
 
   function triggerAudioSpeech(stringText) {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
-    const metrics = new SpeechSynthesisUtterance(stringText); metrics.lang = 'ko-KR'; metrics.rate = 0.85;
+    const metrics = new SpeechSynthesisUtterance(stringText); metrics.lang = 'ko-KR'; metrics.rate = 0.82;
     window.speechSynthesis.speak(metrics);
   }
 
@@ -772,7 +846,7 @@
     const activeScreen = document.getElementById("composerOutput");
     const unifiedSequence = committedOutput + (currentBlock.cho !== null ? String.fromCharCode(0xAC00 + (currentBlock.cho * 21 + currentBlock.jung) * 28 + (currentBlock.jong || 0)) : "");
     if(unifiedSequence.length > 0) { activeScreen.textContent = unifiedSequence; activeScreen.classList.remove("empty"); } 
-    else { activeScreen.textContent = "Click buttons below to assemble characters..."; activeScreen.classList.add("empty"); }
+    else { activeScreen.textContent = "Click blocks to assemble Hangeul characters..."; activeScreen.classList.add("empty"); }
   }
 
   function cwSpace() { commitPendingBlock(); committedOutput += " "; refreshComposerDisplay(); }
